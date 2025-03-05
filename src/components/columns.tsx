@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
 // Define the type for our data
-export type Product = {
+export type Deck = {
   id: string
   name: string
   due: number
@@ -14,7 +14,7 @@ export type Product = {
 }
 
 // Define the columns for our table
-export const columns: ColumnDef<Product>[] = [
+export const columns: ColumnDef<Deck>[] = [
   {
     accessorKey: "name",
     header: ({ column }) => {

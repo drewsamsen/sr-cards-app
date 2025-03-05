@@ -4,9 +4,11 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { DataTable } from "@/components/data-table"
 import { columns } from "@/components/columns"
-import { Header } from "@/app/header"
+import { Header } from "@/components/header"
 import { useAuth } from "@/lib/hooks"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
 
 // Sample data for the table - this would be fetched from the API in a real app
 const data = [
@@ -61,7 +63,7 @@ const data = [
 ]
 
 // Define the Product type to match the data structure
-export interface Product {
+export interface Deck {
   id: string
   name: string
   due: number
@@ -98,8 +100,12 @@ export default function DecksPage() {
         </div>
         <div className="mt-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>All Decks</CardTitle>
+              <Button size="sm" className="flex items-center gap-1">
+                <Plus className="h-4 w-4" />
+                Create new deck
+              </Button>
             </CardHeader>
             <CardContent>
               <DataTable columns={columns} data={data} />
