@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { DataTable } from "@/components/data-table"
-import { columns } from "@/components/columns"
+import { deckColumns } from "@/components/deck-columns"
 import { Header } from "@/components/header"
 import { useAuth, useDecks } from "@/lib/hooks"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -86,7 +86,7 @@ export default function DecksPage() {
             </CardHeader>
             <CardContent>
               <DataTable 
-                columns={columns} 
+                columns={deckColumns} 
                 data={decks} 
                 searchPlaceholder="Search decks..." 
                 emptyMessage={isLoadingDecks ? "Loading decks..." : "No flashcard decks found."}

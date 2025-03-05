@@ -1,2 +1,3 @@
 export * from './useAuth';
-export * from './useDecks'; 
+export * from './useDecks';
+export * from './useDeck'; 

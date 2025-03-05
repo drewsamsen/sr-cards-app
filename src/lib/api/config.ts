@@ -22,6 +22,7 @@ export const API_ENDPOINTS = {
   decks: {
     list: `${API_BASE_URL}/decks`,
     get: (id: string) => `${API_BASE_URL}/decks/${id}`,
+    getBySlug: (slug: string) => `${API_BASE_URL}/decks/slug/${slug}`,
     create: `${API_BASE_URL}/decks/create`,
     update: (id: string) => `${API_BASE_URL}/decks/${id}`,
     delete: (id: string) => `${API_BASE_URL}/decks/${id}`,

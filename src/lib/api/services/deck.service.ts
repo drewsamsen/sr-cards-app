@@ -19,6 +19,13 @@ export interface DecksApiResponse {
   };
 }
 
+export interface DeckApiResponse {
+  status: string;
+  data: {
+    deck: DeckResponse;
+  };
+}
+
 /**
  * Deck service for handling deck-related API calls
  */
@@ -30,6 +37,12 @@ export class DeckService {
     return apiClient.get<DecksApiResponse>(API_ENDPOINTS.decks.list);
   }
 
+  /**
+   * Get a single deck by slug
+   */
+  async getDeckBySlug(slug: string): Promise<ApiResponse<DeckApiResponse>> {
+    return apiClient.get<DeckApiResponse>(API_ENDPOINTS.decks.getBySlug(slug));
+  }
 }
 
 // Create and export a default instance
