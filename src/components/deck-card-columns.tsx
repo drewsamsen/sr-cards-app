@@ -59,7 +59,7 @@ export const deckCardColumns: ColumnDef<DeckCard>[] = [
     },
   },
   {
-    accessorKey: "deckId",
+    accessorKey: "deckName",
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
@@ -72,12 +72,14 @@ export const deckCardColumns: ColumnDef<DeckCard>[] = [
       // Only show this column if we have a deckId (in the all cards view)
       if (!row.original.deckId) return null;
       
+      const deckName = row.getValue("deckName") as string || `Deck ${row.original.deckId.substring(0, 8)}`;
+      
       return (
         <Link 
           href={`/deck/${row.original.deckId}`} 
           className="font-medium text-primary hover:underline"
         >
-          {row.original.deckName || `Deck ${row.original.deckId.substring(0, 8)}`}
+          {deckName}
         </Link>
       )
     },

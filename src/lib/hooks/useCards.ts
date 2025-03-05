@@ -25,9 +25,7 @@ export function useCards(): UseCardsReturn {
   const [error, setError] = useState<string | null>(null);
   const { user, isInitialized } = useAuth();
 
-  const transformCards = async (apiCards: CardResponse[]): Promise<Card[]> => {
-    // For now, we'll just return the cards without deck names
-    // In a real app, you would fetch the deck names from the API
+  const transformCards = (apiCards: CardResponse[]): Card[] => {
     return apiCards.map(card => ({
       id: card.id,
       front: card.front,
@@ -35,7 +33,7 @@ export function useCards(): UseCardsReturn {
       status: card.status,
       review_at: card.reviewAt,
       deckId: card.deckId,
-      deckName: `Deck ${card.deckId.substring(0, 8)}`
+      deckName: card.deckName || `Deck ${card.deckId.substring(0, 8)}`
     }));
   };
 
@@ -53,7 +51,7 @@ export function useCards(): UseCardsReturn {
       const response = await cardService.getAllCards();
       
       if (response.data) {
-        const transformedCards = await transformCards(response.data.data.cards);
+        const transformedCards = transformCards(response.data.data.cards);
         setCards(transformedCards);
       } else {
         setError(response.error || 'Failed to fetch cards');

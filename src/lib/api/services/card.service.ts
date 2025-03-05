@@ -12,6 +12,7 @@ export interface CardResponse {
   reviewAt: string | null;
   createdAt: string;
   updatedAt: string;
+  deckName?: string;
 }
 
 export interface CardsApiResponse {
