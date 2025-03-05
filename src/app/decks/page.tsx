@@ -23,7 +23,7 @@ const data = [
     id: "2",
     name: "Spanish Vocabulary",
     slug: "spanish-vocabulary",
-    due: 8,
+    due: 0,
     total: 32,
   },
   {
@@ -37,7 +37,7 @@ const data = [
     id: "4",
     name: "Biology 101",
     slug: "biology-101",
-    due: 3,
+    due: 0,
     total: 12,
   },
   {
@@ -51,7 +51,7 @@ const data = [
     id: "6",
     name: "English Literature",
     slug: "english-literature",
-    due: 9,
+    due: 0,
     total: 53,
   },
   {

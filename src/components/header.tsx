@@ -4,11 +4,21 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/hooks"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Menu, X } from "lucide-react"
 
 export function Header() {
   const router = useRouter()
   const { user, logout, isLoading } = useAuth()
   const [logoutError, setLogoutError] = useState<string | null>(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
+  const navItems = [
+    { name: "Decks", href: "/decks" },
+    { name: "Cards", href: "/cards" },
+    { name: "API", href: "/api" },
+    { name: "Settings", href: "/settings" },
+  ]
 
   const handleLogout = async () => {
     try {
@@ -26,9 +36,39 @@ export function Header() {
   return (
     <header className="w-full border-b bg-gray-100">
       <div className="max-w-screen-xl mx-auto flex h-16 items-center justify-between px-4">
-        <h1 className="text-xl font-bold">SupaCards</h1>
+        <div className="flex items-center gap-8">
+          <h1 className="text-xl font-bold">SupaCards</h1>
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex">
+            <ul className="flex space-x-6">
+              {navItems.map((item) => (
+                <li key={item.name}>
+                  <Link 
+                    href={item.href}
+                    className="text-sm font-medium text-gray-700 hover:text-primary transition-colors"
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
         
-        <div className="flex items-center gap-3">
+        {/* Mobile menu button */}
+        <button 
+          className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-200"
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {mobileMenuOpen ? (
+            <X className="h-6 w-6" />
+          ) : (
+            <Menu className="h-6 w-6" />
+          )}
+        </button>
+        
+        <div className="hidden md:flex items-center gap-3">
           {user ? (
             <>
               <div className="flex flex-col items-end">
@@ -60,6 +100,49 @@ export function Header() {
           )}
         </div>
       </div>
+      
+      {/* Mobile Navigation */}
+      {mobileMenuOpen && (
+        <div className="md:hidden border-t border-gray-200">
+          <nav className="px-4 py-3">
+            <ul className="space-y-3">
+              {navItems.map((item) => (
+                <li key={item.name}>
+                  <Link 
+                    href={item.href}
+                    className="block text-sm font-medium text-gray-700 hover:text-primary transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          
+          {user && (
+            <div className="px-4 py-3 border-t border-gray-200">
+              <div className="flex flex-col mb-2">
+                <span className="text-sm font-medium">
+                  {user.fullName}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {user.email}
+                </span>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleLogout}
+                disabled={isLoading}
+                className="w-full"
+              >
+                {isLoading ? "Logging out..." : "Log out"}
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
     </header>
   )
 } 
