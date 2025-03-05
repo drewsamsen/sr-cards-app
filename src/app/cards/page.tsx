@@ -1,96 +1,21 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { DataTable } from "@/components/data-table"
-import { cardColumns } from "@/components/card-columns"
+import { deckCardColumns } from "@/components/deck-card-columns"
 import { Header } from "@/components/header"
-import { useAuth } from "@/lib/hooks"
+import { useAuth, useCards } from "@/lib/hooks"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
-
-// Sample data for the table - this would be fetched from the API in a real app
-const data = [
-  {
-    id: "1",
-    question: "What is 2+2?",
-    slug: "what-is-2-plus-2",
-    lastReviewed: "2 days ago",
-    deck: "Basic Math",
-    difficulty: 1,
-  },
-  {
-    id: "2",
-    question: "What is the capital of Spain?",
-    slug: "what-is-the-capital-of-spain",
-    lastReviewed: "1 week ago",
-    deck: "World Geography",
-    difficulty: 2,
-  },
-  {
-    id: "3",
-    question: "Who wrote Romeo and Juliet?",
-    slug: "who-wrote-romeo-and-juliet",
-    lastReviewed: "3 days ago",
-    deck: "English Literature",
-    difficulty: 2,
-  },
-  {
-    id: "4",
-    question: "What is photosynthesis?",
-    slug: "what-is-photosynthesis",
-    lastReviewed: "Never",
-    deck: "Biology 101",
-    difficulty: 3,
-  },
-  {
-    id: "5",
-    question: "How do you say 'hello' in Spanish?",
-    slug: "how-do-you-say-hello-in-spanish",
-    lastReviewed: "5 days ago",
-    deck: "Spanish Vocabulary",
-    difficulty: 1,
-  },
-  {
-    id: "6",
-    question: "What is the first law of thermodynamics?",
-    slug: "what-is-the-first-law-of-thermodynamics",
-    lastReviewed: "2 weeks ago",
-    deck: "Physics Fundamentals",
-    difficulty: 4,
-  },
-  {
-    id: "7",
-    question: "What is a variable in programming?",
-    slug: "what-is-a-variable-in-programming",
-    lastReviewed: "1 day ago",
-    deck: "Programming Concepts",
-    difficulty: 2,
-  },
-  {
-    id: "8",
-    question: "What is the Pythagorean theorem?",
-    slug: "what-is-the-pythagorean-theorem",
-    lastReviewed: "4 days ago",
-    deck: "Basic Math",
-    difficulty: 3,
-  },
-]
-
-// Define the Card type to match the data structure
-export interface FlashCard {
-  id: string
-  question: string
-  slug: string
-  lastReviewed: string
-  deck: string
-  difficulty: number
-}
+import { Plus, AlertCircle } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import Link from "next/link"
 
 export default function CardsPage() {
   const router = useRouter()
   const { user, isInitialized } = useAuth()
+  const { cards, isLoading: isLoadingCards, error: cardsError } = useCards()
 
   // Redirect to login page if not logged in
   useEffect(() => {
@@ -117,6 +42,15 @@ export default function CardsPage() {
           <p className="text-muted-foreground">Browse and manage your flashcards across all decks.</p>
         </div>
         <div className="mt-6">
+          {cardsError && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {cardsError}
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>All Cards</CardTitle>
@@ -127,10 +61,10 @@ export default function CardsPage() {
             </CardHeader>
             <CardContent>
               <DataTable 
-                columns={cardColumns} 
-                data={data} 
+                columns={deckCardColumns} 
+                data={cards} 
                 searchPlaceholder="Search cards..." 
-                emptyMessage="No flashcards found."
+                emptyMessage={isLoadingCards ? "Loading cards..." : "No flashcards found."}
               />
             </CardContent>
           </Card>

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Plus, AlertCircle, ChevronLeft, BookOpen } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
+import React from "react"
 
 // Define the Card type to match the data structure
 export interface DeckCard {
@@ -25,6 +26,9 @@ export interface DeckCard {
 export default function DeckPage({ params }: { params: { slug: string } }) {
   const router = useRouter()
   const { user, isInitialized } = useAuth()
+  
+  // TODO: In future Next.js versions, params will need to be unwrapped with React.use()
+  // before accessing properties. For now, direct access is still supported.
   const { deck, isLoading: isLoadingDeck, error: deckError } = useDeck(params.slug)
   const { 
     cards, 

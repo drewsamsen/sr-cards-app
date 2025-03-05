@@ -2,7 +2,8 @@
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
-import { Button, Badge } from "@/components/ui"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
 
 // Define the type for our data
@@ -13,6 +14,8 @@ export type DeckCard = {
   status: string
   review_at: string | null
   slug?: string
+  deckId?: string
+  deckName?: string
 }
 
 // Helper function to format dates
@@ -52,6 +55,30 @@ export const deckCardColumns: ColumnDef<DeckCard>[] = [
         </Link>
       ) : (
         <span className="font-medium">{front}</span>
+      )
+    },
+  },
+  {
+    accessorKey: "deckId",
+    header: ({ column }) => {
+      return (
+        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          Deck
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      // Only show this column if we have a deckId (in the all cards view)
+      if (!row.original.deckId) return null;
+      
+      return (
+        <Link 
+          href={`/deck/${row.original.deckId}`} 
+          className="font-medium text-primary hover:underline"
+        >
+          {row.original.deckName || `Deck ${row.original.deckId.substring(0, 8)}`}
+        </Link>
       )
     },
   },
@@ -102,13 +129,12 @@ export const deckCardColumns: ColumnDef<DeckCard>[] = [
     id: "edit",
     header: "Edit",
     cell: ({ row }) => (
-      row.original.slug ? (
-        <Link href={`/card/${row.original.slug}/edit`} className="text-primary hover:underline">
-          Edit
-        </Link>
-      ) : (
-        <span className="text-muted-foreground">Edit</span>
-      )
+      <Link 
+        href={`/card/${row.original.id}/edit`} 
+        className="text-primary hover:underline"
+      >
+        Edit
+      </Link>
     ),
   },
 ] 

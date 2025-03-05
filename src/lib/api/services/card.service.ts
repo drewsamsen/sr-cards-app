@@ -31,6 +31,13 @@ export class CardService {
   async getCardsByDeckId(deckId: string): Promise<ApiResponse<CardsApiResponse>> {
     return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.getByDeckId(deckId));
   }
+
+  /**
+   * Get all cards for the current user
+   */
+  async getAllCards(): Promise<ApiResponse<CardsApiResponse>> {
+    return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.list);
+  }
 }
 
 // Create and export a default instance
