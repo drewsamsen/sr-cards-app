@@ -13,13 +13,29 @@ export interface RegisterRequest {
   name: string;
 }
 
+// API response structure
+export interface ApiAuthResponse {
+  status: string;
+  data: {
+    user: {
+      id: string;
+      email: string;
+      fullName: string;
+    };
+    token: string;
+    refreshToken: string;
+  };
+}
+
+// Simplified structure for our app's use
 export interface AuthResponse {
   user: {
     id: string;
     email: string;
-    name: string;
+    fullName: string;
   };
   token: string;
+  refreshToken: string;
 }
 
 /**
@@ -29,29 +45,43 @@ export class AuthService {
   /**
    * Login user
    */
-  async login(data: LoginRequest): Promise<ApiResponse<AuthResponse>> {
-    return apiClient.post<AuthResponse>(API_ENDPOINTS.auth.login, data);
+  async login(data: LoginRequest): Promise<ApiResponse<ApiAuthResponse>> {
+    return apiClient.post<ApiAuthResponse>(API_ENDPOINTS.auth.login, data);
   }
 
   /**
    * Register new user
    */
-  async register(data: RegisterRequest): Promise<ApiResponse<AuthResponse>> {
-    return apiClient.post<AuthResponse>(API_ENDPOINTS.auth.register, data);
+  async register(data: RegisterRequest): Promise<ApiResponse<ApiAuthResponse>> {
+    return apiClient.post<ApiAuthResponse>(API_ENDPOINTS.auth.register, data);
   }
 
   /**
    * Logout user
    */
-  async logout(): Promise<ApiResponse<void>> {
-    return apiClient.post<void>(API_ENDPOINTS.auth.logout);
+  async logout(token: string): Promise<ApiResponse<{ status: string; message: string }>> {
+    // Set the auth token before making the request
+    this.setAuthToken(token);
+    
+    // Make the logout request
+    const response = await apiClient.post<{ status: string; message: string }>(
+      API_ENDPOINTS.auth.logout
+    );
+    
+    // Clear the token after logout
+    this.setAuthToken(null);
+    
+    return response;
   }
 
   /**
    * Refresh authentication token
    */
-  async refreshToken(): Promise<ApiResponse<{ token: string }>> {
-    return apiClient.post<{ token: string }>(API_ENDPOINTS.auth.refresh);
+  async refreshToken(refreshToken: string): Promise<ApiResponse<{ status: string; data: { token: string; refreshToken: string } }>> {
+    return apiClient.post<{ status: string; data: { token: string; refreshToken: string } }>(
+      API_ENDPOINTS.auth.refresh,
+      { refreshToken }
+    );
   }
 
   /**
