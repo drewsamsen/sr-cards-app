@@ -33,6 +33,7 @@ export const API_ENDPOINTS = {
     create: `${API_BASE_URL}/cards/create`,
     update: (id: string) => `${API_BASE_URL}/cards/${id}`,
     delete: (id: string) => `${API_BASE_URL}/cards/${id}`,
+    getByDeckId: (deckId: string) => `${API_BASE_URL}/decks/${deckId}/cards`,
   },
 };
 

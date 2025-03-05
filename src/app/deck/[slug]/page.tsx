@@ -1,48 +1,16 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { DataTable } from "@/components/data-table"
 import { deckCardColumns } from "@/components/deck-card-columns"
 import { Header } from "@/components/header"
-import { useAuth, useDeck } from "@/lib/hooks"
+import { useAuth, useDeck, useDeckCards } from "@/lib/hooks"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, AlertCircle, ChevronLeft, BookOpen } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
-
-// Sample data for the table - this would be fetched from the API in a real app
-const sampleCards = [
-  {
-    id: "1",
-    front: "What is 2+2?",
-    back: "4",
-    status: "new",
-    review_at: null,
-  },
-  {
-    id: "2",
-    front: "What is the capital of Spain?",
-    back: "Madrid",
-    status: "learning",
-    review_at: "2023-04-15T10:30:00Z",
-  },
-  {
-    id: "3",
-    front: "Who wrote Romeo and Juliet?",
-    back: "William Shakespeare",
-    status: "review",
-    review_at: "2023-04-12T14:00:00Z",
-  },
-  {
-    id: "4",
-    front: "What is photosynthesis?",
-    back: "The process by which green plants and some other organisms use sunlight to synthesize foods with carbon dioxide and water.",
-    status: "new",
-    review_at: null,
-  },
-]
 
 // Define the Card type to match the data structure
 export interface DeckCard {
@@ -58,7 +26,11 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
   const router = useRouter()
   const { user, isInitialized } = useAuth()
   const { deck, isLoading: isLoadingDeck, error: deckError } = useDeck(params.slug)
-  const [cards, setCards] = useState<DeckCard[]>(sampleCards)
+  const { 
+    cards, 
+    isLoading: isLoadingCards, 
+    error: cardsError 
+  } = useDeckCards(deck?.id)
 
   // Redirect to login page if not logged in
   useEffect(() => {
@@ -109,6 +81,15 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
             </Alert>
           )}
           
+          {cardsError && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {cardsError}
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>{deck?.name || "Cards"}</CardTitle>
@@ -117,6 +98,7 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
                   variant="default" 
                   size="sm" 
                   className="flex items-center gap-1"
+                  disabled={isLoadingCards || cards.length === 0}
                 >
                   <BookOpen className="h-4 w-4" />
                   Study Now
@@ -136,7 +118,13 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
                 columns={deckCardColumns} 
                 data={cards} 
                 searchPlaceholder="Search cards..." 
-                emptyMessage={isLoadingDeck ? "Loading cards..." : "No flashcards found in this deck."}
+                emptyMessage={
+                  isLoadingDeck 
+                    ? "Loading deck..." 
+                    : isLoadingCards 
+                      ? "Loading cards..." 
+                      : "No flashcards found in this deck."
+                }
               />
             </CardContent>
           </Card>

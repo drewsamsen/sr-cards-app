@@ -9,7 +9,7 @@ import { useAuth, useDecks } from "@/lib/hooks"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, AlertCircle } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 // Define the Deck type to match the data structure
 export interface Deck {
