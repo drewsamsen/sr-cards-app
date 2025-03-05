@@ -5,72 +5,13 @@ import { useRouter } from "next/navigation"
 import { DataTable } from "@/components/data-table"
 import { columns } from "@/components/columns"
 import { Header } from "@/components/header"
-import { useAuth } from "@/lib/hooks"
+import { useAuth, useDecks } from "@/lib/hooks"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { Plus, AlertCircle } from "lucide-react"
+import { Alert, AlertDescription } from "@/components/ui"
 
-// Sample data for the table - this would be fetched from the API in a real app
-const data = [
-  {
-    id: "1",
-    name: "Basic Math",
-    slug: "basic-math",
-    due: 12,
-    total: 45,
-  },
-  {
-    id: "2",
-    name: "Spanish Vocabulary",
-    slug: "spanish-vocabulary",
-    due: 0,
-    total: 32,
-  },
-  {
-    id: "3",
-    name: "World History",
-    slug: "world-history",
-    due: 5,
-    total: 18,
-  },
-  {
-    id: "4",
-    name: "Biology 101",
-    slug: "biology-101",
-    due: 0,
-    total: 12,
-  },
-  {
-    id: "5",
-    name: "Programming Concepts",
-    slug: "programming-concepts",
-    due: 7,
-    total: 27,
-  },
-  {
-    id: "6",
-    name: "English Literature",
-    slug: "english-literature",
-    due: 0,
-    total: 53,
-  },
-  {
-    id: "7",
-    name: "Physics Fundamentals",
-    slug: "physics-fundamentals",
-    due: 2,
-    total: 8,
-  },
-  {
-    id: "8",
-    name: "Music Theory",
-    slug: "music-theory",
-    due: 6,
-    total: 22,
-  },
-]
-
-// Define the Product type to match the data structure
+// Define the Deck type to match the data structure
 export interface Deck {
   id: string
   name: string
@@ -82,6 +23,24 @@ export interface Deck {
 export default function DecksPage() {
   const router = useRouter()
   const { user, isInitialized } = useAuth()
+  const { decks: apiDecks, isLoading: isLoadingDecks, error: decksError } = useDecks()
+  const [decks, setDecks] = useState<Deck[]>([])
+
+  // Transform API decks to our Deck format
+  useEffect(() => {
+    if (apiDecks.length > 0) {
+      // In a real app, we would fetch the due and total counts from another API endpoint
+      // For now, we'll generate random numbers
+      const transformedDecks = apiDecks.map(deck => ({
+        id: deck.id,
+        name: deck.name,
+        slug: deck.slug,
+        due: Math.floor(Math.random() * 10), // Random number for demo
+        total: Math.floor(Math.random() * 50) + 10, // Random number for demo
+      }))
+      setDecks(transformedDecks)
+    }
+  }, [apiDecks])
 
   // Redirect to login page if not logged in
   useEffect(() => {
@@ -108,6 +67,15 @@ export default function DecksPage() {
           <p className="text-muted-foreground">Browse and manage your flashcard decks.</p>
         </div>
         <div className="mt-6">
+          {decksError && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                {decksError}
+              </AlertDescription>
+            </Alert>
+          )}
+          
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>All Decks</CardTitle>
@@ -119,9 +87,9 @@ export default function DecksPage() {
             <CardContent>
               <DataTable 
                 columns={columns} 
-                data={data} 
+                data={decks} 
                 searchPlaceholder="Search decks..." 
-                emptyMessage="No flashcard decks found."
+                emptyMessage={isLoadingDecks ? "Loading decks..." : "No flashcard decks found."}
               />
             </CardContent>
           </Card>

@@ -18,7 +18,15 @@ export const API_ENDPOINTS = {
     profile: `${API_BASE_URL}/users/profile`,
     update: `${API_BASE_URL}/users/update`,
   },
-  // Example for future endpoints
+  // Decks endpoints
+  decks: {
+    list: `${API_BASE_URL}/decks`,
+    get: (id: string) => `${API_BASE_URL}/decks/${id}`,
+    create: `${API_BASE_URL}/decks/create`,
+    update: (id: string) => `${API_BASE_URL}/decks/${id}`,
+    delete: (id: string) => `${API_BASE_URL}/decks/${id}`,
+  },
+  // Cards endpoints
   cards: {
     list: `${API_BASE_URL}/cards`,
     create: `${API_BASE_URL}/cards/create`,
