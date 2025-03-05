@@ -15,48 +15,56 @@ const data = [
   {
     id: "1",
     name: "Basic Math",
+    slug: "basic-math",
     due: 12,
     total: 45,
   },
   {
     id: "2",
     name: "Spanish Vocabulary",
+    slug: "spanish-vocabulary",
     due: 8,
     total: 32,
   },
   {
     id: "3",
     name: "World History",
+    slug: "world-history",
     due: 5,
     total: 18,
   },
   {
     id: "4",
     name: "Biology 101",
+    slug: "biology-101",
     due: 3,
     total: 12,
   },
   {
     id: "5",
     name: "Programming Concepts",
+    slug: "programming-concepts",
     due: 7,
     total: 27,
   },
   {
     id: "6",
     name: "English Literature",
+    slug: "english-literature",
     due: 9,
     total: 53,
   },
   {
     id: "7",
     name: "Physics Fundamentals",
+    slug: "physics-fundamentals",
     due: 2,
     total: 8,
   },
   {
     id: "8",
     name: "Music Theory",
+    slug: "music-theory",
     due: 6,
     total: 22,
   },
@@ -66,6 +74,7 @@ const data = [
 export interface Deck {
   id: string
   name: string
+  slug: string
   due: number
   total: number
 }

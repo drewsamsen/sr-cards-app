@@ -9,6 +9,7 @@ import Link from "next/link"
 export type Deck = {
   id: string
   name: string
+  slug: string
   due: number
   total: number
 }
@@ -28,7 +29,7 @@ export const columns: ColumnDef<Deck>[] = [
     cell: ({ row }) => {
       const name = row.getValue("name") as string
       return (
-        <Link href={`/decks/${row.original.id}`} className="font-medium text-primary hover:underline">
+        <Link href={`/deck/${row.original.slug}`} className="font-medium text-primary hover:underline">
           {name}
         </Link>
       )
@@ -68,7 +69,7 @@ export const columns: ColumnDef<Deck>[] = [
     id: "edit",
     header: "Edit",
     cell: ({ row }) => (
-      <Link href={`/decks/${row.original.id}/edit`} className="text-primary hover:underline">
+      <Link href={`/deck/${row.original.slug}/edit`} className="text-primary hover:underline">
         Edit
       </Link>
     ),
