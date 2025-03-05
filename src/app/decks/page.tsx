@@ -1,0 +1,112 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { DataTable } from "@/components/data-table"
+import { columns } from "@/components/columns"
+import { Header } from "@/app/header"
+import { useAuth } from "@/lib/hooks"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+// Sample data for the table - this would be fetched from the API in a real app
+const data = [
+  {
+    id: "1",
+    name: "Basic Math",
+    due: 12,
+    total: 45,
+  },
+  {
+    id: "2",
+    name: "Spanish Vocabulary",
+    due: 8,
+    total: 32,
+  },
+  {
+    id: "3",
+    name: "World History",
+    due: 5,
+    total: 18,
+  },
+  {
+    id: "4",
+    name: "Biology 101",
+    due: 3,
+    total: 12,
+  },
+  {
+    id: "5",
+    name: "Programming Concepts",
+    due: 7,
+    total: 27,
+  },
+  {
+    id: "6",
+    name: "English Literature",
+    due: 9,
+    total: 53,
+  },
+  {
+    id: "7",
+    name: "Physics Fundamentals",
+    due: 2,
+    total: 8,
+  },
+  {
+    id: "8",
+    name: "Music Theory",
+    due: 6,
+    total: 22,
+  },
+]
+
+// Define the Product type to match the data structure
+export interface Product {
+  id: string
+  name: string
+  due: number
+  total: number
+}
+
+export default function DecksPage() {
+  const router = useRouter()
+  const { user, isInitialized } = useAuth()
+
+  // Redirect to login page if not logged in
+  useEffect(() => {
+    if (isInitialized && !user) {
+      router.push('/login')
+    }
+  }, [user, router, isInitialized])
+
+  // If not logged in or still initializing, show loading state
+  if (!isInitialized || !user) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <Header />
+      <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
+        <div className="space-y-4">
+          <h1 className="text-2xl font-bold tracking-tight">Your Flashcard Decks</h1>
+          <p className="text-muted-foreground">Browse and manage your flashcard decks.</p>
+        </div>
+        <div className="mt-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>All Decks</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataTable columns={columns} data={data} />
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
+  )
+} 

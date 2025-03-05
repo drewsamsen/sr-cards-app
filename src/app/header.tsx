@@ -1,10 +1,12 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/hooks"
 import { Button } from "@/components/ui/button"
 
 export function Header() {
+  const router = useRouter()
   const { user, logout, isLoading } = useAuth()
   const [logoutError, setLogoutError] = useState<string | null>(null)
 
@@ -13,6 +15,8 @@ export function Header() {
       await logout()
       // Clear any previous errors on successful logout
       setLogoutError(null)
+      // Navigate to login page after logout
+      router.push('/login')
     } catch (error) {
       console.error('Error during logout:', error)
       setLogoutError('Failed to logout. Please try again.')

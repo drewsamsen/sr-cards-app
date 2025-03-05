@@ -6,6 +6,7 @@ interface UseAuthReturn {
   token: string | null;
   refreshToken: string | null;
   isLoading: boolean;
+  isInitialized: boolean;
   error: string | null;
   login: (credentials: LoginRequest) => Promise<boolean>;
   logout: () => Promise<void>;
@@ -17,6 +18,7 @@ export function useAuth(): UseAuthReturn {
   const [token, setToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   // Initialize auth state from localStorage
@@ -40,6 +42,9 @@ export function useAuth(): UseAuthReturn {
         localStorage.removeItem('refreshToken');
       }
     }
+    
+    // Mark initialization as complete
+    setIsInitialized(true);
   }, []);
 
   const login = useCallback(async (credentials: LoginRequest): Promise<boolean> => {
@@ -111,6 +116,7 @@ export function useAuth(): UseAuthReturn {
     token,
     refreshToken,
     isLoading,
+    isInitialized,
     error,
     login,
     logout,
