@@ -2,76 +2,113 @@
 
 import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button, Badge } from "@/components/ui"
 import Link from "next/link"
 
 // Define the type for our data
 export type DeckCard = {
   id: string
-  question: string
-  slug: string
-  lastReviewed: string
-  difficulty: number
+  front: string
+  back: string
+  status: string
+  review_at: string | null
+  slug?: string
 }
+
+// Helper function to format dates
+const formatDate = (dateString: string | null) => {
+  if (!dateString) return "Not scheduled";
+  
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffTime = date.getTime() - now.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 0) return "Overdue";
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Tomorrow";
+  if (diffDays < 7) return `In ${diffDays} days`;
+  
+  return date.toLocaleDateString();
+};
 
 // Define the columns for our table
 export const deckCardColumns: ColumnDef<DeckCard>[] = [
   {
-    accessorKey: "question",
+    accessorKey: "front",
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Question
+          Front
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => {
-      const question = row.getValue("question") as string
-      return (
+      const front = row.getValue("front") as string
+      return row.original.slug ? (
         <Link href={`/card/${row.original.slug}`} className="font-medium text-primary hover:underline">
-          {question}
+          {front}
         </Link>
+      ) : (
+        <span className="font-medium">{front}</span>
       )
     },
   },
   {
-    accessorKey: "lastReviewed",
+    accessorKey: "status",
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Last Reviewed
+          Status
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => {
-      const lastReviewed = row.getValue("lastReviewed") as string
-      return <div className="font-medium">{lastReviewed}</div>
+      const status = row.getValue("status") as string
+      const getStatusColor = (status: string) => {
+        switch (status) {
+          case "new": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
+          case "learning": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+          case "review": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+          default: return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+        }
+      };
+      
+      return (
+        <Badge className={`${getStatusColor(status)} capitalize`}>
+          {status}
+        </Badge>
+      )
     },
   },
   {
-    accessorKey: "difficulty",
+    accessorKey: "review_at",
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Difficulty
+          Review Date
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => {
-      const difficulty = row.getValue("difficulty") as number
-      return <div className="font-medium">{difficulty}/5</div>
+      const reviewAt = row.getValue("review_at") as string | null
+      return <div className="font-medium">{formatDate(reviewAt)}</div>
     },
   },
   {
     id: "edit",
     header: "Edit",
     cell: ({ row }) => (
-      <Link href={`/card/${row.original.slug}/edit`} className="text-primary hover:underline">
-        Edit
-      </Link>
+      row.original.slug ? (
+        <Link href={`/card/${row.original.slug}/edit`} className="text-primary hover:underline">
+          Edit
+        </Link>
+      ) : (
+        <span className="text-muted-foreground">Edit</span>
+      )
     ),
   },
 ] 

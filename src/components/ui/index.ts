@@ -5,4 +5,5 @@ export * from './input';
 export * from './label';
 export * from './sheet';
 export * from './table';
-export * from './tabs'; 
+export * from './tabs';
+export * from './badge'; 

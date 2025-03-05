@@ -8,7 +8,7 @@ import { Header } from "@/components/header"
 import { useAuth, useDeck } from "@/lib/hooks"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, AlertCircle, ChevronLeft } from "lucide-react"
+import { Plus, AlertCircle, ChevronLeft, BookOpen } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui"
 import Link from "next/link"
 
@@ -16,41 +16,42 @@ import Link from "next/link"
 const sampleCards = [
   {
     id: "1",
-    question: "What is 2+2?",
-    slug: "what-is-2-plus-2",
-    lastReviewed: "2 days ago",
-    difficulty: 1,
+    front: "What is 2+2?",
+    back: "4",
+    status: "new",
+    review_at: null,
   },
   {
     id: "2",
-    question: "What is the capital of Spain?",
-    slug: "what-is-the-capital-of-spain",
-    lastReviewed: "1 week ago",
-    difficulty: 2,
+    front: "What is the capital of Spain?",
+    back: "Madrid",
+    status: "learning",
+    review_at: "2023-04-15T10:30:00Z",
   },
   {
     id: "3",
-    question: "Who wrote Romeo and Juliet?",
-    slug: "who-wrote-romeo-and-juliet",
-    lastReviewed: "3 days ago",
-    difficulty: 2,
+    front: "Who wrote Romeo and Juliet?",
+    back: "William Shakespeare",
+    status: "review",
+    review_at: "2023-04-12T14:00:00Z",
   },
   {
     id: "4",
-    question: "What is photosynthesis?",
-    slug: "what-is-photosynthesis",
-    lastReviewed: "Never",
-    difficulty: 3,
+    front: "What is photosynthesis?",
+    back: "The process by which green plants and some other organisms use sunlight to synthesize foods with carbon dioxide and water.",
+    status: "new",
+    review_at: null,
   },
 ]
 
 // Define the Card type to match the data structure
 export interface DeckCard {
   id: string
-  question: string
-  slug: string
-  lastReviewed: string
-  difficulty: number
+  front: string
+  back: string
+  status: string
+  review_at: string | null
+  slug?: string
 }
 
 export default function DeckPage({ params }: { params: { slug: string } }) {
@@ -111,10 +112,24 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>{deck?.name || "Cards"}</CardTitle>
-              <Button size="sm" className="flex items-center gap-1">
-                <Plus className="h-4 w-4" />
-                Add new card
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant="default" 
+                  size="sm" 
+                  className="flex items-center gap-1"
+                >
+                  <BookOpen className="h-4 w-4" />
+                  Study Now
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-1"
+                >
+                  <Plus className="h-4 w-4" />
+                  Add new card
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <DataTable 
