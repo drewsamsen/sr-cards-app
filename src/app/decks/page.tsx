@@ -117,7 +117,12 @@ export default function DecksPage() {
               </Button>
             </CardHeader>
             <CardContent>
-              <DataTable columns={columns} data={data} />
+              <DataTable 
+                columns={columns} 
+                data={data} 
+                searchPlaceholder="Search decks..." 
+                emptyMessage="No flashcard decks found."
+              />
             </CardContent>
           </Card>
         </div>
