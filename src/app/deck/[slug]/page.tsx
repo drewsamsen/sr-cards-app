@@ -103,9 +103,12 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
                   size="sm" 
                   className="flex items-center gap-1"
                   disabled={isLoadingCards || cards.length === 0}
+                  asChild
                 >
-                  <BookOpen className="h-4 w-4" />
-                  Study Now
+                  <Link href={`/deck/${params.slug}/study`}>
+                    <BookOpen className="h-4 w-4" />
+                    Study Now
+                  </Link>
                 </Button>
                 <Button 
                   variant="outline" 
