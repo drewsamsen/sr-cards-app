@@ -48,11 +48,10 @@ export interface CardReviewResponse {
 }
 
 export interface ReviewMetrics {
-  totalCards: number;
-  cardsRemaining: number;
-  progress: number;
-  streakDays: number;
-  nextDueDate: string | null;
+  again: string;
+  hard: string;
+  good: string;
+  easy: string;
 }
 
 export interface DeckReviewApiResponse {
