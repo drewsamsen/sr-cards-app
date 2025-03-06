@@ -26,6 +26,44 @@ export interface DeckApiResponse {
   };
 }
 
+// Card review response interface
+export interface CardReviewResponse {
+  id: string;
+  userId: string;
+  deckId: string;
+  front: string;
+  back: string;
+  state: number;
+  due: string | null;
+  stability: number;
+  difficulty: number;
+  elapsedDays: number;
+  scheduledDays: number;
+  reps: number;
+  lapses: number;
+  lastReview: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deckName: string;
+}
+
+export interface ReviewMetrics {
+  totalCards: number;
+  cardsRemaining: number;
+  progress: number;
+  streakDays: number;
+  nextDueDate: string | null;
+}
+
+export interface DeckReviewApiResponse {
+  status: string;
+  data: {
+    deck: DeckResponse;
+    card: CardReviewResponse;
+    reviewMetrics: ReviewMetrics;
+  };
+}
+
 /**
  * Deck service for handling deck-related API calls
  */
@@ -42,6 +80,13 @@ export class DeckService {
    */
   async getDeckBySlug(slug: string): Promise<ApiResponse<DeckApiResponse>> {
     return apiClient.get<DeckApiResponse>(API_ENDPOINTS.decks.getBySlug(slug));
+  }
+
+  /**
+   * Get a card for review from a deck by slug
+   */
+  async getCardForReview(slug: string): Promise<ApiResponse<DeckReviewApiResponse>> {
+    return apiClient.get<DeckReviewApiResponse>(API_ENDPOINTS.decks.review(slug));
   }
 }
 

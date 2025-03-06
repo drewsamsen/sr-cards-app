@@ -26,6 +26,7 @@ export const API_ENDPOINTS = {
     create: `${API_BASE_URL}/decks/create`,
     update: (id: string) => `${API_BASE_URL}/decks/${id}`,
     delete: (id: string) => `${API_BASE_URL}/decks/${id}`,
+    review: (slug: string) => `${API_BASE_URL}/decks/slug/${slug}/review`,
   },
   // Cards endpoints
   cards: {
