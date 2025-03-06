@@ -6,7 +6,7 @@ import { DataTable } from "@/components/data-table"
 import { deckColumns } from "@/components/deck-columns"
 import { Header } from "@/components/header"
 import { useAuth, useDecks } from "@/lib/hooks"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -62,10 +62,12 @@ export default function DecksPage() {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
-        <div className="space-y-4">
-          <h1 className="text-2xl font-bold tracking-tight">Your Flashcard Decks</h1>
-          <p className="text-muted-foreground">Browse and manage your flashcard decks.</p>
+        <div className="mb-6">
+          <nav className="flex items-center text-sm">
+            <span className="text-foreground font-medium">Decks</span>
+          </nav>
         </div>
+        
         <div className="mt-6">
           {decksError && (
             <Alert variant="destructive" className="mb-6">
@@ -77,19 +79,18 @@ export default function DecksPage() {
           )}
           
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>All Decks</CardTitle>
-              <Button size="sm" className="flex items-center gap-1">
-                <Plus className="h-4 w-4" />
-                Create new deck
-              </Button>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-3 px-6 pb-6">
               <DataTable 
                 columns={deckColumns} 
                 data={decks} 
                 searchPlaceholder="Search decks..." 
                 emptyMessage={isLoadingDecks ? "Loading decks..." : "No flashcard decks found."}
+                actionButton={
+                  <Button size="sm" className="flex items-center gap-1">
+                    <Plus className="h-4 w-4" />
+                    Create new deck
+                  </Button>
+                }
               />
             </CardContent>
           </Card>

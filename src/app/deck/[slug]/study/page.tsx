@@ -6,7 +6,7 @@ import { Header } from "@/components/header"
 import { useAuth } from "@/lib/hooks"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, RotateCcw, Check, X, ChevronDown, ChevronUp } from "lucide-react"
+import { ChevronLeft, RotateCcw, Check, X, ChevronDown, ChevronUp, ChevronRight } from "lucide-react"
 import Link from "next/link"
 import { deckService, CardReviewResponse, ReviewMetrics, DeckResponse } from "@/lib/api/services/deck.service"
 import { cardService, CardLog } from "@/lib/api/services/card.service"
@@ -230,18 +230,23 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
         <Header />
         <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
           <div className="mb-6">
-            <Link 
-              href={`/deck/${params.slug}`} 
-              className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Back to deck
-            </Link>
-          </div>
-          <div className="space-y-4 mb-8">
-            <h1 className="text-2xl font-bold tracking-tight">
-              Studying: {studyState.deck?.name || params.slug.replace(/-/g, ' ')}
-            </h1>
+            <nav className="flex items-center text-sm">
+              <Link 
+                href="/decks" 
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                Decks
+              </Link>
+              <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
+              <Link 
+                href={`/deck/${params.slug}`} 
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                {studyState.deck?.name || params.slug.replace(/-/g, ' ')}
+              </Link>
+              <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
+              <span className="text-foreground font-medium">Study</span>
+            </nav>
           </div>
           <div className="flex flex-col items-center justify-center">
             <p className="text-destructive">Error loading card. Please try again.</p>
@@ -259,18 +264,23 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
         <Header />
         <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
           <div className="mb-6">
-            <Link 
-              href={`/deck/${params.slug}`} 
-              className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Back to deck
-            </Link>
-          </div>
-          <div className="space-y-4 mb-8">
-            <h1 className="text-2xl font-bold tracking-tight">
-              Studying: {studyState.deck?.name || params.slug.replace(/-/g, ' ')}
-            </h1>
+            <nav className="flex items-center text-sm">
+              <Link 
+                href="/decks" 
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                Decks
+              </Link>
+              <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
+              <Link 
+                href={`/deck/${params.slug}`} 
+                className="text-muted-foreground hover:text-primary transition-colors"
+              >
+                {studyState.deck?.name || params.slug.replace(/-/g, ' ')}
+              </Link>
+              <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
+              <span className="text-foreground font-medium">Study</span>
+            </nav>
           </div>
           <div className="flex flex-col items-center justify-center">
             <p className="text-xl">No cards to review at this time!</p>
@@ -299,22 +309,23 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
       <Header />
       <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
         <div className="mb-6">
-          <Link 
-            href={`/deck/${params.slug}`} 
-            className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
-          >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Back to deck
-          </Link>
-        </div>
-        
-        <div className="space-y-4 mb-8">
-          <h1 className="text-2xl font-bold tracking-tight">
-            Studying: {studyState.deck?.name || params.slug.replace(/-/g, ' ')}
-          </h1>
-          <p className="text-muted-foreground">
-            Click on the card to reveal the answer
-          </p>
+          <nav className="flex items-center text-sm">
+            <Link 
+              href="/decks" 
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              Decks
+            </Link>
+            <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
+            <Link 
+              href={`/deck/${params.slug}`} 
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              {studyState.deck?.name || params.slug.replace(/-/g, ' ')}
+            </Link>
+            <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
+            <span className="text-foreground font-medium">Study</span>
+          </nav>
         </div>
         
         <div className="flex flex-col items-center justify-center">

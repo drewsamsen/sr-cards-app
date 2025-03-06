@@ -18,13 +18,15 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   searchPlaceholder?: string
   emptyMessage?: string
+  actionButton?: React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   searchPlaceholder = "Search...",
-  emptyMessage = "No results found."
+  emptyMessage = "No results found.",
+  actionButton
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState("")
@@ -44,13 +46,14 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-2">
         <Input
           placeholder={searchPlaceholder}
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
           className="max-w-sm"
         />
+        {actionButton}
       </div>
       <div className="rounded-md border">
         <Table>

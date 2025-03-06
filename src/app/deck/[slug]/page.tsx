@@ -6,9 +6,9 @@ import { DataTable } from "@/components/data-table"
 import { deckCardColumns } from "@/components/deck-card-columns"
 import { Header } from "@/components/header"
 import { useAuth, useDeck, useDeckCards } from "@/lib/hooks"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Plus, AlertCircle, ChevronLeft, BookOpen } from "lucide-react"
+import { Plus, AlertCircle, BookOpen, ChevronRight } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
 import React from "react"
@@ -57,22 +57,18 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
       <Header />
       <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
         <div className="mb-6">
-          <Link 
-            href="/decks" 
-            className="flex items-center text-sm text-muted-foreground hover:text-primary transition-colors"
-          >
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            Back to all decks
-          </Link>
-        </div>
-        
-        <div className="space-y-4">
-          <h1 className="text-2xl font-bold tracking-tight">
-            {isLoadingDeck ? "Loading..." : deck?.name || "Deck not found"}
-          </h1>
-          {deck?.description && (
-            <p className="text-muted-foreground">{deck.description}</p>
-          )}
+          <nav className="flex items-center text-sm">
+            <Link 
+              href="/decks" 
+              className="text-muted-foreground hover:text-primary transition-colors"
+            >
+              Decks
+            </Link>
+            <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
+            <span className="text-foreground font-medium">
+              {isLoadingDeck ? "Loading..." : deck?.name || "Deck not found"}
+            </span>
+          </nav>
         </div>
         
         <div className="mt-6">
@@ -95,32 +91,7 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
           )}
           
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>{deck?.name || "Cards"}</CardTitle>
-              <div className="flex gap-2">
-                <Button 
-                  variant="default" 
-                  size="sm" 
-                  className="flex items-center gap-1"
-                  disabled={isLoadingCards || cards.length === 0}
-                  asChild
-                >
-                  <Link href={`/deck/${params.slug}/study`}>
-                    <BookOpen className="h-4 w-4" />
-                    Study Now
-                  </Link>
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="flex items-center gap-1"
-                >
-                  <Plus className="h-4 w-4" />
-                  Add new card
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
+            <CardContent className="pt-3 px-6 pb-6">
               <DataTable 
                 columns={deckCardColumns} 
                 data={cards} 
@@ -131,6 +102,30 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
                     : isLoadingCards 
                       ? "Loading cards..." 
                       : "No flashcards found in this deck."
+                }
+                actionButton={
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="default" 
+                      size="sm" 
+                      className="flex items-center gap-1"
+                      disabled={isLoadingCards || cards.length === 0}
+                      asChild
+                    >
+                      <Link href={`/deck/${params.slug}/study`}>
+                        <BookOpen className="h-4 w-4" />
+                        Study Now
+                      </Link>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="flex items-center gap-1"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add new card
+                    </Button>
+                  </div>
                 }
               />
             </CardContent>
