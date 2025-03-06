@@ -17,6 +17,7 @@ export const API_ENDPOINTS = {
   users: {
     profile: `${API_BASE_URL}/users/profile`,
     update: `${API_BASE_URL}/users/update`,
+    settings: `${API_BASE_URL}/user-settings`,
   },
   // Decks endpoints
   decks: {
