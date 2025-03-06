@@ -1,5 +1,6 @@
 import { apiClient, ApiResponse } from '../client';
 import { API_ENDPOINTS } from '../config';
+import { CardReviewResponse } from './deck.service';
 
 // Types for card responses
 export interface CardResponse {
@@ -22,6 +23,18 @@ export interface CardsApiResponse {
   };
 }
 
+export interface CardReviewRequest {
+  rating: number; // 1=Again, 2=Hard, 3=Good, 4=Easy
+  reviewedAt?: string; // Optional, defaults to current time
+}
+
+export interface CardReviewApiResponse {
+  status: string;
+  data: {
+    card: CardReviewResponse;
+  };
+}
+
 /**
  * Card service for handling card-related API calls
  */
@@ -38,6 +51,13 @@ export class CardService {
    */
   async getAllCards(): Promise<ApiResponse<CardsApiResponse>> {
     return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.list);
+  }
+
+  /**
+   * Submit a review for a card
+   */
+  async reviewCard(cardId: string, reviewData: CardReviewRequest): Promise<ApiResponse<CardReviewApiResponse>> {
+    return apiClient.post<CardReviewApiResponse>(API_ENDPOINTS.cards.review(cardId), reviewData);
   }
 }
 

@@ -35,6 +35,7 @@ export const API_ENDPOINTS = {
     update: (id: string) => `${API_BASE_URL}/cards/${id}`,
     delete: (id: string) => `${API_BASE_URL}/cards/${id}`,
     getByDeckId: (deckId: string) => `${API_BASE_URL}/decks/${deckId}/cards`,
+    review: (id: string) => `${API_BASE_URL}/cards/${id}/review`,
   },
 };
 

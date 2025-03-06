@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { ChevronLeft, RotateCcw, Check, X } from "lucide-react"
 import Link from "next/link"
 import { deckService, CardReviewResponse, ReviewMetrics, DeckResponse } from "@/lib/api/services/deck.service"
+import { cardService } from "@/lib/api/services/card.service"
 
 // Helper function to format dates in a readable way
 const formatDate = (dateString: string) => {
@@ -139,19 +140,38 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
     setIsFlipped(!isFlipped)
   }
 
-  const handleResponse = (response: 'again' | 'hard' | 'good' | 'easy') => {
-    // In a real app, this would update the card status and schedule the next review
-    console.log(`Response: ${response}`)
+  const handleResponse = async (response: 'again' | 'hard' | 'good' | 'easy') => {
+    if (!studyState.card) return
     
-    // Log the due date based on the response
-    if (studyState.reviewMetrics) {
-      const dueDate = studyState.reviewMetrics[response]
-      console.log(`Next review due: ${dueDate}`)
+    // Map the response to a rating number
+    const ratingMap = {
+      'again': 1,
+      'hard': 2,
+      'good': 3,
+      'easy': 4
     }
     
-    // For now, just flip back to the front and fetch the next card
-    setIsFlipped(false)
-    fetchCardForReview()
+    const rating = ratingMap[response]
+    
+    try {
+      // Log the due date based on the response
+      if (studyState.reviewMetrics) {
+        const dueDate = studyState.reviewMetrics[response]
+        console.log(`Next review due: ${dueDate}`)
+      }
+      
+      // Submit the review to the API
+      await cardService.reviewCard(studyState.card.id, { rating })
+      
+      // Flip back to the front and fetch the next card
+      setIsFlipped(false)
+      fetchCardForReview()
+    } catch (error) {
+      console.error("Error submitting card review:", error)
+      // Still fetch the next card even if there was an error
+      setIsFlipped(false)
+      fetchCardForReview()
+    }
   }
 
   // Show loading state while fetching card
