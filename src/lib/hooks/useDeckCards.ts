@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { cardService, CardResponse } from '@/lib/api/services/card.service';
 import { ApiError } from '@/lib/api/client';
 import { useAuth } from './useAuth';
+import { handleAuthError } from '@/lib/utils/auth-utils';
 
 // Define the transformed card type for our UI
 export interface DeckCard {
@@ -54,16 +55,19 @@ export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
       const transformedCards = transformCards(response.data.data.cards);
       setCards(transformedCards);
     } catch (err) {
-      const message = err instanceof ApiError 
-        ? err.message 
-        : 'Failed to fetch cards';
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching cards';
       
-      setError(message);
+      // Handle auth errors
+      if (!handleAuthError(errorMessage)) {
+        setError(errorMessage);
+      }
+      
+      console.error(err);
       setCards([]);
     } finally {
       setIsLoading(false);
     }
-  }, [token, deckId]);
+  }, [deckId, token, isInitialized]);
 
   // Fetch cards when the component mounts, auth is initialized, and deckId changes
   useEffect(() => {

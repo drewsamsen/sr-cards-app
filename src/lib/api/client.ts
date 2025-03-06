@@ -1,4 +1,5 @@
 import { API_BASE_URL, DEFAULT_HEADERS, REQUEST_TIMEOUT } from './config';
+import { handleAuthError } from '@/lib/utils/auth-utils';
 
 /**
  * API response interface
@@ -71,6 +72,12 @@ export class ApiClient {
 
     if (!response.ok) {
       const message = data?.message || data?.error || response.statusText || 'Unknown error';
+      
+      // Check for auth errors (401 Unauthorized, 403 Forbidden)
+      if (response.status === 401 || response.status === 403) {
+        handleAuthError(message);
+      }
+      
       throw new ApiError(message, response.status, data);
     }
 
@@ -147,12 +154,15 @@ export class ApiClient {
       return this.handleResponse<T>(response);
     } catch (error: unknown) {
       if (error instanceof ApiError) {
+        // Check if it's an auth error that wasn't caught in handleResponse
+        if (error.status === 401 || error.status === 403) {
+          handleAuthError(error.message);
+        }
         throw error;
       }
-      throw new ApiError(
-        error instanceof Error ? error.message : 'Network error', 
-        0
-      );
+      
+      const errorMessage = error instanceof Error ? error.message : 'Network error';
+      throw new ApiError(errorMessage, 0);
     }
   }
 

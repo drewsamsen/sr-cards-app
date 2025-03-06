@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { cardService, CardResponse, deckService } from '@/lib/api/services';
 import { useAuth } from './useAuth';
+import { handleAuthError } from '@/lib/utils/auth-utils';
 
 export interface Card {
   id: string;
@@ -57,7 +58,13 @@ export function useCards(): UseCardsReturn {
         setError(response.error || 'Failed to fetch cards');
       }
     } catch (err) {
-      setError('An error occurred while fetching cards');
+      const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching cards';
+      
+      // Handle auth errors
+      if (!handleAuthError(errorMessage)) {
+        setError(errorMessage);
+      }
+      
       console.error(err);
     } finally {
       setIsLoading(false);

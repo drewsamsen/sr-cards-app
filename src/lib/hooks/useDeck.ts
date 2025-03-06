@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { deckService, DeckResponse } from '@/lib/api/services/deck.service';
 import { ApiError } from '@/lib/api/client';
 import { useAuth } from './useAuth';
+import { handleAuthError } from '@/lib/utils/auth-utils';
 
 interface UseDeckReturn {
   deck: DeckResponse | null;
@@ -30,11 +31,14 @@ export function useDeck(slug: string): UseDeckReturn {
       const response = await deckService.getDeckBySlug(slug);
       setDeck(response.data.data.deck);
     } catch (err) {
-      const message = err instanceof ApiError 
-        ? err.message 
-        : 'Failed to fetch deck';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch deck';
       
-      setError(message);
+      // Handle auth errors
+      if (!handleAuthError(errorMessage)) {
+        setError(errorMessage);
+      }
+      
+      console.error(err);
       setDeck(null);
     } finally {
       setIsLoading(false);
