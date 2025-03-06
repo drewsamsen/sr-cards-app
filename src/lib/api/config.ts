@@ -36,6 +36,7 @@ export const API_ENDPOINTS = {
     delete: (id: string) => `${API_BASE_URL}/cards/${id}`,
     getByDeckId: (deckId: string) => `${API_BASE_URL}/decks/${deckId}/cards`,
     review: (id: string) => `${API_BASE_URL}/cards/${id}/review`,
+    logs: (id: string) => `${API_BASE_URL}/cards/${id}/logs`,
   },
 };
 

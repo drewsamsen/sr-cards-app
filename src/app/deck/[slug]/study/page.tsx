@@ -6,10 +6,10 @@ import { Header } from "@/components/header"
 import { useAuth } from "@/lib/hooks"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, RotateCcw, Check, X } from "lucide-react"
+import { ChevronLeft, RotateCcw, Check, X, ChevronDown, ChevronUp } from "lucide-react"
 import Link from "next/link"
 import { deckService, CardReviewResponse, ReviewMetrics, DeckResponse } from "@/lib/api/services/deck.service"
-import { cardService } from "@/lib/api/services/card.service"
+import { cardService, CardLog } from "@/lib/api/services/card.service"
 
 // Helper function to format dates in a readable way
 const formatDate = (dateString: string) => {
@@ -71,8 +71,10 @@ interface StudyState {
   card: CardReviewResponse | null;
   deck: DeckResponse | null;
   reviewMetrics: ReviewMetrics | null;
+  cardLogs: CardLog[];
   isLoading: boolean;
   error: string | null;
+  showLogs: boolean;
 }
 
 export default function StudyPage({ params }: { params: { slug: string } }) {
@@ -83,24 +85,35 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
     card: null,
     deck: null,
     reviewMetrics: null,
+    cardLogs: [],
     isLoading: true,
-    error: null
+    error: null,
+    showLogs: false
   })
 
   // Fetch card for review
   const fetchCardForReview = async () => {
     try {
-      setStudyState(prev => ({ ...prev, isLoading: true, error: null }))
+      setStudyState(prev => ({ ...prev, isLoading: true, error: null, cardLogs: [] }))
       const response = await deckService.getCardForReview(params.slug)
       
       if (response.data.status === "success") {
-        setStudyState({
+        const newState = {
           card: response.data.data.card,
           deck: response.data.data.deck,
           reviewMetrics: response.data.data.reviewMetrics,
+          cardLogs: [],
           isLoading: false,
-          error: null
-        })
+          error: null,
+          showLogs: false
+        }
+        
+        setStudyState(newState)
+        
+        // Fetch logs for the card
+        if (response.data.data.card) {
+          fetchCardLogs(response.data.data.card.id)
+        }
       } else {
         setStudyState(prev => ({ 
           ...prev, 
@@ -116,6 +129,30 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
         error: "Failed to load card" 
       }))
     }
+  }
+  
+  // Fetch logs for a card
+  const fetchCardLogs = async (cardId: string) => {
+    try {
+      const logsResponse = await cardService.getCardLogs(cardId)
+      
+      if (logsResponse.data.status === "success") {
+        setStudyState(prev => ({
+          ...prev,
+          cardLogs: logsResponse.data.data.logs
+        }))
+      }
+    } catch (error) {
+      console.error("Error fetching card logs:", error)
+    }
+  }
+  
+  // Toggle logs visibility
+  const toggleLogs = () => {
+    setStudyState(prev => ({
+      ...prev,
+      showLogs: !prev.showLogs
+    }))
   }
 
   // Redirect to login page if not logged in
@@ -246,6 +283,17 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
     )
   }
 
+  // Get rating text
+  const getRatingText = (rating: number) => {
+    switch (rating) {
+      case 1: return "Again"
+      case 2: return "Hard"
+      case 3: return "Good"
+      case 4: return "Easy"
+      default: return "Unknown"
+    }
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -278,12 +326,12 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
               {!isFlipped ? (
                 <div className="text-center">
                   <h3 className="text-xl font-semibold mb-4">Question</h3>
-                  <p className="text-lg">{studyState.card.front}</p>
+                  <p className="text-lg">{studyState.card?.front}</p>
                 </div>
               ) : (
                 <div className="text-center">
                   <h3 className="text-xl font-semibold mb-4">Answer</h3>
-                  <p className="text-lg">{studyState.card.back}</p>
+                  <p className="text-lg">{studyState.card?.back}</p>
                 </div>
               )}
             </CardContent>
@@ -380,6 +428,49 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
               )}
             </div>
           </div>
+          
+          {/* Card logs section */}
+          {studyState.card && studyState.cardLogs.length > 0 && (
+            <div className="w-full max-w-2xl mt-8">
+              <Button 
+                variant="outline" 
+                onClick={toggleLogs} 
+                className="flex items-center justify-between w-full mb-2"
+              >
+                <span>Review History</span>
+                {studyState.showLogs ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
+              
+              {studyState.showLogs && (
+                <div className="border rounded-md overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-muted">
+                          <th className="px-4 py-2 text-left">Date</th>
+                          <th className="px-4 py-2 text-left">Rating</th>
+                          <th className="px-4 py-2 text-left">Difficulty</th>
+                          <th className="px-4 py-2 text-left">Stability</th>
+                          <th className="px-4 py-2 text-left">Next Due</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {studyState.cardLogs.map((log) => (
+                          <tr key={log.id} className="border-t">
+                            <td className="px-4 py-2">{formatDate(log.review)}</td>
+                            <td className="px-4 py-2">{getRatingText(log.rating)}</td>
+                            <td className="px-4 py-2">{log.difficulty.toFixed(2)}</td>
+                            <td className="px-4 py-2">{log.stability.toFixed(2)}</td>
+                            <td className="px-4 py-2">{log.due ? formatDate(log.due) : 'N/A'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </main>
     </div>
