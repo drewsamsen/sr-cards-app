@@ -58,8 +58,12 @@ export interface DeckReviewApiResponse {
   status: string;
   data: {
     deck: DeckResponse;
-    card: CardReviewResponse;
-    reviewMetrics: ReviewMetrics;
+    card?: CardReviewResponse;
+    reviewMetrics?: ReviewMetrics;
+    allCaughtUp?: boolean;
+    emptyDeck?: boolean;
+    message?: string;
+    totalCards?: number;
   };
 }
 

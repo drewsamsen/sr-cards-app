@@ -75,6 +75,7 @@ interface StudyState {
   isLoading: boolean;
   error: string | null;
   showLogs: boolean;
+  message?: string;
 }
 
 export default function StudyPage({ params }: { params: { slug: string } }) {
@@ -98,23 +99,52 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
       const response = await deckService.getCardForReview(params.slug)
       
       if (response.data.status === "success") {
-        const newState = {
-          card: response.data.data.card,
-          deck: response.data.data.deck,
-          reviewMetrics: response.data.data.reviewMetrics,
-          cardLogs: [],
-          isLoading: false,
-          error: null,
-          showLogs: false
-        }
-        
-        setStudyState(newState)
-        
-        // Fetch logs for the card
+        // Check which scenario we have
         if (response.data.data.card) {
+          // Scenario 1: Card available for review
+          const newState: StudyState = {
+            card: response.data.data.card,
+            deck: response.data.data.deck,
+            reviewMetrics: response.data.data.reviewMetrics || null,
+            cardLogs: [],
+            isLoading: false,
+            error: null,
+            showLogs: false
+          }
+          
+          setStudyState(newState)
+          
+          // Fetch logs for the card
           fetchCardLogs(response.data.data.card.id)
+        } else if (response.data.data.allCaughtUp) {
+          // Scenario 2: All caught up - no cards due for review
+          setStudyState(prev => ({ 
+            ...prev, 
+            deck: response.data.data.deck,
+            isLoading: false, 
+            error: "all_caught_up",
+            message: response.data.data.message || "You're all caught up! No cards due for review at this time."
+          }))
+        } else if (response.data.data.emptyDeck) {
+          // Scenario 3: Empty deck - no cards in the deck
+          setStudyState(prev => ({ 
+            ...prev, 
+            deck: response.data.data.deck,
+            isLoading: false, 
+            error: "empty_deck",
+            message: response.data.data.message || "This deck doesn't have any cards yet. Add some cards to start reviewing!"
+          }))
+        } else {
+          // Fallback for unexpected response format
+          setStudyState(prev => ({ 
+            ...prev, 
+            deck: response.data.data.deck,
+            isLoading: false, 
+            error: "Failed to load card" 
+          }))
         }
       } else {
+        // Error response
         setStudyState(prev => ({ 
           ...prev, 
           isLoading: false, 
@@ -249,8 +279,26 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
             </nav>
           </div>
           <div className="flex flex-col items-center justify-center">
-            <p className="text-destructive">Error loading card. Please try again.</p>
-            <Button onClick={fetchCardForReview} className="mt-4">Retry</Button>
+            {studyState.error === "empty_deck" ? (
+              <>
+                <p className="text-xl">{studyState.message || "This deck doesn't have any cards yet. Add some cards to start reviewing!"}</p>
+                <Link href={`/deck/${params.slug}`}>
+                  <Button className="mt-4">Back to Deck</Button>
+                </Link>
+              </>
+            ) : studyState.error === "all_caught_up" ? (
+              <>
+                <p className="text-xl">{studyState.message || "You're all caught up! No cards due for review at this time."}</p>
+                <Link href={`/deck/${params.slug}`}>
+                  <Button className="mt-4">Back to Deck</Button>
+                </Link>
+              </>
+            ) : (
+              <>
+                <p className="text-destructive">Error loading card. Please try again.</p>
+                <Button onClick={fetchCardForReview} className="mt-4">Retry</Button>
+              </>
+            )}
           </div>
         </main>
       </div>
@@ -283,7 +331,7 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
             </nav>
           </div>
           <div className="flex flex-col items-center justify-center">
-            <p className="text-xl">No cards to review at this time!</p>
+            <p className="text-xl">You are all caught up</p>
             <Link href={`/deck/${params.slug}`}>
               <Button className="mt-4">Back to Deck</Button>
             </Link>
