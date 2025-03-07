@@ -58,6 +58,18 @@ export interface CardLogsApiResponse {
   };
 }
 
+export interface CreateCardRequest {
+  front: string;
+  back: string;
+}
+
+export interface CardApiResponse {
+  status: string;
+  data: {
+    card: CardResponse;
+  };
+}
+
 /**
  * Card service for handling card-related API calls
  */
@@ -88,6 +100,13 @@ export class CardService {
    */
   async getCardLogs(cardId: string): Promise<ApiResponse<CardLogsApiResponse>> {
     return apiClient.get<CardLogsApiResponse>(API_ENDPOINTS.cards.logs(cardId));
+  }
+
+  /**
+   * Create a new card in a deck
+   */
+  async createCard(deckId: string, cardData: CreateCardRequest): Promise<ApiResponse<CardApiResponse>> {
+    return apiClient.post<CardApiResponse>(API_ENDPOINTS.cards.createForDeck(deckId), cardData);
   }
 }
 

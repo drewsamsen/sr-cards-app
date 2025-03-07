@@ -121,9 +121,12 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
                       variant="outline" 
                       size="sm" 
                       className="flex items-center gap-1"
+                      asChild
                     >
-                      <Plus className="h-4 w-4" />
-                      Add new card
+                      <Link href={`/deck/${params.slug}/cards/new`}>
+                        <Plus className="h-4 w-4" />
+                        Add new card
+                      </Link>
                     </Button>
                   </div>
                 }
