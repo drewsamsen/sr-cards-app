@@ -123,7 +123,7 @@ export const deckCardColumns: ColumnDef<DeckCard>[] = [
     header: "",
     cell: ({ row }) => (
       <Link 
-        href={`/card/${row.original.id}/edit`} 
+        href={`/cards/${row.original.id}/edit`} 
         className="flex justify-center"
       >
         <Edit className="h-4 w-4 text-primary hover:text-primary/80" />

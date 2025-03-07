@@ -59,7 +59,7 @@ export class UserService {
    * Update user settings
    */
   async updateUserSettings(settings: Partial<UserSettings>): Promise<ApiResponse<UserSettingsApiResponse>> {
-    return apiClient.put<UserSettingsApiResponse>(API_ENDPOINTS.users.settings, { settings });
+    return apiClient.patch<UserSettingsApiResponse>(API_ENDPOINTS.users.settings, { settings });
   }
 }
 

@@ -63,6 +63,11 @@ export interface CreateCardRequest {
   back: string;
 }
 
+export interface UpdateCardRequest {
+  front?: string;
+  back?: string;
+}
+
 export interface CardApiResponse {
   status: string;
   data: {
@@ -107,6 +112,20 @@ export class CardService {
    */
   async createCard(deckId: string, cardData: CreateCardRequest): Promise<ApiResponse<CardApiResponse>> {
     return apiClient.post<CardApiResponse>(API_ENDPOINTS.cards.createForDeck(deckId), cardData);
+  }
+
+  /**
+   * Get a card by ID
+   */
+  async getCard(cardId: string): Promise<ApiResponse<CardApiResponse>> {
+    return apiClient.get<CardApiResponse>(API_ENDPOINTS.cards.update(cardId));
+  }
+
+  /**
+   * Update an existing card
+   */
+  async updateCard(cardId: string, cardData: UpdateCardRequest): Promise<ApiResponse<CardApiResponse>> {
+    return apiClient.patch<CardApiResponse>(API_ENDPOINTS.cards.update(cardId), cardData);
   }
 }
 
