@@ -75,6 +75,12 @@ export interface CreateDeckRequest {
   description: string;
 }
 
+// Add interface for update deck request
+export interface UpdateDeckRequest {
+  name: string;
+  description: string;
+}
+
 /**
  * Deck service for handling deck-related API calls
  */
@@ -105,6 +111,13 @@ export class DeckService {
    */
   async createDeck(data: CreateDeckRequest): Promise<ApiResponse<DeckApiResponse>> {
     return apiClient.post<DeckApiResponse>(API_ENDPOINTS.decks.create, data);
+  }
+
+  /**
+   * Update an existing deck
+   */
+  async updateDeck(id: string, data: UpdateDeckRequest): Promise<ApiResponse<DeckApiResponse>> {
+    return apiClient.put<DeckApiResponse>(API_ENDPOINTS.decks.update(id), data);
   }
 }
 
