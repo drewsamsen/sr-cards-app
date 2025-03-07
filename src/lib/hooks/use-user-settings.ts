@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { userService, UserSettingsResponse, UserSettings, FSRSParams } from '../api/services/user.service';
+import { useAuth } from './useAuth';
 
 interface UseUserSettingsReturn {
   settings: UserSettingsResponse | null;
@@ -13,6 +14,7 @@ export function useUserSettings(): UseUserSettingsReturn {
   const [settings, setSettings] = useState<UserSettingsResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const { user, isInitialized } = useAuth();
 
   const fetchSettings = async () => {
     try {
@@ -55,7 +57,7 @@ export function useUserSettings(): UseUserSettingsReturn {
   };
 
   const updateFSRSParams = async (newParams: Partial<FSRSParams>) => {
-    if (!settings) return;
+    if (!settings || !settings.settings || !settings.settings.fsrsParams) return;
     
     const updatedSettings: Partial<UserSettings> = {
       fsrsParams: {
@@ -68,8 +70,10 @@ export function useUserSettings(): UseUserSettingsReturn {
   };
 
   useEffect(() => {
-    fetchSettings();
-  }, []);
+    if (isInitialized && user) {
+      fetchSettings();
+    }
+  }, [isInitialized, user]);
 
   return {
     settings,

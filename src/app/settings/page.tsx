@@ -30,7 +30,7 @@ export default function SettingsPage() {
 
   // Update form state when settings are loaded
   useEffect(() => {
-    if (settings) {
+    if (settings && settings.settings && settings.settings.fsrsParams) {
       const { fsrsParams } = settings.settings
       setRequestRetention(fsrsParams.requestRetention)
       setMaximumInterval(fsrsParams.maximumInterval)
