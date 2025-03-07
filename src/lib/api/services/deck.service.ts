@@ -8,6 +8,8 @@ export interface DeckResponse {
   name: string;
   slug: string;
   description: string;
+  reviewCount?: number;
+  totalCards?: number;
   createdAt: string;
   updatedAt: string;
 }

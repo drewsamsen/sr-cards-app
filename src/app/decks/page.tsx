@@ -16,8 +16,8 @@ export interface Deck {
   id: string
   name: string
   slug: string
-  due: number
-  total: number
+  reviewCount: number
+  totalCards: number
 }
 
 export default function DecksPage() {
@@ -29,14 +29,12 @@ export default function DecksPage() {
   // Transform API decks to our Deck format
   useEffect(() => {
     if (apiDecks.length > 0) {
-      // In a real app, we would fetch the due and total counts from another API endpoint
-      // For now, we'll generate random numbers
       const transformedDecks = apiDecks.map(deck => ({
         id: deck.id,
         name: deck.name,
         slug: deck.slug,
-        due: Math.floor(Math.random() * 10), // Random number for demo
-        total: Math.floor(Math.random() * 50) + 10, // Random number for demo
+        reviewCount: deck.reviewCount || 0,
+        totalCards: deck.totalCards || 0
       }))
       setDecks(transformedDecks)
     }

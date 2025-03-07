@@ -10,8 +10,8 @@ export type Deck = {
   id: string
   name: string
   slug: string
-  due: number
-  total: number
+  reviewCount: number
+  totalCards: number
 }
 
 // Define the columns for our table
@@ -36,33 +36,33 @@ export const deckColumns: ColumnDef<Deck>[] = [
     },
   },
   {
-    accessorKey: "due",
+    accessorKey: "reviewCount",
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Due
+          Due for Review
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => {
-      const due = row.getValue("due") as number
-      return <div className="font-medium">{due}</div>
+      const reviewCount = row.getValue("reviewCount") as number
+      return <div className="font-medium">{reviewCount}</div>
     },
   },
   {
-    accessorKey: "total",
+    accessorKey: "totalCards",
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Total
+          Total Cards
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => {
-      const total = row.getValue("total") as number
-      return <div className="font-medium">{total}</div>
+      const totalCards = row.getValue("totalCards") as number
+      return <div className="font-medium">{totalCards}</div>
     },
   },
   {
