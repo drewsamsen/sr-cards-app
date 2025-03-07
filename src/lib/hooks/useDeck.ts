@@ -8,7 +8,7 @@ interface UseDeckReturn {
   deck: DeckResponse | null;
   isLoading: boolean;
   error: string | null;
-  fetchDeck: () => Promise<void>;
+  refetch: () => Promise<void>;
 }
 
 export function useDeck(slug: string): UseDeckReturn {
@@ -56,6 +56,6 @@ export function useDeck(slug: string): UseDeckReturn {
     deck,
     isLoading,
     error,
-    fetchDeck,
+    refetch: fetchDeck,
   };
 } 
