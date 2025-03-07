@@ -1,7 +1,7 @@
 "use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, Edit } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
@@ -13,6 +13,10 @@ export type DeckCard = {
   back: string
   status: string
   review_at: string | null
+  state?: number
+  difficulty?: number
+  stability?: number
+  due?: string | null
   slug?: string
   deckId?: string
   deckName?: string
@@ -25,14 +29,49 @@ const formatDate = (dateString: string | null) => {
   const date = new Date(dateString);
   const now = new Date();
   const diffTime = date.getTime() - now.getTime();
+  const diffMinutes = Math.floor(diffTime / (1000 * 60));
+  const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
   
-  if (diffDays < 0) return "Overdue";
-  if (diffDays === 0) return "Today";
+  if (diffMinutes < 0) return "Overdue";
+  if (diffMinutes < 60) return `${diffMinutes} min`;
+  if (diffHours < 24) return `${diffHours} hr`;
   if (diffDays === 1) return "Tomorrow";
-  if (diffDays < 7) return `In ${diffDays} days`;
+  if (diffDays < 7) return `${diffDays} days`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} wk`;
+  if (diffDays < 365) return `${Math.floor(diffDays / 30)} mo`;
   
-  return date.toLocaleDateString();
+  return `${Math.floor(diffDays / 365)} yr`;
+};
+
+// Helper function to format numbers with 2 decimal places
+const formatNumber = (num: number | undefined) => {
+  if (num === undefined) return "N/A";
+  return num.toFixed(2);
+};
+
+// Helper function to get state label
+const getStateLabel = (state: number | undefined) => {
+  if (state === undefined) return "Unknown";
+  switch (state) {
+    case 0: return "New";
+    case 1: return "Learning";
+    case 2: return "Review";
+    case 3: return "Relearning";
+    default: return `State ${state}`;
+  }
+};
+
+// Helper function to get state color
+const getStateColor = (state: number | undefined) => {
+  if (state === undefined) return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+  switch (state) {
+    case 0: return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
+    case 1: return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
+    case 2: return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
+    case 3: return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300";
+    default: return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+  }
 };
 
 // Define the columns for our table
@@ -42,100 +81,52 @@ export const deckCardColumns: ColumnDef<DeckCard>[] = [
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Front
+          Card Content
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       )
     },
     cell: ({ row }) => {
       const front = row.getValue("front") as string
-      return row.original.slug ? (
-        <Link href={`/card/${row.original.slug}`} className="font-medium text-primary hover:underline">
-          {front}
-        </Link>
-      ) : (
-        <span className="font-medium">{front}</span>
+      const back = row.original.back
+      const state = row.original.state
+      
+      return (
+        <div className="space-y-0.5">
+          <div className="text-sm">
+            <span className="font-bold">Front: </span>
+            {front}
+          </div>
+          <div className="text-sm">
+            <span className="font-bold">Back: </span>
+            {back}
+          </div>
+          <div className="mt-1">
+            <Badge className={`text-xs ${getStateColor(state)}`}>
+              {getStateLabel(state)}
+            </Badge>
+          </div>
+        </div>
       )
     },
   },
   {
-    accessorKey: "deckName",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Deck
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    accessorKey: "due",
+    header: () => <div className="text-center">Due</div>,
     cell: ({ row }) => {
-      // Only show this column if we have a deckId (in the all cards view)
-      if (!row.original.deckId) return null;
-      
-      const deckName = row.getValue("deckName") as string || `Deck ${row.original.deckId.substring(0, 8)}`;
-      
-      return (
-        <Link 
-          href={`/deck/${row.original.deckId}`} 
-          className="font-medium text-primary hover:underline"
-        >
-          {deckName}
-        </Link>
-      )
-    },
-  },
-  {
-    accessorKey: "status",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Status
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string
-      const getStatusColor = (status: string) => {
-        switch (status) {
-          case "new": return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300";
-          case "learning": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300";
-          case "review": return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300";
-          default: return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
-        }
-      };
-      
-      return (
-        <Badge className={`${getStatusColor(status)} capitalize`}>
-          {status}
-        </Badge>
-      )
-    },
-  },
-  {
-    accessorKey: "review_at",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Review Date
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => {
-      const reviewAt = row.getValue("review_at") as string | null
-      return <div className="font-medium">{formatDate(reviewAt)}</div>
+      const due = row.getValue("due") as string | null | undefined
+      return <div className="text-center w-20">{formatDate(due || null)}</div>
     },
   },
   {
     id: "edit",
-    header: "Edit",
+    header: "",
     cell: ({ row }) => (
       <Link 
         href={`/card/${row.original.id}/edit`} 
-        className="text-primary hover:underline"
+        className="flex justify-center"
       >
-        Edit
+        <Edit className="h-4 w-4 text-primary hover:text-primary/80" />
       </Link>
     ),
   },

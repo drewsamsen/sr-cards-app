@@ -24,6 +24,10 @@ export interface DeckCard {
   back: string
   status: string
   review_at: string | null
+  state?: number
+  difficulty?: number
+  stability?: number
+  due?: string | null
   slug?: string
 }
 
