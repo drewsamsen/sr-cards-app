@@ -10,6 +10,7 @@ export interface DeckResponse {
   description: string;
   reviewCount?: number;
   totalCards?: number;
+  remainingReviews?: number;
   createdAt: string;
   updatedAt: string;
 }

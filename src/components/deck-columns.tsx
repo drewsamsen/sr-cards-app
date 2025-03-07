@@ -12,19 +12,20 @@ export type Deck = {
   name: string
   slug: string
   reviewCount: number
+  remainingReviews: number
   totalCards: number
 }
 
 // Define the columns for our table
 export const deckColumns: ColumnDef<Deck>[] = [
   {
-    accessorKey: "reviewCount",
+    accessorKey: "remainingReviews",
     header: () => <div className="sr-only">Due for Review</div>,
     cell: ({ row }) => {
-      const reviewCount = row.getValue("reviewCount") as number
+      const remainingReviews = row.getValue("remainingReviews") as number
       const slug = row.original.slug
       
-      if (reviewCount === 0) {
+      if (remainingReviews === 0) {
         return (
           <Button 
             size="sm" 
@@ -33,7 +34,7 @@ export const deckColumns: ColumnDef<Deck>[] = [
             disabled
           >
             <BookOpen className="h-4 w-4" />
-            {reviewCount}
+            {remainingReviews}
           </Button>
         );
       }
@@ -46,7 +47,7 @@ export const deckColumns: ColumnDef<Deck>[] = [
             className="flex items-center gap-1 w-16 justify-center"
           >
             <BookOpen className="h-4 w-4" />
-            {reviewCount}
+            {remainingReviews}
           </Button>
         </Link>
       )
@@ -83,7 +84,14 @@ export const deckColumns: ColumnDef<Deck>[] = [
     },
     cell: ({ row }) => {
       const totalCards = row.getValue("totalCards") as number
-      return <div className="font-medium">Total: {totalCards}</div>
+      const reviewCount = row.original.reviewCount as number
+      
+      return (
+        <div className="flex flex-col">
+          <div className="font-medium">Total: {totalCards}</div>
+          <div className="text-sm text-muted-foreground">Backlog: {reviewCount}</div>
+        </div>
+      )
     },
   },
   {
