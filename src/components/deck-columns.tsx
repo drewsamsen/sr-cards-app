@@ -37,17 +37,26 @@ export const deckColumns: ColumnDef<Deck>[] = [
   },
   {
     accessorKey: "reviewCount",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Due for Review
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
+    header: () => <div className="sr-only">Due for Review</div>,
     cell: ({ row }) => {
       const reviewCount = row.getValue("reviewCount") as number
-      return <div className="font-medium">{reviewCount}</div>
+      const slug = row.original.slug
+      
+      if (reviewCount === 0) {
+        return <div className="text-muted-foreground">No cards due</div>
+      }
+      
+      return (
+        <Link href={`/deck/${slug}/study`}>
+          <Button 
+            size="sm" 
+            variant="outline" 
+            className="w-32 text-center"
+          >
+            Review {reviewCount} {reviewCount === 1 ? 'Card' : 'Cards'}
+          </Button>
+        </Link>
+      )
     },
   },
   {
