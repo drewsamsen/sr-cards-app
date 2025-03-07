@@ -17,6 +17,7 @@ import Link from "next/link"
 import React from "react"
 import { deckService, UpdateDeckRequest } from "@/lib/api/services/deck.service"
 import { CardEditModal } from "@/components/card-edit-modal"
+import { CardAddModal } from "@/components/card-add-modal"
 import { SingleCard } from "@/lib/hooks/useCard"
 
 // Define the Card type to match the data structure
@@ -52,6 +53,9 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
   // Card edit modal state
   const [isCardEditModalOpen, setIsCardEditModalOpen] = useState<boolean>(false)
   const [selectedCard, setSelectedCard] = useState<SingleCard | null>(null)
+  
+  // Card add modal state
+  const [isCardAddModalOpen, setIsCardAddModalOpen] = useState<boolean>(false)
   
   // TODO: In future Next.js versions, params will need to be unwrapped with React.use()
   // before accessing properties. For now, direct access is still supported.
@@ -361,12 +365,10 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
                       variant="outline" 
                       size="sm" 
                       className="flex items-center gap-1"
-                      asChild
+                      onClick={() => setIsCardAddModalOpen(true)}
                     >
-                      <Link href={`/deck/${params.slug}/cards/new`}>
-                        <Plus className="h-4 w-4" />
-                        Add new card
-                      </Link>
+                      <Plus className="h-4 w-4" />
+                      Add new card
                     </Button>
                   </div>
                 }
@@ -383,6 +385,17 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
         onOpenChange={setIsCardEditModalOpen}
         onCardUpdated={() => {
           // Refetch cards when a card is updated
+          fetchCards();
+        }}
+      />
+      
+      {/* Card Add Modal */}
+      <CardAddModal
+        deckId={deck?.id || ""}
+        isOpen={isCardAddModalOpen}
+        onOpenChange={setIsCardAddModalOpen}
+        onCardAdded={() => {
+          // Refetch cards when a card is added
           fetchCards();
         }}
       />
