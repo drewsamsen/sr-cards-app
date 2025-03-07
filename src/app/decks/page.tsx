@@ -84,7 +84,7 @@ export default function DecksPage() {
                 searchPlaceholder="Search decks..." 
                 emptyMessage={isLoadingDecks ? "Loading decks..." : "No flashcard decks found."}
                 actionButton={
-                  <Button size="sm" className="flex items-center gap-1">
+                  <Button size="sm" className="flex items-center gap-1" onClick={() => router.push('/decks/new')}>
                     <Plus className="h-4 w-4" />
                     Create new deck
                   </Button>

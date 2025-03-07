@@ -69,6 +69,12 @@ export interface DeckReviewApiResponse {
   };
 }
 
+// Add interface for create deck request
+export interface CreateDeckRequest {
+  name: string;
+  description: string;
+}
+
 /**
  * Deck service for handling deck-related API calls
  */
@@ -92,6 +98,13 @@ export class DeckService {
    */
   async getCardForReview(slug: string): Promise<ApiResponse<DeckReviewApiResponse>> {
     return apiClient.get<DeckReviewApiResponse>(API_ENDPOINTS.decks.review(slug));
+  }
+
+  /**
+   * Create a new deck
+   */
+  async createDeck(data: CreateDeckRequest): Promise<ApiResponse<DeckApiResponse>> {
+    return apiClient.post<DeckApiResponse>(API_ENDPOINTS.decks.create, data);
   }
 }
 
