@@ -69,10 +69,12 @@ export default function EditCardPage({ params }: EditCardPageProps) {
       
       if (response.data.status === "success") {
         // Redirect to the deck page
-        if (card?.deckId) {
-          // Find the deck slug from the card's deckName
-          const deckSlug = card.deckName?.toLowerCase().replace(/\s+/g, '-') || card.deckId
-          router.push(`/deck/${deckSlug}`)
+        if (card?.deckSlug) {
+          // Use the actual deck slug from the API
+          router.push(`/deck/${card.deckSlug}`)
+        } else if (card?.deckId) {
+          // Fallback to the deck ID if slug is not available
+          router.push(`/deck/${card.deckId}`)
         } else {
           // Fallback to cards list if we can't determine the deck
           router.push('/cards')
@@ -120,7 +122,7 @@ export default function EditCardPage({ params }: EditCardPageProps) {
               <>
                 <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
                 <Link 
-                  href={`/deck/${card.deckName?.toLowerCase().replace(/\s+/g, '-') || card.deckId}`}
+                  href={`/deck/${card.deckSlug || card.deckId}`}
                   className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   {card.deckName || "Deck"}

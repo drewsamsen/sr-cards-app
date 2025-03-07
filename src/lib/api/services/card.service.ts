@@ -14,6 +14,7 @@ export interface CardResponse {
   createdAt: string;
   updatedAt: string;
   deckName?: string;
+  deckSlug?: string;
 }
 
 export interface CardsApiResponse {

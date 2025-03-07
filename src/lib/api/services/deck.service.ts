@@ -79,6 +79,7 @@ export interface CreateDeckRequest {
 export interface UpdateDeckRequest {
   name: string;
   description: string;
+  slug?: string;
 }
 
 /**

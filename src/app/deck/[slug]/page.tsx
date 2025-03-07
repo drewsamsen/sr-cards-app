@@ -39,6 +39,7 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [name, setName] = useState<string>("")
   const [description, setDescription] = useState<string>("")
+  const [slug, setSlug] = useState<string>("")
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [formSuccess, setFormSuccess] = useState<boolean>(false)
@@ -57,8 +58,20 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
     if (deck) {
       setName(deck.name)
       setDescription(deck.description || "")
+      setSlug(deck.slug || "")
     }
   }, [deck])
+
+  // Helper function to generate a slug from a name
+  const generateSlug = (name: string): string => {
+    return name
+      .toLowerCase()
+      .replace(/\s+/g, '-')       // Replace spaces with hyphens
+      .replace(/[^\w\-]+/g, '')   // Remove all non-word chars except hyphens
+      .replace(/\-\-+/g, '-')     // Replace multiple hyphens with single hyphen
+      .replace(/^-+/, '')         // Trim hyphens from start
+      .replace(/-+$/, '');        // Trim hyphens from end
+  }
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -75,10 +88,23 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
         return
       }
       
+      if (!slug.trim()) {
+        setFormError("Slug is required")
+        return
+      }
+      
+      // Validate slug format (only allow lowercase letters, numbers, and hyphens)
+      const slugRegex = /^[a-z0-9-]+$/
+      if (!slugRegex.test(slug.trim())) {
+        setFormError("Slug can only contain lowercase letters, numbers, and hyphens")
+        return
+      }
+      
       // Update deck data
       const deckData: UpdateDeckRequest = {
         name: name.trim(),
-        description: description.trim()
+        description: description.trim(),
+        slug: slug.trim()
       }
       
       // Submit to API
@@ -183,10 +209,43 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
                     <Input
                       id="name"
                       value={name}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        const newName = e.target.value;
+                        setName(newName);
+                        // Only auto-generate slug if the user hasn't manually edited it
+                        // or if it's empty or if it was derived from the previous name
+                        if (!slug || slug === generateSlug(name)) {
+                          setSlug(generateSlug(newName));
+                        }
+                      }}
                       placeholder="e.g. JavaScript Basics"
                       required
                     />
+                  </div>
+                  
+                  <div className="grid gap-2">
+                    <Label htmlFor="slug">Slug (URL-friendly identifier)</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="slug"
+                        value={slug}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSlug(e.target.value)}
+                        placeholder="e.g. javascript-basics"
+                        required
+                      />
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => setSlug(generateSlug(name))}
+                        className="whitespace-nowrap"
+                      >
+                        Generate from Name
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      This will be used in the URL: /deck/<span className="font-mono">{slug || 'your-slug'}</span>
+                    </p>
                   </div>
                   
                   <div className="grid gap-2">

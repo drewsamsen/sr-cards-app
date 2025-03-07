@@ -11,6 +11,7 @@ export interface SingleCard {
   review_at: string | null;
   deckId: string;
   deckName?: string;
+  deckSlug?: string;
 }
 
 interface UseCardReturn {
@@ -34,7 +35,8 @@ export function useCard(cardId: string): UseCardReturn {
       status: apiCard.status,
       review_at: apiCard.reviewAt,
       deckId: apiCard.deckId,
-      deckName: apiCard.deckName || `Deck ${apiCard.deckId.substring(0, 8)}`
+      deckName: apiCard.deckName || `Deck ${apiCard.deckId.substring(0, 8)}`,
+      deckSlug: apiCard.deckSlug
     };
   };
 
