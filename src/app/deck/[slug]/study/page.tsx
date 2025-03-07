@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, RotateCcw, Check, X, ChevronDown, ChevronUp, ChevronRight } from "lucide-react"
 import Link from "next/link"
-import { deckService, CardReviewResponse, ReviewMetrics, DeckResponse } from "@/lib/api/services/deck.service"
+import { deckService, CardReviewResponse, ReviewMetrics, DeckResponse, DailyProgress } from "@/lib/api/services/deck.service"
 import { cardService, CardLog } from "@/lib/api/services/card.service"
 
 // Helper function to format dates in a readable way
@@ -76,6 +76,8 @@ interface StudyState {
   error: string | null;
   showLogs: boolean;
   message?: string;
+  dailyLimitReached?: boolean;
+  dailyProgress?: DailyProgress;
 }
 
 export default function StudyPage({ params }: { params: { slug: string } }) {
@@ -116,8 +118,19 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
           
           // Fetch logs for the card
           fetchCardLogs(response.data.data.card.id)
+        } else if (response.data.data.dailyLimitReached) {
+          // Scenario 2: Daily limit reached
+          setStudyState(prev => ({ 
+            ...prev, 
+            deck: response.data.data.deck,
+            isLoading: false, 
+            error: "daily_limit_reached",
+            message: response.data.data.message || "You've reached your daily review limits for this deck. Come back later!",
+            dailyLimitReached: true,
+            dailyProgress: response.data.data.dailyProgress
+          }))
         } else if (response.data.data.allCaughtUp) {
-          // Scenario 2: All caught up - no cards due for review
+          // Scenario 3: All caught up - no cards due for review
           setStudyState(prev => ({ 
             ...prev, 
             deck: response.data.data.deck,
@@ -126,7 +139,7 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
             message: response.data.data.message || "You're all caught up! No cards due for review at this time."
           }))
         } else if (response.data.data.emptyDeck) {
-          // Scenario 3: Empty deck - no cards in the deck
+          // Scenario 4: Empty deck - no cards in the deck
           setStudyState(prev => ({ 
             ...prev, 
             deck: response.data.data.deck,
@@ -292,6 +305,32 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
                 <Link href={`/deck/${params.slug}`}>
                   <Button className="mt-4">Back to Deck</Button>
                 </Link>
+              </>
+            ) : studyState.error === "daily_limit_reached" ? (
+              <>
+                <div className="text-center max-w-lg">
+                  <p className="text-xl mb-4">{studyState.message || "You've reached your daily review limits for this deck. Come back later!"}</p>
+                  
+                  {studyState.dailyProgress && (
+                    <div className="bg-muted p-4 rounded-lg mb-6">
+                      <h3 className="font-medium mb-2">Daily Progress</h3>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <p>New Cards:</p>
+                          <p className="font-medium">{studyState.dailyProgress.newCardsSeen} / {studyState.dailyProgress.newCardsLimit}</p>
+                        </div>
+                        <div>
+                          <p>Reviews:</p>
+                          <p className="font-medium">{studyState.dailyProgress.reviewCardsSeen} / {studyState.dailyProgress.reviewCardsLimit}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <Link href={`/deck/${params.slug}`}>
+                    <Button className="mt-2">Back to Deck</Button>
+                  </Link>
+                </div>
               </>
             ) : (
               <>

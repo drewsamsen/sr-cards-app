@@ -56,6 +56,14 @@ export interface ReviewMetrics {
   easy: string;
 }
 
+export interface DailyProgress {
+  newCardsSeen: number;
+  newCardsLimit: number;
+  reviewCardsSeen: number;
+  reviewCardsLimit: number;
+  totalRemaining: number;
+}
+
 export interface DeckReviewApiResponse {
   status: string;
   data: {
@@ -64,6 +72,8 @@ export interface DeckReviewApiResponse {
     reviewMetrics?: ReviewMetrics;
     allCaughtUp?: boolean;
     emptyDeck?: boolean;
+    dailyLimitReached?: boolean;
+    dailyProgress?: DailyProgress;
     message?: string;
     totalCards?: number;
   };
