@@ -16,6 +16,8 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
 import React from "react"
 import { deckService, UpdateDeckRequest } from "@/lib/api/services/deck.service"
+import { CardEditModal } from "@/components/card-edit-modal"
+import { SingleCard } from "@/lib/hooks/useCard"
 
 // Define the Card type to match the data structure
 export interface DeckCard {
@@ -29,6 +31,9 @@ export interface DeckCard {
   stability?: number
   due?: string | null
   slug?: string
+  deckId?: string
+  deckName?: string
+  onEdit?: (card: DeckCard) => void
 }
 
 export default function DeckPage({ params }: { params: { slug: string } }) {
@@ -44,13 +49,18 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
   const [formError, setFormError] = useState<string | null>(null)
   const [formSuccess, setFormSuccess] = useState<boolean>(false)
   
+  // Card edit modal state
+  const [isCardEditModalOpen, setIsCardEditModalOpen] = useState<boolean>(false)
+  const [selectedCard, setSelectedCard] = useState<SingleCard | null>(null)
+  
   // TODO: In future Next.js versions, params will need to be unwrapped with React.use()
   // before accessing properties. For now, direct access is still supported.
   const { deck, isLoading: isLoadingDeck, error: deckError, refetch: refetchDeck } = useDeck(params.slug)
   const { 
     cards, 
     isLoading: isLoadingCards, 
-    error: cardsError 
+    error: cardsError,
+    fetchCards
   } = useDeckCards(deck?.id)
 
   // Initialize form with deck data when it loads
@@ -125,6 +135,28 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
       setIsSubmitting(false)
     }
   }
+
+  // Handle card edit
+  const handleCardEdit = (card: DeckCard) => {
+    // Convert DeckCard to SingleCard format
+    setSelectedCard({
+      id: card.id,
+      front: card.front,
+      back: card.back,
+      status: card.status,
+      review_at: card.review_at,
+      deckId: card.deckId || deck?.id || "",
+      deckName: card.deckName || deck?.name,
+      deckSlug: deck?.slug
+    })
+    setIsCardEditModalOpen(true)
+  }
+
+  // Add onEdit handler to each card
+  const cardsWithEditHandler = cards.map(card => ({
+    ...card,
+    onEdit: handleCardEdit
+  }))
 
   // Redirect to login page if not logged in
   useEffect(() => {
@@ -302,7 +334,7 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
             <CardContent className="pt-3 px-6 pb-6">
               <DataTable 
                 columns={deckCardColumns} 
-                data={cards} 
+                data={cardsWithEditHandler} 
                 searchPlaceholder="Search cards..." 
                 emptyMessage={
                   isLoadingDeck 
@@ -343,6 +375,17 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
           </Card>
         </div>
       </main>
+      
+      {/* Card Edit Modal */}
+      <CardEditModal
+        card={selectedCard}
+        isOpen={isCardEditModalOpen}
+        onOpenChange={setIsCardEditModalOpen}
+        onCardUpdated={() => {
+          // Refetch cards when a card is updated
+          fetchCards();
+        }}
+      />
     </div>
   )
 } 

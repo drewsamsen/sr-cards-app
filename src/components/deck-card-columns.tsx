@@ -20,6 +20,7 @@ export type DeckCard = {
   slug?: string
   deckId?: string
   deckName?: string
+  onEdit?: (card: DeckCard) => void
 }
 
 // Helper function to format dates
@@ -122,12 +123,18 @@ export const deckCardColumns: ColumnDef<DeckCard>[] = [
     id: "edit",
     header: "",
     cell: ({ row }) => (
-      <Link 
-        href={`/cards/${row.original.id}/edit`} 
-        className="flex justify-center"
-      >
-        <Edit className="h-4 w-4 text-primary hover:text-primary/80" />
-      </Link>
+      <div className="flex justify-center">
+        <Button 
+          size="sm" 
+          variant="outline" 
+          className="flex items-center gap-1"
+          onClick={() => row.original.onEdit?.(row.original)}
+        >
+          <Edit className="h-4 w-4" />
+          Edit
+        </Button>
+      </div>
     ),
+    size: 100,
   },
 ] 
