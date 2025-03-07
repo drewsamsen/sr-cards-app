@@ -16,11 +16,17 @@ export interface UserNotifications {
   reminderDays: string[];
 }
 
+export interface LearningSettings {
+  newCardsPerDay?: number;
+  maxReviewsPerDay?: number;
+}
+
 export interface UserSettings {
   theme: string;
   showAnswerTimer: boolean;
   notifications: UserNotifications;
   fsrsParams: FSRSParams;
+  learning: LearningSettings;
 }
 
 export interface UserSettingsResponse {

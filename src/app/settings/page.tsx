@@ -12,11 +12,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
+import { LearningSettings } from "@/lib/api/services/user.service"
 
 export default function SettingsPage() {
   const router = useRouter()
   const { user, isInitialized } = useAuth()
-  const { settings, isLoading, error, updateFSRSParams } = useUserSettings()
+  const { settings, isLoading, error, updateSettings } = useUserSettings()
   
   // Form state
   const [requestRetention, setRequestRetention] = useState<number>(0.9)
@@ -24,19 +25,33 @@ export default function SettingsPage() {
   const [weights, setWeights] = useState<string>("")
   const [enableFuzz, setEnableFuzz] = useState<boolean>(false)
   const [enableShortTerm, setEnableShortTerm] = useState<boolean>(true)
+  const [newCardsPerDay, setNewCardsPerDay] = useState<number | undefined>(undefined)
+  const [maxReviewsPerDay, setMaxReviewsPerDay] = useState<number | undefined>(undefined)
   const [isSaving, setIsSaving] = useState<boolean>(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false)
 
   // Update form state when settings are loaded
   useEffect(() => {
-    if (settings && settings.settings && settings.settings.fsrsParams) {
-      const { fsrsParams } = settings.settings
-      setRequestRetention(fsrsParams.requestRetention)
-      setMaximumInterval(fsrsParams.maximumInterval)
-      setWeights(fsrsParams.w.join(", "))
-      setEnableFuzz(fsrsParams.enableFuzz)
-      setEnableShortTerm(fsrsParams.enableShortTerm)
+    if (settings && settings.settings) {
+      if (settings.settings.fsrsParams) {
+        const { fsrsParams } = settings.settings
+        setRequestRetention(fsrsParams.requestRetention)
+        setMaximumInterval(fsrsParams.maximumInterval)
+        setWeights(fsrsParams.w.join(", "))
+        setEnableFuzz(fsrsParams.enableFuzz)
+        setEnableShortTerm(fsrsParams.enableShortTerm)
+      }
+      
+      if (settings.settings.learning) {
+        const { learning } = settings.settings
+        setNewCardsPerDay(learning.newCardsPerDay)
+        setMaxReviewsPerDay(learning.maxReviewsPerDay)
+      } else {
+        // Reset to undefined if not set
+        setNewCardsPerDay(undefined)
+        setMaxReviewsPerDay(undefined)
+      }
     }
   }, [settings])
 
@@ -65,13 +80,31 @@ export default function SettingsPage() {
         return
       }
       
-      await updateFSRSParams({
-        requestRetention,
-        maximumInterval,
-        w: weightsArray,
-        enableFuzz,
-        enableShortTerm
-      })
+      // Prepare learning settings only if values are defined
+      const learningSettings: LearningSettings = {};
+      if (newCardsPerDay !== undefined) {
+        learningSettings.newCardsPerDay = newCardsPerDay;
+      }
+      if (maxReviewsPerDay !== undefined) {
+        learningSettings.maxReviewsPerDay = maxReviewsPerDay;
+      }
+      
+      const updateData: any = {
+        fsrsParams: {
+          requestRetention,
+          maximumInterval,
+          w: weightsArray,
+          enableFuzz,
+          enableShortTerm
+        }
+      };
+      
+      // Only include learning settings if at least one value is defined
+      if (Object.keys(learningSettings).length > 0) {
+        updateData.learning = learningSettings;
+      }
+      
+      await updateSettings(updateData);
       
       setSaveSuccess(true)
     } catch (err) {
@@ -132,81 +165,119 @@ export default function SettingsPage() {
           
           <Card>
             <CardContent className="pt-6 px-6 pb-6">
-              <h2 className="text-xl font-semibold mb-4">FSRS Parameters</h2>
-              
               {isLoading ? (
                 <p>Loading settings...</p>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid gap-4">
+                    <h2 className="text-xl font-semibold mb-4">Daily Limits</h2>
                     <div className="grid gap-2">
-                      <Label htmlFor="requestRetention">Request Retention</Label>
+                      <Label htmlFor="newCardsPerDay">New Cards Per Day</Label>
                       <Input
-                        id="requestRetention"
+                        id="newCardsPerDay"
                         type="number"
-                        step="0.01"
                         min="0"
-                        max="1"
-                        value={requestRetention}
-                        onChange={(e) => setRequestRetention(parseFloat(e.target.value))}
-                        required
+                        value={newCardsPerDay === undefined ? "" : newCardsPerDay}
+                        onChange={(e) => {
+                          const value = e.target.value === "" ? undefined : parseInt(e.target.value);
+                          setNewCardsPerDay(value);
+                        }}
                       />
                       <p className="text-sm text-muted-foreground">
-                        Target retention rate (0-1). Higher values create longer intervals.
+                        Maximum number of new cards to show per day.
                       </p>
                     </div>
                     
                     <div className="grid gap-2">
-                      <Label htmlFor="maximumInterval">Maximum Interval (days)</Label>
+                      <Label htmlFor="maxReviewsPerDay">Maximum Reviews Per Day</Label>
                       <Input
-                        id="maximumInterval"
+                        id="maxReviewsPerDay"
                         type="number"
-                        min="1"
-                        value={maximumInterval}
-                        onChange={(e) => setMaximumInterval(parseInt(e.target.value))}
-                        required
+                        min="0"
+                        value={maxReviewsPerDay === undefined ? "" : maxReviewsPerDay}
+                        onChange={(e) => {
+                          const value = e.target.value === "" ? undefined : parseInt(e.target.value);
+                          setMaxReviewsPerDay(value);
+                        }}
                       />
                       <p className="text-sm text-muted-foreground">
-                        Maximum interval between reviews in days.
+                        Maximum number of review cards to show per day.
                       </p>
                     </div>
-                    
-                    <div className="grid gap-2">
-                      <Label htmlFor="weights">Weights</Label>
-                      <Input
-                        id="weights"
-                        value={weights}
-                        onChange={(e) => setWeights(e.target.value)}
-                        required
-                      />
-                      <p className="text-sm text-muted-foreground">
-                        FSRS algorithm weights as comma-separated values.
+                  </div>
+                  
+                  <div className="mt-8">
+                    <h2 className="text-xl font-semibold mb-4">FSRS Parameters</h2>
+                    <div className="grid gap-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="requestRetention">Request Retention</Label>
+                        <Input
+                          id="requestRetention"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max="1"
+                          value={requestRetention}
+                          onChange={(e) => setRequestRetention(parseFloat(e.target.value))}
+                          required
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          Target retention rate (0-1). Higher values create longer intervals.
+                        </p>
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="maximumInterval">Maximum Interval (days)</Label>
+                        <Input
+                          id="maximumInterval"
+                          type="number"
+                          min="1"
+                          value={maximumInterval}
+                          onChange={(e) => setMaximumInterval(parseInt(e.target.value))}
+                          required
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          Maximum interval between reviews in days.
+                        </p>
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="weights">Weights</Label>
+                        <Input
+                          id="weights"
+                          value={weights}
+                          onChange={(e) => setWeights(e.target.value)}
+                          required
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          FSRS algorithm weights as comma-separated values.
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id="enableFuzz" 
+                          checked={enableFuzz}
+                          onCheckedChange={(checked: boolean | "indeterminate") => setEnableFuzz(checked === true)}
+                        />
+                        <Label htmlFor="enableFuzz" className="cursor-pointer">Enable Fuzz</Label>
+                      </div>
+                      <p className="text-sm text-muted-foreground ml-6 -mt-1">
+                        When enabled, this adds a small random delay to the new interval time to prevent cards from sticking together and always being reviewed on the same day.
+                      </p>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id="enableShortTerm" 
+                          checked={enableShortTerm}
+                          onCheckedChange={(checked: boolean | "indeterminate") => setEnableShortTerm(checked === true)}
+                        />
+                        <Label htmlFor="enableShortTerm" className="cursor-pointer">Enable Short Term</Label>
+                      </div>
+                      <p className="text-sm text-muted-foreground ml-6 -mt-1">
+                        When disabled, this allows user to skip the short-term schedule.
                       </p>
                     </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="enableFuzz" 
-                        checked={enableFuzz}
-                        onCheckedChange={(checked: boolean | "indeterminate") => setEnableFuzz(checked === true)}
-                      />
-                      <Label htmlFor="enableFuzz" className="cursor-pointer">Enable Fuzz</Label>
-                    </div>
-                    <p className="text-sm text-muted-foreground ml-6 -mt-1">
-                      When enabled, this adds a small random delay to the new interval time to prevent cards from sticking together and always being reviewed on the same day.
-                    </p>
-                    
-                    <div className="flex items-center space-x-2">
-                      <Checkbox 
-                        id="enableShortTerm" 
-                        checked={enableShortTerm}
-                        onCheckedChange={(checked: boolean | "indeterminate") => setEnableShortTerm(checked === true)}
-                      />
-                      <Label htmlFor="enableShortTerm" className="cursor-pointer">Enable Short Term</Label>
-                    </div>
-                    <p className="text-sm text-muted-foreground ml-6 -mt-1">
-                      When disabled, this allows user to skip the short-term schedule.
-                    </p>
                   </div>
                   
                   <Button 
