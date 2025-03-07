@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Flashcard Review App
+
+A modern spaced repetition flashcard application built with Next.js, React, and TypeScript. This app helps users efficiently learn and retain information using the FSRS (Free Spaced Repetition Scheduler) algorithm.
+
+## Features
+
+- **User Authentication**: Secure login and registration system
+- **Deck Management**: Create, edit, and organize flashcard decks
+- **Card Management**: 
+  - Create and edit flashcards with front and back content
+  - Inline editing via modal dialogs for a seamless experience
+- **Spaced Repetition**: 
+  - Study cards using the FSRS algorithm for optimal retention
+  - Smart scheduling of reviews based on your performance
+  - Daily review limits to prevent overlearning
+- **Progress Tracking**: 
+  - View your learning progress for each deck
+  - See remaining reviews and backlog counts at a glance
+- **User Settings**: Customize your learning experience
+
+## Tech Stack
+
+- **Frontend**:
+  - Next.js 15 (App Router)
+  - React 19
+  - TypeScript
+  - Tailwind CSS
+  - Shadcn UI Components
+  - Tanstack React Table
+
+- **UI/UX**:
+  - Responsive design for all devices
+  - Dark/light mode support
+  - Accessible components
 
 ## Getting Started
 
 First, run the development server:
 
 ```bash
+# Install dependencies
+npm install
+
+# Start the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3001](http://localhost:3001) with your browser to see the application.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `/src/app`: Next.js app router pages
+  - `/cards`: Card management pages
+  - `/deck`: Deck detail and study pages
+  - `/decks`: Deck listing page
+  - `/login`: Authentication pages
+  - `/settings`: User settings pages
+- `/src/components`: Reusable React components
+- `/src/lib`: Utility functions and hooks
+  - `/api`: API client and services
+  - `/hooks`: Custom React hooks
+  - `/utils`: Helper functions
 
-## Learn More
+## Recent Updates
 
-To learn more about Next.js, take a look at the following resources:
+- Added modal dialogs for card creation and editing
+- Implemented daily review limits with user-friendly messaging
+- Updated deck listing to show both remaining reviews and backlog counts
+- Improved user interface for better usability
+- Added progress tracking for daily review limits
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License - see the LICENSE file for details.
