@@ -45,6 +45,7 @@ export const API_ENDPOINTS = {
     preview: `${API_BASE_URL}/imports/preview`,
     confirm: `${API_BASE_URL}/imports/confirm`,
     cancel: `${API_BASE_URL}/imports/cancel`,
+    history: `${API_BASE_URL}/imports/history`,
   },
 };
 

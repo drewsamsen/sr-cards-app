@@ -19,11 +19,13 @@ import {
 } from "@/components/ui/select"
 import { ImportPreviewModal } from "@/components/import-preview-modal"
 import { ImportResultsModal } from "@/components/import-results-modal"
+import { ImportHistoryTable } from "@/components/import-history-table"
 import { 
   importService, 
   ImportPreview, 
   ImportRowPreview,
-  ConfirmImportResponse
+  ConfirmImportResponse,
+  ImportHistoryItem
 } from "@/lib/api/services/import.service"
 
 export default function ImportPage() {
@@ -32,7 +34,7 @@ export default function ImportPage() {
   const { decks, isLoading: isLoadingDecks } = useDecks()
   
   // Form state
-  const [csvContent, setCsvContent] = useState<string>("")
+  const [tabContent, setTabContent] = useState<string>("")
   const [selectedDeckId, setSelectedDeckId] = useState<string>("")
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
@@ -55,6 +57,11 @@ export default function ImportPage() {
   // Results state
   const [isResultsModalOpen, setIsResultsModalOpen] = useState<boolean>(false)
   const [importResults, setImportResults] = useState<ConfirmImportResponse['data'] | null>(null)
+  
+  // Import history state
+  const [importHistory, setImportHistory] = useState<ImportHistoryItem[]>([])
+  const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false)
+  const [historyError, setHistoryError] = useState<string | null>(null)
 
   // Redirect to login page if not logged in
   useEffect(() => {
@@ -70,6 +77,34 @@ export default function ImportPage() {
     }
   }, [decks, selectedDeckId])
 
+  // Fetch import history when the component mounts
+  useEffect(() => {
+    if (isInitialized && user) {
+      fetchImportHistory()
+    }
+  }, [isInitialized, user])
+
+  // Fetch import history
+  const fetchImportHistory = async () => {
+    setIsLoadingHistory(true)
+    setHistoryError(null)
+
+    try {
+      const response = await importService.getImportHistory()
+      
+      if (response.data.status === "success") {
+        setImportHistory(response.data.data.imports)
+      } else {
+        setHistoryError("Failed to fetch import history")
+      }
+    } catch (err) {
+      setHistoryError("An error occurred while fetching import history")
+      console.error(err)
+    } finally {
+      setIsLoadingHistory(false)
+    }
+  }
+
   // Handle form submission to create preview
   const handleCreatePreview = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -81,7 +116,7 @@ export default function ImportPage() {
       // Call the API to create an import preview
       const response = await importService.createImportPreview({
         deckId: selectedDeckId,
-        csvData: csvContent
+        csvData: tabContent
       })
       
       if (response.data.status === "success") {
@@ -125,13 +160,16 @@ export default function ImportPage() {
         
         // Reset the form if there were no errors
         if (response.data.data.status === "completed") {
-          setCsvContent("")
+          setTabContent("")
           setImportSuccess(true)
         }
         
         // Reset the preview data
         setImportPreview(null)
         setPreviewRows([])
+        
+        // Refresh import history after successful import
+        fetchImportHistory()
       } else {
         setConfirmError("Failed to confirm import")
       }
@@ -202,7 +240,7 @@ export default function ImportPage() {
       <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
         <div className="space-y-4">
           <h1 className="text-2xl font-bold tracking-tight">Import Flashcards</h1>
-          <p className="text-muted-foreground">Import flashcards from CSV format.</p>
+          <p className="text-muted-foreground">Import flashcards from comma-delimited or tab-delimited format.</p>
         </div>
         <div className="mt-6">
           {error && (
@@ -226,7 +264,7 @@ export default function ImportPage() {
             </Alert>
           )}
           
-          <Card>
+          <Card className="mb-8">
             <CardHeader>
               <CardTitle>Import Options</CardTitle>
             </CardHeader>
@@ -258,19 +296,24 @@ export default function ImportPage() {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="csv-content">CSV Content</Label>
+                  <Label htmlFor="tab-content">Delimited Content</Label>
                   <Textarea
-                    id="csv-content"
+                    id="tab-content"
                     placeholder="front,back
 What is React?,A JavaScript library for building user interfaces
-What is NextJS?,A React framework for production"
+What is NextJS?,A React framework for production
+
+OR use tabs:
+front	back
+What is React?	A JavaScript library for building user interfaces
+What is NextJS?	A React framework for production"
                     rows={10}
-                    value={csvContent}
-                    onChange={(e) => setCsvContent(e.target.value)}
+                    value={tabContent}
+                    onChange={(e) => setTabContent(e.target.value)}
                     className="font-mono"
                   />
                   <p className="text-sm text-muted-foreground">
-                    Format: front,back (one card per line)
+                    Format: front,back or front[tab]back (one card per line)
                   </p>
                 </div>
                 
@@ -280,7 +323,7 @@ What is NextJS?,A React framework for production"
                     className="flex items-center gap-2"
                     disabled={
                       isSubmitting || 
-                      !csvContent.trim() || 
+                      !tabContent.trim() || 
                       !selectedDeckId || 
                       isLoadingDecks
                     }
@@ -294,10 +337,10 @@ What is NextJS?,A React framework for production"
               <div className="mt-8 border-t pt-6">
                 <h3 className="text-lg font-medium mb-2">Import Instructions</h3>
                 <ul className="list-disc pl-5 space-y-2 text-sm text-muted-foreground">
-                  <li>Use comma-separated values with headers: front,back</li>
+                  <li>Use comma-delimited values (CSV) or tab-delimited values (TSV) with headers</li>
                   <li>Each line after the header represents one flashcard</li>
                   <li>All cards will be imported into the selected deck</li>
-                  <li>The import process has two steps: validation and execution</li>
+                  <li>The import process has two steps: validation and confirmation</li>
                   <li>You'll see a preview of the import before confirming</li>
                 </ul>
                 
@@ -308,6 +351,33 @@ What is NextJS?,A React framework for production"
               </div>
             </CardContent>
           </Card>
+          
+          <div className="mt-12">
+            <h2 className="text-xl font-semibold mb-4">Import History</h2>
+            
+            {historyError && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{historyError}</AlertDescription>
+              </Alert>
+            )}
+            
+            <ImportHistoryTable 
+              imports={importHistory} 
+              isLoading={isLoadingHistory} 
+            />
+            
+            <div className="mt-4 flex justify-end">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={fetchImportHistory}
+                disabled={isLoadingHistory}
+              >
+                {isLoadingHistory ? "Refreshing..." : "Refresh History"}
+              </Button>
+            </div>
+          </div>
         </div>
       </main>
       
