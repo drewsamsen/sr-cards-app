@@ -16,6 +16,7 @@ export function Header() {
   const navItems = [
     { name: "Decks", href: "/decks" },
     { name: "Cards", href: "/cards" },
+    { name: "Import", href: "/import" },
     { name: "API", href: "/api" },
     { name: "Settings", href: "/settings" },
   ]
