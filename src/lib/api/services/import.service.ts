@@ -23,6 +23,12 @@ export interface ImportSummary {
   totalRows: number;
   validRows: number;
   invalidRows: number;
+  duplicateCards?: number;
+  duplicateDetails?: {
+    row: number;
+    cardFront: string;
+    existingCardFront: string;
+  }[];
   errors?: ImportError[];
 }
 

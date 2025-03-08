@@ -9,7 +9,7 @@ import {
   DialogFooter 
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { AlertCircle, CheckCircle, XCircle } from "lucide-react"
+import { AlertCircle, CheckCircle, XCircle, AlertTriangle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { 
   Table, 
@@ -54,6 +54,24 @@ export function ImportPreviewModal({
 
   const { summary } = importPreview
   const hasErrors = summary.invalidRows > 0
+  const hasDuplicates = summary.duplicateCards && summary.duplicateCards > 0
+  
+  // Filter out duplicate cards for the table display
+  const nonDuplicateRows = previewRows.filter(row => 
+    !row.error?.includes('Duplicate card')
+  )
+  
+  // Get valid rows to prioritize showing them
+  const validRows = nonDuplicateRows.filter(row => row.status === 'valid')
+  
+  // Get invalid rows that aren't duplicates
+  const invalidNonDuplicateRows = nonDuplicateRows.filter(row => row.status === 'invalid')
+  
+  // Combine valid rows first, then invalid non-duplicate rows
+  const rowsToDisplay = [...validRows, ...invalidNonDuplicateRows]
+  
+  // Check if there are more than 10 rows to display
+  const hasMoreRows = rowsToDisplay.length > 10
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -79,7 +97,7 @@ export function ImportPreviewModal({
         <div className="space-y-4">
           <div className="bg-muted p-4 rounded-md">
             <h3 className="text-sm font-medium mb-2">Summary</h3>
-            <div className="grid grid-cols-3 gap-4 text-sm">
+            <div className="grid grid-cols-4 gap-4 text-sm">
               <div>
                 <p className="text-muted-foreground">Total Rows</p>
                 <p className="font-medium">{summary.totalRows}</p>
@@ -92,6 +110,12 @@ export function ImportPreviewModal({
                 <p className="text-muted-foreground">Invalid Rows</p>
                 <p className={`font-medium ${hasErrors ? 'text-red-600' : 'text-gray-600'}`}>
                   {summary.invalidRows}
+                </p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Duplicate Cards</p>
+                <p className={`font-medium ${hasDuplicates ? 'text-amber-600' : 'text-gray-600'}`}>
+                  {summary.duplicateCards || 0}
                 </p>
               </div>
             </div>
@@ -113,6 +137,27 @@ export function ImportPreviewModal({
             </Alert>
           )}
 
+          {hasDuplicates && summary.duplicateDetails && (
+            <Alert className="mb-2 border-amber-500 bg-amber-50">
+              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              <AlertDescription className="text-amber-800">
+                <p className="mb-2">The following duplicate cards were found:</p>
+                <ul className="list-disc pl-5 space-y-1">
+                  {summary.duplicateDetails.slice(0, 5).map((duplicate, index) => (
+                    <li key={index}>
+                      Row {duplicate.row}: "{duplicate.cardFront}" is similar to existing card "{duplicate.existingCardFront}"
+                    </li>
+                  ))}
+                  {summary.duplicateDetails.length > 5 && (
+                    <li className="font-medium mt-1">
+                      ...and {summary.duplicateDetails.length - 5} more duplicate{summary.duplicateDetails.length - 5 !== 1 ? 's' : ''}
+                    </li>
+                  )}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          )}
+
           <div className="border rounded-md overflow-hidden">
             <Table>
               <TableHeader>
@@ -124,26 +169,38 @@ export function ImportPreviewModal({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {previewRows.map((row, index) => (
-                  <TableRow key={index} className={row.status === 'invalid' ? 'bg-red-50' : ''}>
-                    <TableCell>
-                      {row.status === 'valid' ? (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      ) : (
-                        <XCircle className="h-5 w-5 text-red-500" />
-                      )}
-                    </TableCell>
-                    <TableCell className="font-mono text-sm">
-                      {row.front || <span className="text-muted-foreground italic">Empty</span>}
-                    </TableCell>
-                    <TableCell className="font-mono text-sm">
-                      {row.back || <span className="text-muted-foreground italic">Empty</span>}
-                    </TableCell>
-                    <TableCell className="text-sm text-red-600">
-                      {row.error || ''}
+                {rowsToDisplay
+                  .slice(0, 10)
+                  .map((row, index) => (
+                    <TableRow 
+                      key={index} 
+                      className={row.status === 'invalid' ? 'bg-red-50' : ''}
+                    >
+                      <TableCell>
+                        {row.status === 'valid' ? (
+                          <CheckCircle className="h-5 w-5 text-green-500" />
+                        ) : (
+                          <XCircle className="h-5 w-5 text-red-500" />
+                        )}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {row.front || <span className="text-muted-foreground italic">Empty</span>}
+                      </TableCell>
+                      <TableCell className="font-mono text-sm">
+                        {row.back || <span className="text-muted-foreground italic">Empty</span>}
+                      </TableCell>
+                      <TableCell className="text-sm text-red-600">
+                        {row.error || ''}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                {hasMoreRows && (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-sm text-muted-foreground py-4">
+                      ...and {rowsToDisplay.length - 10} more rows
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </div>
