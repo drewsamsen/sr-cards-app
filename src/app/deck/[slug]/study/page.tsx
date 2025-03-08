@@ -6,10 +6,12 @@ import { Header } from "@/components/header"
 import { useAuth } from "@/lib/hooks"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, RotateCcw, Check, X, ChevronDown, ChevronUp, ChevronRight } from "lucide-react"
+import { ChevronLeft, RotateCcw, Check, X, ChevronDown, ChevronUp, ChevronRight, Edit } from "lucide-react"
 import Link from "next/link"
 import { deckService, CardReviewResponse, ReviewMetrics, DeckResponse, DailyProgress } from "@/lib/api/services/deck.service"
 import { cardService, CardLog } from "@/lib/api/services/card.service"
+import { CardEditModal } from "@/components/card-edit-modal"
+import { SingleCard } from "@/lib/hooks/useCard"
 
 // Helper function to format dates in a readable way
 const formatDate = (dateString: string) => {
@@ -66,18 +68,17 @@ const getTimeUntil = (dateString: string) => {
   return `${diffDays} day${diffDays !== 1 ? 's' : ''} from now`
 }
 
-// Interface for the study state
+// Define the study state interface
 interface StudyState {
-  card: CardReviewResponse | null;
-  deck: DeckResponse | null;
-  reviewMetrics: ReviewMetrics | null;
-  cardLogs: CardLog[];
-  isLoading: boolean;
-  error: string | null;
-  showLogs: boolean;
-  message?: string;
-  dailyLimitReached?: boolean;
-  dailyProgress?: DailyProgress;
+  card: CardReviewResponse | null
+  deck: DeckResponse | null
+  reviewMetrics: ReviewMetrics | null
+  cardLogs: CardLog[]
+  isLoading: boolean
+  error: string | null
+  message?: string
+  dailyProgress?: DailyProgress
+  showLogs: boolean
 }
 
 export default function StudyPage({ params }: { params: { slug: string } }) {
@@ -93,6 +94,9 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
     error: null,
     showLogs: false
   })
+  
+  // Card edit modal state
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   // Fetch card for review
   const fetchCardForReview = async () => {
@@ -126,7 +130,6 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
             isLoading: false, 
             error: "daily_limit_reached",
             message: response.data.data.message || "You've reached your daily review limits for this deck. Come back later!",
-            dailyLimitReached: true,
             dailyProgress: response.data.data.dailyProgress
           }))
         } else if (response.data.data.allCaughtUp) {
@@ -218,6 +221,34 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
 
   const handleFlip = () => {
     setIsFlipped(!isFlipped)
+  }
+  
+  const handleEditClick = (e: React.MouseEvent) => {
+    // Prevent the card from flipping when clicking the edit button
+    e.stopPropagation()
+    setIsEditModalOpen(true)
+  }
+  
+  const handleCardUpdated = async () => {
+    // Refresh the current card to show the updated content
+    if (studyState.card) {
+      try {
+        const response = await cardService.getCard(studyState.card.id)
+        if (response.data.status === "success") {
+          // Update the card in the study state
+          setStudyState(prev => ({
+            ...prev,
+            card: {
+              ...prev.card!,
+              front: response.data.data.card.front,
+              back: response.data.data.card.back
+            }
+          }))
+        }
+      } catch (error) {
+        console.error("Error fetching updated card:", error)
+      }
+    }
   }
 
   const handleResponse = async (response: 'again' | 'hard' | 'good' | 'easy') => {
@@ -417,9 +448,18 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
         
         <div className="flex flex-col items-center justify-center">
           <Card 
-            className="w-full max-w-2xl min-h-[16rem] md:min-h-[20rem] cursor-pointer transition-all duration-300"
+            className="w-full max-w-2xl min-h-[16rem] md:min-h-[20rem] cursor-pointer transition-all duration-300 relative"
             onClick={handleFlip}
           >
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-2 right-2 h-8 w-8 rounded-full opacity-70 hover:opacity-100 z-10"
+              onClick={handleEditClick}
+              title="Edit card"
+            >
+              <Edit className="h-4 w-4" />
+            </Button>
             <CardContent className="p-6 h-full flex flex-col items-center justify-center">
               {!isFlipped ? (
                 <div className="text-center">
@@ -570,6 +610,24 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
             </div>
           )}
         </div>
+        
+        {/* Card Edit Modal */}
+        {studyState.card && (
+          <CardEditModal
+            isOpen={isEditModalOpen}
+            onOpenChange={setIsEditModalOpen}
+            card={{
+              id: studyState.card.id,
+              front: studyState.card.front,
+              back: studyState.card.back,
+              status: studyState.card.state.toString(),
+              review_at: studyState.card.due,
+              deckId: studyState.card.deckId,
+              deckName: studyState.deck?.name
+            }}
+            onCardUpdated={handleCardUpdated}
+          />
+        )}
       </main>
     </div>
   )
