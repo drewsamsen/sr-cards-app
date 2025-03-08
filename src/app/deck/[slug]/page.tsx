@@ -13,9 +13,20 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, AlertCircle, BookOpen, ChevronRight, Save, Edit, X } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import Link from "next/link"
 import React from "react"
 import { deckService, UpdateDeckRequest } from "@/lib/api/services/deck.service"
+import { cardService } from "@/lib/api/services/card.service"
 import { CardEditModal } from "@/components/card-edit-modal"
 import { CardAddModal } from "@/components/card-add-modal"
 import { SingleCard } from "@/lib/hooks/useCard"
@@ -56,6 +67,13 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
   
   // Card add modal state
   const [isCardAddModalOpen, setIsCardAddModalOpen] = useState<boolean>(false)
+  
+  // Card delete confirmation state
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
+  const [cardToDelete, setCardToDelete] = useState<DeckCard | null>(null)
+  const [isDeleting, setIsDeleting] = useState<boolean>(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [deleteSuccess, setDeleteSuccess] = useState<boolean>(false)
   
   // TODO: In future Next.js versions, params will need to be unwrapped with React.use()
   // before accessing properties. For now, direct access is still supported.
@@ -142,7 +160,6 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
 
   // Handle card edit
   const handleCardEdit = (card: DeckCard) => {
-    // Convert DeckCard to SingleCard format
     setSelectedCard({
       id: card.id,
       front: card.front,
@@ -156,10 +173,49 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
     setIsCardEditModalOpen(true)
   }
 
+  // Handle card delete
+  const handleCardDelete = (card: DeckCard) => {
+    setCardToDelete(card)
+    setIsDeleteDialogOpen(true)
+  }
+  
+  // Confirm card delete
+  const confirmCardDelete = async () => {
+    if (!cardToDelete) return
+    
+    setDeleteError(null)
+    setIsDeleting(true)
+    
+    try {
+      const response = await cardService.deleteCard(cardToDelete.id)
+      
+      if (response.status === 200 && response.data.status === "success") {
+        setDeleteSuccess(true)
+        setIsDeleteDialogOpen(false)
+        
+        // Refresh the cards list
+        fetchCards()
+        
+        // Show success message briefly
+        setTimeout(() => {
+          setDeleteSuccess(false)
+        }, 3000)
+      } else {
+        setDeleteError("Failed to delete card")
+      }
+    } catch (err) {
+      setDeleteError("An error occurred while deleting the card")
+      console.error(err)
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
   // Add onEdit handler to each card
-  const cardsWithEditHandler = cards.map(card => ({
+  const cardsWithHandlers = cards.map(card => ({
     ...card,
-    onEdit: handleCardEdit
+    onEdit: handleCardEdit,
+    onDelete: handleCardDelete
   }))
 
   // Redirect to login page if not logged in
@@ -220,6 +276,13 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
             <Alert className="mb-6 bg-green-50 text-green-800 border-green-200">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>Deck updated successfully!</AlertDescription>
+            </Alert>
+          )}
+          
+          {deleteSuccess && (
+            <Alert className="mb-6 bg-green-50 text-green-800 border-green-200">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>Card deleted successfully!</AlertDescription>
             </Alert>
           )}
           
@@ -338,7 +401,7 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
             <CardContent className="pt-3 px-6 pb-6">
               <DataTable 
                 columns={deckCardColumns} 
-                data={cardsWithEditHandler} 
+                data={cardsWithHandlers} 
                 searchPlaceholder="Search cards..." 
                 emptyMessage={
                   isLoadingDeck 
@@ -380,12 +443,12 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
       
       {/* Card Edit Modal */}
       <CardEditModal
-        card={selectedCard}
         isOpen={isCardEditModalOpen}
         onOpenChange={setIsCardEditModalOpen}
+        card={selectedCard}
         onCardUpdated={() => {
-          // Refetch cards when a card is updated
-          fetchCards();
+          fetchCards()
+          setIsCardEditModalOpen(false)
         }}
       />
       
@@ -395,10 +458,41 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
         isOpen={isCardAddModalOpen}
         onOpenChange={setIsCardAddModalOpen}
         onCardAdded={() => {
-          // Refetch cards when a card is added
-          fetchCards();
+          fetchCards()
+          setIsCardAddModalOpen(false)
         }}
       />
+      
+      {/* Card Delete Confirmation Dialog */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete this card?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the card
+              from your deck.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          {deleteError && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{deleteError}</AlertDescription>
+            </Alert>
+          )}
+          
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmCardDelete}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 } 

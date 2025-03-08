@@ -1,7 +1,7 @@
 "use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Edit } from "lucide-react"
+import { ArrowUpDown, Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import Link from "next/link"
@@ -21,6 +21,7 @@ export type DeckCard = {
   deckId?: string
   deckName?: string
   onEdit?: (card: DeckCard) => void
+  onDelete?: (card: DeckCard) => void
 }
 
 // Helper function to format dates
@@ -123,7 +124,7 @@ export const deckCardColumns: ColumnDef<DeckCard>[] = [
     id: "edit",
     header: "",
     cell: ({ row }) => (
-      <div className="flex justify-center">
+      <div className="flex justify-center gap-2">
         <Button 
           size="sm" 
           variant="outline" 
@@ -133,8 +134,16 @@ export const deckCardColumns: ColumnDef<DeckCard>[] = [
           <Edit className="h-4 w-4" />
           Edit
         </Button>
+        <Button 
+          size="sm" 
+          variant="outline" 
+          className="flex items-center gap-1 text-red-500 hover:text-red-700 hover:bg-red-50"
+          onClick={() => row.original.onDelete?.(row.original)}
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
       </div>
     ),
-    size: 100,
+    size: 150,
   },
 ] 

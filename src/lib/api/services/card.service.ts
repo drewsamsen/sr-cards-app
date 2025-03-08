@@ -128,6 +128,13 @@ export class CardService {
   async updateCard(cardId: string, cardData: UpdateCardRequest): Promise<ApiResponse<CardApiResponse>> {
     return apiClient.patch<CardApiResponse>(API_ENDPOINTS.cards.update(cardId), cardData);
   }
+
+  /**
+   * Delete a card
+   */
+  async deleteCard(cardId: string): Promise<ApiResponse<{ status: string, data: null }>> {
+    return apiClient.delete(API_ENDPOINTS.cards.delete(cardId));
+  }
 }
 
 // Create and export a default instance
