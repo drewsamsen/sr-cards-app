@@ -37,13 +37,11 @@ export function Pagination({
 
   return (
     <div className={`flex flex-col ${compact ? 'sm:flex-row' : 'sm:flex-row'} items-center justify-between space-y-3 sm:space-y-0 ${compact ? 'py-2' : 'py-4'}`}>
-      {!compact && (
-        <div className="text-sm text-muted-foreground">
-          Showing <span className="font-medium">{startItem}</span> to{" "}
-          <span className="font-medium">{endItem}</span> of{" "}
-          <span className="font-medium">{totalItems}</span> items
-        </div>
-      )}
+      <div className={`${compact ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
+        Showing <span className="font-medium">{startItem}</span> to{" "}
+        <span className="font-medium">{endItem}</span> of{" "}
+        <span className="font-medium">{totalItems}</span> items
+      </div>
       <div className={`flex items-center ${compact ? 'space-x-2 sm:space-x-4' : 'space-x-6 lg:space-x-8'}`}>
         {!compact && (
           <div className="flex items-center space-x-2">

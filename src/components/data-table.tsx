@@ -49,22 +49,37 @@ export function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState("")
-  const [searchDebounce, setSearchDebounce] = useState<NodeJS.Timeout | null>(null)
+  const [searchInputValue, setSearchInputValue] = useState("")
 
   // Handle search input change
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
-    setGlobalFilter(value)
+    setSearchInputValue(value)
     
-    // If using server-side search, debounce the search
+    // If not using server-side search, update the global filter immediately
+    if (!useServerSearch) {
+      setGlobalFilter(value)
+    }
+  }
+
+  // Handle search form submission
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    
     if (useServerSearch && onSearch) {
-      if (searchDebounce) clearTimeout(searchDebounce)
-      
-      const debounceTimeout = setTimeout(() => {
-        onSearch(value)
-      }, 300) // 300ms debounce
-      
-      setSearchDebounce(debounceTimeout)
+      // Update the global filter for visual consistency
+      setGlobalFilter(searchInputValue)
+      // Trigger the server-side search
+      onSearch(searchInputValue)
+    }
+  }
+
+  // Handle key press in search input
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // If Enter key is pressed, trigger search
+    if (e.key === 'Enter' && useServerSearch && onSearch) {
+      setGlobalFilter(searchInputValue)
+      onSearch(searchInputValue)
     }
   }
 
@@ -76,10 +91,10 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     state: {
       sorting,
-      globalFilter: useServerSearch ? undefined : globalFilter,
+      globalFilter: useServerSearch ? globalFilter : searchInputValue,
     },
-    onGlobalFilterChange: useServerSearch ? undefined : setGlobalFilter,
-    enableGlobalFilter: !useServerSearch,
+    onGlobalFilterChange: useServerSearch ? setGlobalFilter : setSearchInputValue,
+    enableGlobalFilter: true,
   })
 
   // Render pagination controls
@@ -102,12 +117,15 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className="flex items-center justify-between py-2">
-        <Input
-          placeholder={searchPlaceholder}
-          value={globalFilter}
-          onChange={handleSearchChange}
-          className="max-w-sm"
-        />
+        <form onSubmit={handleSearchSubmit} className="max-w-sm w-full">
+          <Input
+            placeholder={searchPlaceholder}
+            value={searchInputValue}
+            onChange={handleSearchChange}
+            onKeyDown={handleKeyDown}
+            className="max-w-sm"
+          />
+        </form>
         {actionButton}
       </div>
       
