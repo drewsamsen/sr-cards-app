@@ -9,23 +9,9 @@ import { Button } from "@/components/ui/button"
 import { ChevronLeft, RotateCcw, Check, X, ChevronDown, ChevronUp, ChevronRight, Edit, Star } from "lucide-react"
 import Link from "next/link"
 import { deckService, CardReviewResponse, ReviewMetrics, DeckResponse, DailyProgress } from "@/lib/api/services/deck.service"
-import { cardService, CardLog } from "@/lib/api/services/card.service"
+import { cardService } from "@/lib/api/services/card.service"
 import { CardEditModal } from "@/components/card-edit-modal"
 import { SingleCard } from "@/lib/hooks/useCard"
-
-// Helper function to format dates in a readable way
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString)
-  
-  // Format date: Mar 5, 2023
-  const formattedDate = date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  })
-  
-  return formattedDate
-}
 
 // Helper function to calculate and format time difference
 const getTimeUntil = (dateString: string) => {
@@ -68,23 +54,15 @@ const getTimeUntil = (dateString: string) => {
   return `${diffDays} day${diffDays !== 1 ? 's' : ''}`
 }
 
-// Helper function to format numbers with 2 decimal places
-const formatNumber = (num: number | undefined) => {
-  if (num === undefined) return "N/A";
-  return num.toFixed(2);
-};
-
 // Define the study state interface
 interface StudyState {
   card: CardReviewResponse | null
   deck: DeckResponse | null
   reviewMetrics: ReviewMetrics | null
-  cardLogs: CardLog[]
   isLoading: boolean
   error: string | null
   message?: string
   dailyProgress?: DailyProgress
-  showLogs: boolean
 }
 
 export default function StudyPage({ params }: { params: { slug: string } }) {
@@ -95,10 +73,8 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
     card: null,
     deck: null,
     reviewMetrics: null,
-    cardLogs: [],
     isLoading: true,
-    error: null,
-    showLogs: false
+    error: null
   })
   
   // Card edit modal state
@@ -107,7 +83,7 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
   // Fetch card for review
   const fetchCardForReview = async () => {
     try {
-      setStudyState(prev => ({ ...prev, isLoading: true, error: null, cardLogs: [] }))
+      setStudyState(prev => ({ ...prev, isLoading: true, error: null }))
       const response = await deckService.getCardForReview(params.slug)
       
       if (response.data.status === "success") {
@@ -118,16 +94,11 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
             card: response.data.data.card,
             deck: response.data.data.deck,
             reviewMetrics: response.data.data.reviewMetrics || null,
-            cardLogs: [],
             isLoading: false,
-            error: null,
-            showLogs: false
+            error: null
           }
           
           setStudyState(newState)
-          
-          // Fetch logs for the card
-          fetchCardLogs(response.data.data.card.id)
         } else if (response.data.data.dailyLimitReached) {
           // Scenario 2: Daily limit reached
           setStudyState(prev => ({ 
@@ -183,30 +154,6 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
     }
   }
   
-  // Fetch logs for a card
-  const fetchCardLogs = async (cardId: string) => {
-    try {
-      const logsResponse = await cardService.getCardLogs(cardId)
-      
-      if (logsResponse.data.status === "success") {
-        setStudyState(prev => ({
-          ...prev,
-          cardLogs: logsResponse.data.data.logs
-        }))
-      }
-    } catch (error) {
-      console.error("Error fetching card logs:", error)
-    }
-  }
-  
-  // Toggle logs visibility
-  const toggleLogs = () => {
-    setStudyState(prev => ({
-      ...prev,
-      showLogs: !prev.showLogs
-    }))
-  }
-
   // Redirect to login page if not logged in
   useEffect(() => {
     if (isInitialized && !user) {
@@ -417,17 +364,6 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
     )
   }
 
-  // Get rating text
-  const getRatingText = (rating: number) => {
-    switch (rating) {
-      case 1: return "Again"
-      case 2: return "Hard"
-      case 3: return "Good"
-      case 4: return "Easy"
-      default: return "Unknown"
-    }
-  }
-
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
@@ -577,49 +513,6 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
             </div>
           </div>
         </div>
-        
-        {/* Card logs section */}
-        {studyState.card && studyState.cardLogs.length > 0 && (
-          <div className="w-full max-w-2xl mt-8 mx-auto">
-            <Button 
-              variant="outline" 
-              onClick={toggleLogs} 
-              className="flex items-center justify-between w-full mb-2"
-            >
-              <span>Review History</span>
-              {studyState.showLogs ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </Button>
-            
-            {studyState.showLogs && (
-              <div className="border rounded-md overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="bg-muted">
-                        <th className="px-4 py-2 text-left">Date</th>
-                        <th className="px-4 py-2 text-left">Rating</th>
-                        <th className="px-4 py-2 text-left">Difficulty</th>
-                        <th className="px-4 py-2 text-left">Stability</th>
-                        <th className="px-4 py-2 text-left">Next Due</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {studyState.cardLogs.map((log) => (
-                        <tr key={log.id} className="border-t">
-                          <td className="px-4 py-2">{formatDate(log.createdAt)}</td>
-                          <td className="px-4 py-2">{getRatingText(log.rating)}</td>
-                          <td className="px-4 py-2">{formatNumber(log.difficulty)}</td>
-                          <td className="px-4 py-2">{formatNumber(log.stability)}</td>
-                          <td className="px-4 py-2">{formatDate(log.due || '')}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
       </main>
       
       {/* Card edit modal */}
@@ -630,7 +523,7 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
           id: studyState.card.id,
           front: studyState.card.front,
           back: studyState.card.back,
-          status: studyState.card.state.toString(),
+          status: 'active',
           review_at: studyState.card.due,
           deckId: studyState.card.deckId,
           deckName: studyState.deck?.name

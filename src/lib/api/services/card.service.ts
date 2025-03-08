@@ -53,29 +53,6 @@ export interface CardReviewApiResponse {
   };
 }
 
-export interface CardLog {
-  id: string;
-  cardId: string;
-  userId: string;
-  rating: number;
-  state: number;
-  due: string | null;
-  stability: number;
-  difficulty: number;
-  elapsedDays: number;
-  lastElapsedDays: number;
-  scheduledDays: number;
-  review: string;
-  createdAt: string;
-}
-
-export interface CardLogsApiResponse {
-  status: string;
-  data: {
-    logs: CardLog[];
-  };
-}
-
 export interface CreateCardRequest {
   front: string;
   back: string;
@@ -145,13 +122,6 @@ export class CardService {
    */
   async reviewCard(cardId: string, reviewData: CardReviewRequest): Promise<ApiResponse<CardReviewApiResponse>> {
     return apiClient.post<CardReviewApiResponse>(API_ENDPOINTS.cards.review(cardId), reviewData);
-  }
-
-  /**
-   * Get review logs for a card
-   */
-  async getCardLogs(cardId: string): Promise<ApiResponse<CardLogsApiResponse>> {
-    return apiClient.get<CardLogsApiResponse>(API_ENDPOINTS.cards.logs(cardId));
   }
 
   /**

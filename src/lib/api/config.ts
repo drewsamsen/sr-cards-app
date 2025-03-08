@@ -39,7 +39,6 @@ export const API_ENDPOINTS = {
     // Deprecated: getByDeckId is now handled by the list endpoint with a deckId parameter
     getByDeckId: (deckId: string) => `${API_BASE_URL}/decks/${deckId}/cards`,
     review: (id: string) => `${API_BASE_URL}/cards/${id}/review`,
-    logs: (id: string) => `${API_BASE_URL}/cards/${id}/logs`,
     // Deprecated: search is now handled by the list endpoint with a q parameter
     search: `${API_BASE_URL}/cards/search`,
   },
