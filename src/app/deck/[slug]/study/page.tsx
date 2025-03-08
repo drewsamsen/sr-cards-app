@@ -38,7 +38,7 @@ const getTimeUntil = (dateString: string) => {
   // If less than an hour, show minutes
   if (diffMs < 60 * 60 * 1000) {
     const diffMinutes = Math.max(1, Math.round(diffMs / (1000 * 60)))
-    return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''} from now`
+    return `${diffMinutes} minute${diffMinutes !== 1 ? 's' : ''}`
   }
   
   // Convert to hours
@@ -46,7 +46,7 @@ const getTimeUntil = (dateString: string) => {
   
   // If less than 24 hours, show hours
   if (diffHours < 24) {
-    return `${diffHours} hour${diffHours !== 1 ? 's' : ''} from now`
+    return `${diffHours} hour${diffHours !== 1 ? 's' : ''}`
   }
   
   // Check if the date is tomorrow
@@ -65,8 +65,14 @@ const getTimeUntil = (dateString: string) => {
   
   // Otherwise show days
   const diffDays = Math.round(diffHours / 24)
-  return `${diffDays} day${diffDays !== 1 ? 's' : ''} from now`
+  return `${diffDays} day${diffDays !== 1 ? 's' : ''}`
 }
+
+// Helper function to format numbers with 2 decimal places
+const formatNumber = (num: number | undefined) => {
+  if (num === undefined) return "N/A";
+  return num.toFixed(2);
+};
 
 // Define the study state interface
 interface StudyState {
@@ -425,7 +431,7 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
+      <main className="flex-1 container mx-auto px-4 py-6 md:py-10 flex flex-col">
         <div className="mb-6">
           <nav className="flex items-center text-sm">
             <Link 
@@ -446,189 +452,191 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
           </nav>
         </div>
         
-        <div className="flex flex-col items-center justify-center">
-          <Card 
-            className="w-full max-w-2xl min-h-[16rem] md:min-h-[20rem] cursor-pointer transition-all duration-300 relative"
-            onClick={handleFlip}
-          >
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-2 right-2 h-8 w-8 rounded-full opacity-70 hover:opacity-100 z-10"
-              onClick={handleEditClick}
-              title="Edit card"
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-            <CardContent className="p-6 h-full flex flex-col items-center justify-center">
-              {!isFlipped ? (
-                <div className="text-center w-full max-w-xl">
-                  <h3 className="text-xl font-semibold mb-6 text-muted-foreground">Question</h3>
-                  <p className="text-xl md:text-2xl font-medium leading-relaxed">{studyState.card?.front}</p>
-                </div>
-              ) : (
-                <div className="text-center w-full max-w-xl">
-                  <h3 className="text-xl font-semibold mb-6 text-muted-foreground">Answer</h3>
-                  <p className="text-xl md:text-2xl font-medium leading-relaxed">{studyState.card?.back}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-          
-          <div className={`mt-8 flex flex-wrap gap-3 justify-center transition-opacity duration-300 ${
-            isFlipped ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}>
-            <div className="flex flex-col items-center">
-              <Button 
-                variant="destructive" 
-                size="lg"
-                onClick={() => handleResponse('again')}
-                className="flex items-center gap-2"
+        <div className="flex flex-col items-center justify-between flex-grow">
+          {/* Make this entire area clickable for flipping the card */}
+          <div className="w-full flex-grow flex flex-col items-center cursor-pointer" onClick={handleFlip}>
+            <div className="w-full flex justify-center">
+              <Card 
+                className="w-full max-w-2xl min-h-[16rem] md:min-h-[20rem] cursor-pointer transition-all duration-300 relative flex flex-col"
+                onClick={handleFlip}
               >
-                <RotateCcw className="h-4 w-4" />
-                Again
-              </Button>
-              {studyState.reviewMetrics && (
-                <div className="flex flex-col items-center">
-                  <span className="text-xs text-muted-foreground mt-1">
-                    {formatDate(studyState.reviewMetrics.again)}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {getTimeUntil(studyState.reviewMetrics.again)}
-                  </span>
-                </div>
-              )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-2 right-2 h-8 w-8 rounded-full opacity-70 hover:opacity-100 z-10"
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card flip when clicking edit
+                    handleEditClick(e);
+                  }}
+                  title="Edit card"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+                <CardContent className="p-6 flex flex-col flex-grow">
+                  <div className="flex flex-col h-full">
+                    {/* Front text always visible */}
+                    <div className={isFlipped ? "" : "mb-auto"}>
+                      <p className="text-xl md:text-2xl font-medium leading-relaxed text-center whitespace-pre-line">{studyState.card?.front}</p>
+                    </div>
+                    
+                    {/* Back content only visible when flipped */}
+                    {isFlipped && (
+                      <div className="mt-4">
+                        <hr className="mb-4 border-t border-border" />
+                        <p className="text-xl md:text-2xl font-medium text-left whitespace-pre-line leading-tight">{studyState.card?.back}</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
             
-            <div className="flex flex-col items-center">
-              <Button 
-                variant="outline" 
-                size="lg"
-                onClick={() => handleResponse('hard')}
-                className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white border-amber-600 hover:border-amber-700"
-              >
-                <X className="h-4 w-4" />
-                Hard
-              </Button>
-              {studyState.reviewMetrics && (
-                <div className="flex flex-col items-center">
-                  <span className="text-xs text-muted-foreground mt-1">
-                    {formatDate(studyState.reviewMetrics.hard)}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {getTimeUntil(studyState.reviewMetrics.hard)}
-                  </span>
-                </div>
-              )}
-            </div>
-            
-            <div className="flex flex-col items-center">
-              <Button 
-                variant="default" 
-                size="lg"
-                onClick={() => handleResponse('good')}
-                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
-              >
-                <Check className="h-4 w-4" />
-                Good
-              </Button>
-              {studyState.reviewMetrics && (
-                <div className="flex flex-col items-center">
-                  <span className="text-xs text-muted-foreground mt-1">
-                    {formatDate(studyState.reviewMetrics.good)}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {getTimeUntil(studyState.reviewMetrics.good)}
-                  </span>
-                </div>
-              )}
-            </div>
-            
-            <div className="flex flex-col items-center">
-              <Button 
-                variant="secondary" 
-                size="lg"
-                onClick={() => handleResponse('easy')}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700"
-              >
-                <Star className="h-4 w-4" />
-                Easy
-              </Button>
-              {studyState.reviewMetrics && (
-                <div className="flex flex-col items-center">
-                  <span className="text-xs text-muted-foreground mt-1">
-                    {formatDate(studyState.reviewMetrics.easy)}
-                  </span>
-                  <span className="text-xs text-muted-foreground">
-                    {getTimeUntil(studyState.reviewMetrics.easy)}
-                  </span>
-                </div>
-              )}
-            </div>
+            {/* This empty div provides additional clickable area below the card */}
+            <div className="w-full max-w-2xl h-16 mt-4"></div>
           </div>
           
-          {/* Card logs section */}
-          {studyState.card && studyState.cardLogs.length > 0 && (
-            <div className="w-full max-w-2xl mt-8">
-              <Button 
-                variant="outline" 
-                onClick={toggleLogs} 
-                className="flex items-center justify-between w-full mb-2"
-              >
-                <span>Review History</span>
-                {studyState.showLogs ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              </Button>
-              
-              {studyState.showLogs && (
-                <div className="border rounded-md overflow-hidden">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="bg-muted">
-                          <th className="px-4 py-2 text-left">Date</th>
-                          <th className="px-4 py-2 text-left">Rating</th>
-                          <th className="px-4 py-2 text-left">Difficulty</th>
-                          <th className="px-4 py-2 text-left">Stability</th>
-                          <th className="px-4 py-2 text-left">Next Due</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {studyState.cardLogs.map((log) => (
-                          <tr key={log.id} className="border-t">
-                            <td className="px-4 py-2">{formatDate(log.review)}</td>
-                            <td className="px-4 py-2">{getRatingText(log.rating)}</td>
-                            <td className="px-4 py-2">{log.difficulty.toFixed(2)}</td>
-                            <td className="px-4 py-2">{log.stability.toFixed(2)}</td>
-                            <td className="px-4 py-2">{log.due ? formatDate(log.due) : 'N/A'}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+          <div className={`w-full mt-auto pt-8 transition-opacity duration-300 ${
+            isFlipped ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}>
+            <div className="grid grid-cols-4 gap-1 sm:gap-2 max-w-2xl w-full mx-auto">
+              <div className="flex flex-col items-center">
+                <Button 
+                  variant="destructive" 
+                  size="lg"
+                  onClick={() => handleResponse('again')}
+                  className="flex items-center gap-1 w-full px-2 sm:px-4"
+                >
+                  <RotateCcw className="h-4 w-4 flex-shrink-0" />
+                  <span className="whitespace-nowrap">Again</span>
+                </Button>
+                {studyState.reviewMetrics && (
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs text-muted-foreground mt-1">
+                      {getTimeUntil(studyState.reviewMetrics.again)}
+                    </span>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
+              
+              <div className="flex flex-col items-center">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  onClick={() => handleResponse('hard')}
+                  className="flex items-center gap-1 w-full px-2 sm:px-4 bg-amber-600 hover:bg-amber-700 text-white border-amber-600 hover:border-amber-700"
+                >
+                  <X className="h-4 w-4 flex-shrink-0" />
+                  <span className="whitespace-nowrap">Hard</span>
+                </Button>
+                {studyState.reviewMetrics && (
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs text-muted-foreground mt-1">
+                      {getTimeUntil(studyState.reviewMetrics.hard)}
+                    </span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex flex-col items-center">
+                <Button 
+                  variant="default" 
+                  size="lg"
+                  onClick={() => handleResponse('good')}
+                  className="flex items-center gap-1 w-full px-2 sm:px-4 bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
+                >
+                  <Check className="h-4 w-4 flex-shrink-0" />
+                  <span className="whitespace-nowrap">Good</span>
+                </Button>
+                {studyState.reviewMetrics && (
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs text-muted-foreground mt-1">
+                      {getTimeUntil(studyState.reviewMetrics.good)}
+                    </span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex flex-col items-center">
+                <Button 
+                  variant="secondary" 
+                  size="lg"
+                  onClick={() => handleResponse('easy')}
+                  className="flex items-center gap-1 w-full px-2 sm:px-4 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700"
+                >
+                  <Star className="h-4 w-4 flex-shrink-0" />
+                  <span className="whitespace-nowrap">Easy</span>
+                </Button>
+                {studyState.reviewMetrics && (
+                  <div className="flex flex-col items-center">
+                    <span className="text-xs text-muted-foreground mt-1">
+                      {getTimeUntil(studyState.reviewMetrics.easy)}
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
-          )}
+          </div>
         </div>
         
-        {/* Card Edit Modal */}
-        {studyState.card && (
-          <CardEditModal
-            isOpen={isEditModalOpen}
-            onOpenChange={setIsEditModalOpen}
-            card={{
-              id: studyState.card.id,
-              front: studyState.card.front,
-              back: studyState.card.back,
-              status: studyState.card.state.toString(),
-              review_at: studyState.card.due,
-              deckId: studyState.card.deckId,
-              deckName: studyState.deck?.name
-            }}
-            onCardUpdated={handleCardUpdated}
-          />
+        {/* Card logs section */}
+        {studyState.card && studyState.cardLogs.length > 0 && (
+          <div className="w-full max-w-2xl mt-8 mx-auto">
+            <Button 
+              variant="outline" 
+              onClick={toggleLogs} 
+              className="flex items-center justify-between w-full mb-2"
+            >
+              <span>Review History</span>
+              {studyState.showLogs ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+            
+            {studyState.showLogs && (
+              <div className="border rounded-md overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-muted">
+                        <th className="px-4 py-2 text-left">Date</th>
+                        <th className="px-4 py-2 text-left">Rating</th>
+                        <th className="px-4 py-2 text-left">Difficulty</th>
+                        <th className="px-4 py-2 text-left">Stability</th>
+                        <th className="px-4 py-2 text-left">Next Due</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {studyState.cardLogs.map((log) => (
+                        <tr key={log.id} className="border-t">
+                          <td className="px-4 py-2">{formatDate(log.createdAt)}</td>
+                          <td className="px-4 py-2">{getRatingText(log.rating)}</td>
+                          <td className="px-4 py-2">{formatNumber(log.difficulty)}</td>
+                          <td className="px-4 py-2">{formatNumber(log.stability)}</td>
+                          <td className="px-4 py-2">{formatDate(log.due || '')}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </main>
+      
+      {/* Card edit modal */}
+      <CardEditModal
+        isOpen={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        card={studyState.card ? {
+          id: studyState.card.id,
+          front: studyState.card.front,
+          back: studyState.card.back,
+          status: studyState.card.state.toString(),
+          review_at: studyState.card.due,
+          deckId: studyState.card.deckId,
+          deckName: studyState.deck?.name
+        } : null}
+        onCardUpdated={handleCardUpdated}
+      />
     </div>
   )
 } 

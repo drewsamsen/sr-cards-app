@@ -33,6 +33,7 @@ interface DataTableProps<TData, TValue> {
   showTopPagination?: boolean
   onSearch?: (query: string) => void
   useServerSearch?: boolean
+  hideSearch?: boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -45,7 +46,8 @@ export function DataTable<TData, TValue>({
   onPaginationChange,
   showTopPagination = true,
   onSearch,
-  useServerSearch = false
+  useServerSearch = false,
+  hideSearch = false
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState("")
@@ -117,17 +119,19 @@ export function DataTable<TData, TValue>({
   return (
     <div className="space-y-2 sm:space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-        <div className="w-full sm:max-w-xs">
-          <form onSubmit={handleSearchSubmit}>
-            <Input
-              placeholder={searchPlaceholder}
-              value={searchInputValue}
-              onChange={handleSearchChange}
-              onKeyDown={handleKeyDown}
-              className="max-w-full"
-            />
-          </form>
-        </div>
+        {!hideSearch && (
+          <div className="w-full sm:max-w-xs">
+            <form onSubmit={handleSearchSubmit}>
+              <Input
+                placeholder={searchPlaceholder}
+                value={searchInputValue}
+                onChange={handleSearchChange}
+                onKeyDown={handleKeyDown}
+                className="max-w-full"
+              />
+            </form>
+          </div>
+        )}
         {actionButton && (
           <div className="flex justify-end">{actionButton}</div>
         )}
