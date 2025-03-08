@@ -263,8 +263,8 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
-        <div className="mb-6">
+      <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 md:py-10">
+        <div className="mb-4 sm:mb-6">
           <nav className="flex items-center text-sm">
             <Link 
               href="/decks" 
@@ -279,9 +279,9 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
           </nav>
         </div>
         
-        <div className="mt-6">
+        <div className="mt-4 sm:mt-6">
           {deckError && (
-            <Alert variant="destructive" className="mb-6">
+            <Alert variant="destructive" className="mb-4 sm:mb-6">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 {deckError}
@@ -290,7 +290,7 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
           )}
           
           {formError && (
-            <Alert variant="destructive" className="mb-6">
+            <Alert variant="destructive" className="mb-4 sm:mb-6">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 {formError}
@@ -299,20 +299,20 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
           )}
           
           {formSuccess && (
-            <Alert className="mb-6 bg-green-50 text-green-800 border-green-200">
+            <Alert className="mb-4 sm:mb-6 bg-green-50 text-green-800 border-green-200">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>Deck updated successfully!</AlertDescription>
             </Alert>
           )}
           
           {deleteSuccess && (
-            <Alert className="mb-6 bg-green-50 text-green-800 border-green-200">
+            <Alert className="mb-4 sm:mb-6 bg-green-50 text-green-800 border-green-200">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>Card deleted successfully!</AlertDescription>
             </Alert>
           )}
           
-          <Card className="mb-6">
+          <Card className="mb-4 sm:mb-6">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle>
                 {isEditing ? "Edit Deck" : (isLoadingDeck ? "Loading..." : deck?.name || "Deck not found")}
@@ -415,7 +415,7 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
           </Card>
           
           {cardsError && (
-            <Alert variant="destructive" className="mb-6">
+            <Alert variant="destructive" className="mb-4 sm:mb-6">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 {cardsError}
@@ -424,7 +424,7 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
           )}
           
           <Card>
-            <CardContent className="pt-3 px-6 pb-6">
+            <CardContent className="pt-2 sm:pt-3 px-2 sm:px-6 pb-4 sm:pb-6">
               <DataTable 
                 columns={deckCardColumns} 
                 data={cardsWithHandlers} 
@@ -449,22 +449,20 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
                       variant="default" 
                       size="sm" 
                       className="flex items-center gap-1"
-                      disabled={isLoadingCards || cards.length === 0}
-                      asChild
+                      onClick={() => setIsCardAddModalOpen(true)}
                     >
-                      <Link href={`/deck/${params.slug}/study`}>
-                        <BookOpen className="h-4 w-4" />
-                        Study Now
-                      </Link>
+                      <Plus className="h-4 w-4" />
+                      Add Card
                     </Button>
                     <Button 
                       variant="outline" 
                       size="sm" 
                       className="flex items-center gap-1"
-                      onClick={() => setIsCardAddModalOpen(true)}
+                      disabled={isLoadingCards || cards.length === 0}
+                      onClick={() => router.push(`/deck/${params.slug}/study`)}
                     >
-                      <Plus className="h-4 w-4" />
-                      Add Card
+                      <BookOpen className="h-4 w-4" />
+                      Study
                     </Button>
                   </div>
                 }
