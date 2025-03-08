@@ -32,6 +32,7 @@ interface UseDeckCardsReturn {
   error: string | null;
   pagination: Pagination;
   fetchCards: (limit?: number, offset?: number) => Promise<void>;
+  searchCards: (query: string, limit?: number, offset?: number) => Promise<void>;
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
 }
@@ -46,6 +47,7 @@ export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
     offset: 0,
     hasMore: false
   });
+  const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const { token, isInitialized } = useAuth();
 
   // Transform API card response to our UI format
@@ -80,7 +82,19 @@ export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
     const pageOffset = offset !== undefined ? offset : pagination.offset;
 
     try {
-      const response = await cardService.getCardsByDeckId(deckId, pageLimit, pageOffset);
+      // If there's a search query, use the search endpoint
+      let response;
+      if (searchQuery) {
+        response = await cardService.searchCards({
+          q: searchQuery,
+          deckId,
+          limit: pageLimit,
+          offset: pageOffset
+        });
+      } else {
+        response = await cardService.getCardsByDeckId(deckId, pageLimit, pageOffset);
+      }
+      
       const transformedCards = transformCards(response.data.data.cards);
       setCards(transformedCards);
       
@@ -101,7 +115,20 @@ export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [deckId, token, isInitialized, pagination.limit, pagination.offset]);
+  }, [deckId, token, isInitialized, pagination.limit, pagination.offset, searchQuery]);
+
+  // Search cards function
+  const searchCards = useCallback(async (query: string, limit?: number, offset?: number) => {
+    if (!query.trim()) {
+      // If query is empty, clear search and fetch regular cards
+      setSearchQuery(null);
+      fetchCards(limit, offset);
+      return;
+    }
+
+    setSearchQuery(query);
+    fetchCards(limit, offset);
+  }, [fetchCards]);
 
   // Helper function to change page
   const setPage = useCallback((page: number) => {
@@ -129,6 +156,7 @@ export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
     error,
     pagination,
     fetchCards,
+    searchCards,
     setPage,
     setPageSize
   };

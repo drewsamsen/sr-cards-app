@@ -21,7 +21,8 @@ export default function CardsPage() {
     error: cardsError,
     pagination,
     setPage,
-    setPageSize
+    setPageSize,
+    searchCards
   } = useCards()
 
   // Calculate pagination values for the DataTable
@@ -39,6 +40,11 @@ export default function CardsPage() {
 
   const handlePageSizeChange = (size: number) => {
     setPageSize(size);
+  }
+
+  // Search handler
+  const handleSearch = (query: string) => {
+    searchCards(query);
   }
 
   // Redirect to login page if not logged in
@@ -87,13 +93,15 @@ export default function CardsPage() {
               <DataTable 
                 columns={deckCardColumns} 
                 data={cards} 
-                searchPlaceholder="Search cards..." 
+                searchPlaceholder="Search across all cards..." 
                 emptyMessage={isLoadingCards ? "Loading cards..." : "No flashcards found."}
                 pagination={tablePagination}
                 onPaginationChange={{
                   onPageChange: handlePageChange,
                   onPageSizeChange: handlePageSizeChange
                 }}
+                onSearch={handleSearch}
+                useServerSearch={true}
               />
             </CardContent>
           </Card>

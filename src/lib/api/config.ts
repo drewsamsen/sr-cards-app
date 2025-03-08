@@ -39,6 +39,7 @@ export const API_ENDPOINTS = {
     getByDeckId: (deckId: string) => `${API_BASE_URL}/decks/${deckId}/cards`,
     review: (id: string) => `${API_BASE_URL}/cards/${id}/review`,
     logs: (id: string) => `${API_BASE_URL}/cards/${id}/logs`,
+    search: `${API_BASE_URL}/cards/search`,
   },
   // Import endpoints
   imports: {

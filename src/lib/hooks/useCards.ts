@@ -27,6 +27,7 @@ interface UseCardsReturn {
   error: string | null;
   pagination: Pagination;
   fetchCards: (limit?: number, offset?: number) => Promise<void>;
+  searchCards: (query: string, limit?: number, offset?: number) => Promise<void>;
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
 }
@@ -41,6 +42,7 @@ export function useCards(): UseCardsReturn {
     offset: 0,
     hasMore: false
   });
+  const [searchQuery, setSearchQuery] = useState<string | null>(null);
   const { user, isInitialized } = useAuth();
 
   const transformCards = (apiCards: CardResponse[]): Card[] => {
@@ -70,7 +72,17 @@ export function useCards(): UseCardsReturn {
     const pageOffset = offset !== undefined ? offset : pagination.offset;
 
     try {
-      const response = await cardService.getAllCards(pageLimit, pageOffset);
+      // If there's a search query, use the search endpoint
+      let response;
+      if (searchQuery) {
+        response = await cardService.searchCards({
+          q: searchQuery,
+          limit: pageLimit,
+          offset: pageOffset
+        });
+      } else {
+        response = await cardService.getAllCards(pageLimit, pageOffset);
+      }
       
       if (response.data) {
         const transformedCards = transformCards(response.data.data.cards);
@@ -95,7 +107,20 @@ export function useCards(): UseCardsReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [user, isInitialized, pagination.limit, pagination.offset]);
+  }, [user, isInitialized, pagination.limit, pagination.offset, searchQuery]);
+
+  // Search cards function
+  const searchCards = useCallback(async (query: string, limit?: number, offset?: number) => {
+    if (!query.trim()) {
+      // If query is empty, clear search and fetch regular cards
+      setSearchQuery(null);
+      fetchCards(limit, offset);
+      return;
+    }
+
+    setSearchQuery(query);
+    fetchCards(limit, offset);
+  }, [fetchCards]);
 
   // Helper function to change page
   const setPage = useCallback((page: number) => {
@@ -120,6 +145,7 @@ export function useCards(): UseCardsReturn {
     error, 
     pagination, 
     fetchCards, 
+    searchCards,
     setPage, 
     setPageSize 
   };

@@ -82,6 +82,13 @@ export interface CardApiResponse {
   };
 }
 
+export interface SearchCardsParams {
+  q: string;
+  deckId?: string;
+  limit?: number;
+  offset?: number;
+}
+
 /**
  * Card service for handling card-related API calls
  */
@@ -158,6 +165,14 @@ export class CardService {
    */
   async deleteCard(cardId: string): Promise<ApiResponse<{ status: string, data: null }>> {
     return apiClient.delete(API_ENDPOINTS.cards.delete(cardId));
+  }
+
+  /**
+   * Search for cards by content (front or back text)
+   * @param params Search parameters including query, optional deckId, limit, and offset
+   */
+  async searchCards(params: SearchCardsParams): Promise<ApiResponse<CardsApiResponse>> {
+    return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.search, params);
   }
 }
 

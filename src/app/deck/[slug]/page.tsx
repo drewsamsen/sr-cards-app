@@ -83,6 +83,7 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
     isLoading: isLoadingCards, 
     error: cardsError,
     fetchCards,
+    searchCards,
     pagination,
     setPage,
     setPageSize
@@ -103,6 +104,11 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
 
   const handlePageSizeChange = (size: number) => {
     setPageSize(size);
+  }
+
+  // Search handler
+  const handleSearch = (query: string) => {
+    searchCards(query);
   }
 
   // Initialize form with deck data when it loads
@@ -435,6 +441,8 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
                   onPageChange: handlePageChange,
                   onPageSizeChange: handlePageSizeChange
                 }}
+                onSearch={handleSearch}
+                useServerSearch={true}
                 actionButton={
                   <div className="flex gap-2">
                     <Button 

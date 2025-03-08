@@ -31,6 +31,8 @@ interface DataTableProps<TData, TValue> {
     onPageSizeChange: (size: number) => void
   }
   showTopPagination?: boolean
+  onSearch?: (query: string) => void
+  useServerSearch?: boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -41,10 +43,30 @@ export function DataTable<TData, TValue>({
   actionButton,
   pagination,
   onPaginationChange,
-  showTopPagination = true
+  showTopPagination = true,
+  onSearch,
+  useServerSearch = false
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState("")
+  const [searchDebounce, setSearchDebounce] = useState<NodeJS.Timeout | null>(null)
+
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setGlobalFilter(value)
+    
+    // If using server-side search, debounce the search
+    if (useServerSearch && onSearch) {
+      if (searchDebounce) clearTimeout(searchDebounce)
+      
+      const debounceTimeout = setTimeout(() => {
+        onSearch(value)
+      }, 300) // 300ms debounce
+      
+      setSearchDebounce(debounceTimeout)
+    }
+  }
 
   const table = useReactTable({
     data,
@@ -54,9 +76,10 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     state: {
       sorting,
-      globalFilter,
+      globalFilter: useServerSearch ? undefined : globalFilter,
     },
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: useServerSearch ? undefined : setGlobalFilter,
+    enableGlobalFilter: !useServerSearch,
   })
 
   // Render pagination controls
@@ -82,7 +105,7 @@ export function DataTable<TData, TValue>({
         <Input
           placeholder={searchPlaceholder}
           value={globalFilter}
-          onChange={(e) => setGlobalFilter(e.target.value)}
+          onChange={handleSearchChange}
           className="max-w-sm"
         />
         {actionButton}
