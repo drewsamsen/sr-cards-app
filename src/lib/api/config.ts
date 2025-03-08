@@ -40,6 +40,11 @@ export const API_ENDPOINTS = {
     review: (id: string) => `${API_BASE_URL}/cards/${id}/review`,
     logs: (id: string) => `${API_BASE_URL}/cards/${id}/logs`,
   },
+  // Import endpoints
+  imports: {
+    preview: `${API_BASE_URL}/imports/preview`,
+    execute: `${API_BASE_URL}/imports/execute`,
+  },
 };
 
 // Request timeout in milliseconds

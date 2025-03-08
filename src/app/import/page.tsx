@@ -17,16 +17,33 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select"
+import { ImportPreviewModal } from "@/components/import-preview-modal"
+import { 
+  importService, 
+  ImportPreview, 
+  ImportRowPreview 
+} from "@/lib/api/services/import.service"
 
 export default function ImportPage() {
   const router = useRouter()
   const { user, isInitialized } = useAuth()
   const { decks, isLoading: isLoadingDecks } = useDecks()
+  
+  // Form state
   const [csvContent, setCsvContent] = useState<string>("")
   const [selectedDeckId, setSelectedDeckId] = useState<string>("")
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
-  const [success, setSuccess] = useState<boolean>(false)
+  
+  // Preview state
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState<boolean>(false)
+  const [importPreview, setImportPreview] = useState<ImportPreview | null>(null)
+  const [previewRows, setPreviewRows] = useState<ImportRowPreview[]>([])
+  
+  // Execute state
+  const [isExecuting, setIsExecuting] = useState<boolean>(false)
+  const [executeError, setExecuteError] = useState<string | null>(null)
+  const [importSuccess, setImportSuccess] = useState<boolean>(false)
 
   // Redirect to login page if not logged in
   useEffect(() => {
@@ -42,30 +59,74 @@ export default function ImportPage() {
     }
   }, [decks, selectedDeckId])
 
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
+  // Handle form submission to create preview
+  const handleCreatePreview = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
-    setSuccess(false)
     setIsSubmitting(true)
+    setImportSuccess(false)
 
     try {
-      // This is a placeholder for the actual import logic
-      // In a real implementation, you would call an API endpoint to process the import
-      console.log("Importing data to deck:", selectedDeckId)
-      console.log("CSV content:", csvContent)
+      // Call the API to create an import preview
+      const response = await importService.createImportPreview({
+        deckId: selectedDeckId,
+        csvData: csvContent
+      })
       
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setSuccess(true)
-      setCsvContent("")
+      if (response.data.status === "success") {
+        // Store the preview data
+        setImportPreview(response.data.data.import)
+        setPreviewRows(response.data.data.preview)
+        
+        // Open the preview modal
+        setIsPreviewModalOpen(true)
+      } else {
+        setError("Failed to create import preview")
+      }
     } catch (err) {
-      setError("An error occurred during import. Please try again.")
+      setError("An error occurred while creating the import preview")
       console.error(err)
     } finally {
       setIsSubmitting(false)
     }
+  }
+
+  // Handle executing the import
+  const handleExecuteImport = async () => {
+    if (!importPreview) return
+    
+    setExecuteError(null)
+    setIsExecuting(true)
+    
+    try {
+      // Call the API to execute the import
+      const response = await importService.executeImport({
+        importId: importPreview.id
+      })
+      
+      if (response.data.status === "success") {
+        // Close the modal and show success message
+        setIsPreviewModalOpen(false)
+        setImportSuccess(true)
+        
+        // Reset the form
+        setCsvContent("")
+        setImportPreview(null)
+        setPreviewRows([])
+      } else {
+        setExecuteError("Failed to execute import")
+      }
+    } catch (err) {
+      setExecuteError("An error occurred while executing the import")
+      console.error(err)
+    } finally {
+      setIsExecuting(false)
+    }
+  }
+
+  // Handle canceling the import
+  const handleCancelImport = () => {
+    setIsPreviewModalOpen(false)
   }
 
   // If not logged in or still initializing, show loading state
@@ -93,10 +154,10 @@ export default function ImportPage() {
             </Alert>
           )}
           
-          {success && (
+          {importSuccess && (
             <Alert className="mb-6 bg-green-50 text-green-800 border-green-200">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>Import successful!</AlertDescription>
+              <AlertDescription>Import successfully executed!</AlertDescription>
             </Alert>
           )}
           
@@ -105,7 +166,7 @@ export default function ImportPage() {
               <CardTitle>Import Options</CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleCreatePreview} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="deck-select">Select Deck</Label>
                   <Select 
@@ -160,7 +221,7 @@ What is NextJS?,A React framework for production"
                     }
                   >
                     <Upload className="h-4 w-4" />
-                    {isSubmitting ? "Importing..." : "Import Cards"}
+                    {isSubmitting ? "Validating..." : "Validate & Preview"}
                   </Button>
                 </div>
               </form>
@@ -171,7 +232,8 @@ What is NextJS?,A React framework for production"
                   <li>Use comma-separated values with headers: front,back</li>
                   <li>Each line after the header represents one flashcard</li>
                   <li>All cards will be imported into the selected deck</li>
-                  <li>Duplicate cards (same front and back) will be skipped</li>
+                  <li>The import process has two steps: validation and execution</li>
+                  <li>You'll see a preview of the import before confirming</li>
                 </ul>
                 
                 <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
@@ -183,6 +245,18 @@ What is NextJS?,A React framework for production"
           </Card>
         </div>
       </main>
+      
+      {/* Import Preview Modal */}
+      <ImportPreviewModal
+        isOpen={isPreviewModalOpen}
+        onOpenChange={setIsPreviewModalOpen}
+        importPreview={importPreview}
+        previewRows={previewRows}
+        onExecuteImport={handleExecuteImport}
+        onCancel={handleCancelImport}
+        isExecuting={isExecuting}
+        executeError={executeError}
+      />
     </div>
   )
 } 
