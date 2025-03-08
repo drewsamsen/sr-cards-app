@@ -58,10 +58,10 @@ export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
       back: card.back,
       status: card.status,
       review_at: card.reviewAt,
-      state: (card as any).state,
-      difficulty: (card as any).difficulty,
-      stability: (card as any).stability,
-      due: (card as any).due,
+      state: card.state,
+      difficulty: card.difficulty,
+      stability: card.stability,
+      due: card.due,
       // We could generate a slug from the front text if needed
       // slug: card.front.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
     }));

@@ -11,6 +11,10 @@ export interface Card {
   review_at: string | null;
   deckId: string;
   deckName?: string;
+  state?: number;
+  difficulty?: number;
+  stability?: number;
+  due?: string | null;
 }
 
 // Define pagination interface
@@ -30,6 +34,7 @@ interface UseCardsReturn {
   searchCards: (query: string, limit?: number, offset?: number) => Promise<void>;
   setPage: (page: number) => void;
   setPageSize: (size: number) => void;
+  refreshCards: () => Promise<void>;
 }
 
 export function useCards(): UseCardsReturn {
@@ -53,7 +58,11 @@ export function useCards(): UseCardsReturn {
       status: card.status,
       review_at: card.reviewAt,
       deckId: card.deckId,
-      deckName: card.deckName || `Deck ${card.deckId.substring(0, 8)}`
+      deckName: card.deckName || `Deck ${card.deckId.substring(0, 8)}`,
+      state: card.state,
+      difficulty: card.difficulty,
+      stability: card.stability,
+      due: card.due
     }));
   };
 
@@ -135,6 +144,11 @@ export function useCards(): UseCardsReturn {
     fetchCards(size, 0);
   }, [fetchCards]);
 
+  // Helper function to refresh cards with current pagination and search settings
+  const refreshCards = useCallback(async () => {
+    await fetchCards(pagination.limit, pagination.offset);
+  }, [fetchCards, pagination.limit, pagination.offset]);
+
   useEffect(() => {
     fetchCards();
   }, [fetchCards]);
@@ -147,6 +161,7 @@ export function useCards(): UseCardsReturn {
     fetchCards, 
     searchCards,
     setPage, 
-    setPageSize 
+    setPageSize,
+    refreshCards
   };
 } 

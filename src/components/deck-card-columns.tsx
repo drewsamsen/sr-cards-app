@@ -94,30 +94,18 @@ export const deckCardColumns: ColumnDef<DeckCard>[] = [
       const state = row.original.state
       
       return (
-        <div className="space-y-0.5">
-          <div className="text-sm">
-            <span className="font-bold">Front: </span>
-            {front}
-          </div>
-          <div className="text-sm">
-            <span className="font-bold">Back: </span>
+        <div className="space-y-1.5">
+          <div className="text-sm font-bold">{front}</div>
+          <div className="text-sm text-muted-foreground">
             {back}
           </div>
-          <div className="mt-1">
+          <div>
             <Badge className={`text-xs ${getStateColor(state)}`}>
               {getStateLabel(state)}
             </Badge>
           </div>
         </div>
       )
-    },
-  },
-  {
-    accessorKey: "due",
-    header: () => <div className="text-center">Due</div>,
-    cell: ({ row }) => {
-      const due = row.getValue("due") as string | null | undefined
-      return <div className="text-center w-20">{formatDate(due || null)}</div>
     },
   },
   {

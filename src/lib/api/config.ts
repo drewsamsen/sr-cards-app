@@ -31,14 +31,16 @@ export const API_ENDPOINTS = {
   },
   // Cards endpoints
   cards: {
-    list: `${API_BASE_URL}/cards`,
+    list: `${API_BASE_URL}/cards`, // Main endpoint for all cards operations
     create: `${API_BASE_URL}/cards/create`,
     createForDeck: (deckId: string) => `${API_BASE_URL}/decks/${deckId}/cards`,
     update: (id: string) => `${API_BASE_URL}/cards/${id}`,
     delete: (id: string) => `${API_BASE_URL}/cards/${id}`,
+    // Deprecated: getByDeckId is now handled by the list endpoint with a deckId parameter
     getByDeckId: (deckId: string) => `${API_BASE_URL}/decks/${deckId}/cards`,
     review: (id: string) => `${API_BASE_URL}/cards/${id}/review`,
     logs: (id: string) => `${API_BASE_URL}/cards/${id}/logs`,
+    // Deprecated: search is now handled by the list endpoint with a q parameter
     search: `${API_BASE_URL}/cards/search`,
   },
   // Import endpoints

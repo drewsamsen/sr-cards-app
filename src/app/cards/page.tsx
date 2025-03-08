@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { DataTable } from "@/components/data-table"
 import { deckCardColumns } from "@/components/deck-card-columns"
@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import Link from "next/link"
+import { CardAddWithDeckModal } from "@/components/card-add-with-deck-modal"
 
 export default function CardsPage() {
   const router = useRouter()
@@ -22,8 +22,12 @@ export default function CardsPage() {
     pagination,
     setPage,
     setPageSize,
-    searchCards
+    searchCards,
+    refreshCards
   } = useCards()
+  
+  // State for the add card modal
+  const [isAddCardModalOpen, setIsAddCardModalOpen] = useState(false)
 
   // Calculate pagination values for the DataTable
   const tablePagination = {
@@ -45,6 +49,11 @@ export default function CardsPage() {
   // Search handler
   const handleSearch = (query: string) => {
     searchCards(query);
+  }
+  
+  // Handle card added
+  const handleCardAdded = () => {
+    refreshCards()
   }
 
   // Redirect to login page if not logged in
@@ -84,7 +93,11 @@ export default function CardsPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>All Cards</CardTitle>
-              <Button size="sm" className="flex items-center gap-1">
+              <Button 
+                size="sm" 
+                className="flex items-center gap-1"
+                onClick={() => setIsAddCardModalOpen(true)}
+              >
                 <Plus className="h-4 w-4" />
                 Create new card
               </Button>
@@ -107,6 +120,13 @@ export default function CardsPage() {
           </Card>
         </div>
       </main>
+      
+      {/* Add Card Modal */}
+      <CardAddWithDeckModal
+        isOpen={isAddCardModalOpen}
+        onOpenChange={setIsAddCardModalOpen}
+        onCardAdded={handleCardAdded}
+      />
     </div>
   )
 } 

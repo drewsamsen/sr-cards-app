@@ -15,6 +15,16 @@ export interface CardResponse {
   updatedAt: string;
   deckName?: string;
   deckSlug?: string;
+  // Additional properties from the new API
+  state?: number;
+  due?: string | null;
+  stability?: number;
+  difficulty?: number;
+  elapsedDays?: number;
+  scheduledDays?: number;
+  reps?: number;
+  lapses?: number;
+  lastReview?: string | null;
 }
 
 export interface CardsApiResponse {
@@ -27,6 +37,7 @@ export interface CardsApiResponse {
       offset: number;
       hasMore: boolean;
     };
+    deckId?: string; // Only present when filtering by deck
   };
 }
 
@@ -104,9 +115,10 @@ export class CardService {
     limit: number = 20, 
     offset: number = 0
   ): Promise<ApiResponse<CardsApiResponse>> {
+    // Use the new API endpoint with deckId as a query parameter
     return apiClient.get<CardsApiResponse>(
-      API_ENDPOINTS.cards.getByDeckId(deckId),
-      { limit, offset }
+      API_ENDPOINTS.cards.list,
+      { deckId, limit, offset }
     );
   }
 
@@ -121,7 +133,10 @@ export class CardService {
   ): Promise<ApiResponse<CardsApiResponse>> {
     return apiClient.get<CardsApiResponse>(
       API_ENDPOINTS.cards.list,
-      { limit, offset }
+      { 
+        limit, 
+        offset
+      }
     );
   }
 
@@ -172,7 +187,8 @@ export class CardService {
    * @param params Search parameters including query, optional deckId, limit, and offset
    */
   async searchCards(params: SearchCardsParams): Promise<ApiResponse<CardsApiResponse>> {
-    return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.search, params);
+    // Use the main cards endpoint with search parameters
+    return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.list, params);
   }
 }
 
