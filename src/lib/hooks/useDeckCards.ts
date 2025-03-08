@@ -18,17 +18,34 @@ export interface DeckCard {
   slug?: string;
 }
 
+// Define pagination interface
+export interface Pagination {
+  total: number;
+  limit: number;
+  offset: number;
+  hasMore: boolean;
+}
+
 interface UseDeckCardsReturn {
   cards: DeckCard[];
   isLoading: boolean;
   error: string | null;
-  fetchCards: () => Promise<void>;
+  pagination: Pagination;
+  fetchCards: (limit?: number, offset?: number) => Promise<void>;
+  setPage: (page: number) => void;
+  setPageSize: (size: number) => void;
 }
 
 export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
   const [cards, setCards] = useState<DeckCard[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [pagination, setPagination] = useState<Pagination>({
+    total: 0,
+    limit: 20,
+    offset: 0,
+    hasMore: false
+  });
   const { token, isInitialized } = useAuth();
 
   // Transform API card response to our UI format
@@ -48,7 +65,7 @@ export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
     }));
   };
 
-  const fetchCards = useCallback(async () => {
+  const fetchCards = useCallback(async (limit?: number, offset?: number) => {
     if (!token || !deckId) {
       setCards([]);
       setIsLoading(false);
@@ -58,10 +75,19 @@ export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
     setIsLoading(true);
     setError(null);
 
+    // Use provided values or current pagination state
+    const pageLimit = limit !== undefined ? limit : pagination.limit;
+    const pageOffset = offset !== undefined ? offset : pagination.offset;
+
     try {
-      const response = await cardService.getCardsByDeckId(deckId);
+      const response = await cardService.getCardsByDeckId(deckId, pageLimit, pageOffset);
       const transformedCards = transformCards(response.data.data.cards);
       setCards(transformedCards);
+      
+      // Update pagination information if available
+      if (response.data.data.pagination) {
+        setPagination(response.data.data.pagination);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An error occurred while fetching cards';
       
@@ -75,7 +101,20 @@ export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [deckId, token, isInitialized]);
+  }, [deckId, token, isInitialized, pagination.limit, pagination.offset]);
+
+  // Helper function to change page
+  const setPage = useCallback((page: number) => {
+    const newOffset = (page - 1) * pagination.limit;
+    setPagination(prev => ({ ...prev, offset: newOffset }));
+    fetchCards(pagination.limit, newOffset);
+  }, [pagination.limit, fetchCards]);
+
+  // Helper function to change page size
+  const setPageSize = useCallback((size: number) => {
+    setPagination(prev => ({ ...prev, limit: size, offset: 0 }));
+    fetchCards(size, 0);
+  }, [fetchCards]);
 
   // Fetch cards when the component mounts, auth is initialized, and deckId changes
   useEffect(() => {
@@ -88,6 +127,9 @@ export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
     cards,
     isLoading,
     error,
+    pagination,
     fetchCards,
+    setPage,
+    setPageSize
   };
 } 

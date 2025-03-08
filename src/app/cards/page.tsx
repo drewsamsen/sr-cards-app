@@ -15,7 +15,31 @@ import Link from "next/link"
 export default function CardsPage() {
   const router = useRouter()
   const { user, isInitialized } = useAuth()
-  const { cards, isLoading: isLoadingCards, error: cardsError } = useCards()
+  const { 
+    cards, 
+    isLoading: isLoadingCards, 
+    error: cardsError,
+    pagination,
+    setPage,
+    setPageSize
+  } = useCards()
+
+  // Calculate pagination values for the DataTable
+  const tablePagination = {
+    pageIndex: Math.floor(pagination.offset / pagination.limit),
+    pageSize: pagination.limit,
+    pageCount: Math.ceil(pagination.total / pagination.limit),
+    totalItems: pagination.total
+  }
+
+  // Pagination change handlers
+  const handlePageChange = (page: number) => {
+    setPage(page);
+  }
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+  }
 
   // Redirect to login page if not logged in
   useEffect(() => {
@@ -65,6 +89,11 @@ export default function CardsPage() {
                 data={cards} 
                 searchPlaceholder="Search cards..." 
                 emptyMessage={isLoadingCards ? "Loading cards..." : "No flashcards found."}
+                pagination={tablePagination}
+                onPaginationChange={{
+                  onPageChange: handlePageChange,
+                  onPageSizeChange: handlePageSizeChange
+                }}
               />
             </CardContent>
           </Card>

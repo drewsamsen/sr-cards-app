@@ -21,6 +21,12 @@ export interface CardsApiResponse {
   status: string;
   data: {
     cards: CardResponse[];
+    pagination?: {
+      total: number;
+      limit: number;
+      offset: number;
+      hasMore: boolean;
+    };
   };
 }
 
@@ -82,16 +88,34 @@ export interface CardApiResponse {
 export class CardService {
   /**
    * Get all cards for a specific deck
+   * @param deckId The ID of the deck
+   * @param limit Maximum number of cards to return (default: 20, max: 100)
+   * @param offset Number of cards to skip (default: 0)
    */
-  async getCardsByDeckId(deckId: string): Promise<ApiResponse<CardsApiResponse>> {
-    return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.getByDeckId(deckId));
+  async getCardsByDeckId(
+    deckId: string, 
+    limit: number = 20, 
+    offset: number = 0
+  ): Promise<ApiResponse<CardsApiResponse>> {
+    return apiClient.get<CardsApiResponse>(
+      API_ENDPOINTS.cards.getByDeckId(deckId),
+      { limit, offset }
+    );
   }
 
   /**
    * Get all cards for the current user
+   * @param limit Maximum number of cards to return (default: 20, max: 100)
+   * @param offset Number of cards to skip (default: 0)
    */
-  async getAllCards(): Promise<ApiResponse<CardsApiResponse>> {
-    return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.list);
+  async getAllCards(
+    limit: number = 20, 
+    offset: number = 0
+  ): Promise<ApiResponse<CardsApiResponse>> {
+    return apiClient.get<CardsApiResponse>(
+      API_ENDPOINTS.cards.list,
+      { limit, offset }
+    );
   }
 
   /**

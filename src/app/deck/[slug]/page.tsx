@@ -82,8 +82,28 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
     cards, 
     isLoading: isLoadingCards, 
     error: cardsError,
-    fetchCards
+    fetchCards,
+    pagination,
+    setPage,
+    setPageSize
   } = useDeckCards(deck?.id)
+
+  // Calculate pagination values for the DataTable
+  const tablePagination = {
+    pageIndex: Math.floor(pagination.offset / pagination.limit),
+    pageSize: pagination.limit,
+    pageCount: Math.ceil(pagination.total / pagination.limit),
+    totalItems: pagination.total
+  }
+
+  // Pagination change handlers
+  const handlePageChange = (page: number) => {
+    setPage(page);
+  }
+
+  const handlePageSizeChange = (size: number) => {
+    setPageSize(size);
+  }
 
   // Initialize form with deck data when it loads
   useEffect(() => {
@@ -404,12 +424,17 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
                 data={cardsWithHandlers} 
                 searchPlaceholder="Search cards..." 
                 emptyMessage={
-                  isLoadingDeck 
-                    ? "Loading deck..." 
-                    : isLoadingCards 
-                      ? "Loading cards..." 
-                      : "No flashcards found in this deck."
+                  isLoadingCards 
+                    ? "Loading cards..." 
+                    : cardsError 
+                      ? "Error loading cards" 
+                      : "No cards found in this deck."
                 }
+                pagination={tablePagination}
+                onPaginationChange={{
+                  onPageChange: handlePageChange,
+                  onPageSizeChange: handlePageSizeChange
+                }}
                 actionButton={
                   <div className="flex gap-2">
                     <Button 
@@ -431,7 +456,7 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
                       onClick={() => setIsCardAddModalOpen(true)}
                     >
                       <Plus className="h-4 w-4" />
-                      Add new card
+                      Add Card
                     </Button>
                   </div>
                 }

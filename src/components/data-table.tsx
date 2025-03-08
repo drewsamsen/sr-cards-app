@@ -12,6 +12,7 @@ import {
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
+import { Pagination } from "@/components/ui/pagination"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -19,6 +20,17 @@ interface DataTableProps<TData, TValue> {
   searchPlaceholder?: string
   emptyMessage?: string
   actionButton?: React.ReactNode
+  pagination?: {
+    pageIndex: number
+    pageSize: number
+    pageCount: number
+    totalItems: number
+  }
+  onPaginationChange?: {
+    onPageChange: (page: number) => void
+    onPageSizeChange: (size: number) => void
+  }
+  showTopPagination?: boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -26,7 +38,10 @@ export function DataTable<TData, TValue>({
   data,
   searchPlaceholder = "Search...",
   emptyMessage = "No results found.",
-  actionButton
+  actionButton,
+  pagination,
+  onPaginationChange,
+  showTopPagination = true
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState("")
@@ -44,6 +59,23 @@ export function DataTable<TData, TValue>({
     onGlobalFilterChange: setGlobalFilter,
   })
 
+  // Render pagination controls
+  const renderPagination = (isCompact: boolean = false) => {
+    if (!pagination || !onPaginationChange) return null;
+    
+    return (
+      <Pagination
+        currentPage={pagination.pageIndex + 1}
+        totalPages={pagination.pageCount}
+        pageSize={pagination.pageSize}
+        totalItems={pagination.totalItems}
+        onPageChange={onPaginationChange.onPageChange}
+        onPageSizeChange={onPaginationChange.onPageSizeChange}
+        compact={isCompact}
+      />
+    );
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between py-2">
@@ -55,6 +87,10 @@ export function DataTable<TData, TValue>({
         />
         {actionButton}
       </div>
+      
+      {/* Top pagination controls */}
+      {showTopPagination && renderPagination(true)}
+      
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -89,6 +125,9 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
+      
+      {/* Bottom pagination controls */}
+      {renderPagination(false)}
     </div>
   )
 }
