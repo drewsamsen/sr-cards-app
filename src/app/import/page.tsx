@@ -18,10 +18,12 @@ import {
   SelectValue 
 } from "@/components/ui/select"
 import { ImportPreviewModal } from "@/components/import-preview-modal"
+import { ImportResultsModal } from "@/components/import-results-modal"
 import { 
   importService, 
   ImportPreview, 
-  ImportRowPreview 
+  ImportRowPreview,
+  ConfirmImportResponse
 } from "@/lib/api/services/import.service"
 
 export default function ImportPage() {
@@ -41,9 +43,18 @@ export default function ImportPage() {
   const [previewRows, setPreviewRows] = useState<ImportRowPreview[]>([])
   
   // Execute state
-  const [isExecuting, setIsExecuting] = useState<boolean>(false)
-  const [executeError, setExecuteError] = useState<string | null>(null)
+  const [isConfirming, setIsConfirming] = useState<boolean>(false)
+  const [confirmError, setConfirmError] = useState<string | null>(null)
   const [importSuccess, setImportSuccess] = useState<boolean>(false)
+  
+  // Cancel state
+  const [isCancelling, setIsCancelling] = useState<boolean>(false)
+  const [cancelError, setCancelError] = useState<string | null>(null)
+  const [cancelSuccess, setCancelSuccess] = useState<boolean>(false)
+  
+  // Results state
+  const [isResultsModalOpen, setIsResultsModalOpen] = useState<boolean>(false)
+  const [importResults, setImportResults] = useState<ConfirmImportResponse['data'] | null>(null)
 
   // Redirect to login page if not logged in
   useEffect(() => {
@@ -91,42 +102,89 @@ export default function ImportPage() {
     }
   }
 
-  // Handle executing the import
-  const handleExecuteImport = async () => {
+  // Handle confirming the import
+  const handleConfirmImport = async () => {
     if (!importPreview) return
     
-    setExecuteError(null)
-    setIsExecuting(true)
+    setConfirmError(null)
+    setIsConfirming(true)
     
     try {
-      // Call the API to execute the import
-      const response = await importService.executeImport({
+      // Call the API to confirm the import
+      const response = await importService.confirmImport({
         importId: importPreview.id
       })
       
       if (response.data.status === "success") {
-        // Close the modal and show success message
+        // Close the preview modal
         setIsPreviewModalOpen(false)
-        setImportSuccess(true)
         
-        // Reset the form
-        setCsvContent("")
+        // Store the results and open the results modal
+        setImportResults(response.data.data)
+        setIsResultsModalOpen(true)
+        
+        // Reset the form if there were no errors
+        if (response.data.data.status === "completed") {
+          setCsvContent("")
+          setImportSuccess(true)
+        }
+        
+        // Reset the preview data
         setImportPreview(null)
         setPreviewRows([])
       } else {
-        setExecuteError("Failed to execute import")
+        setConfirmError("Failed to confirm import")
       }
     } catch (err) {
-      setExecuteError("An error occurred while executing the import")
+      setConfirmError("An error occurred while confirming the import")
       console.error(err)
     } finally {
-      setIsExecuting(false)
+      setIsConfirming(false)
     }
   }
 
   // Handle canceling the import
-  const handleCancelImport = () => {
-    setIsPreviewModalOpen(false)
+  const handleCancelImport = async () => {
+    if (!importPreview) return
+    
+    setCancelError(null)
+    setIsCancelling(true)
+    
+    try {
+      // Call the API to cancel the import
+      const response = await importService.cancelImport({
+        importId: importPreview.id
+      })
+      
+      if (response.data.status === "success") {
+        // Close the preview modal
+        setIsPreviewModalOpen(false)
+        
+        // Show success message
+        setCancelSuccess(true)
+        
+        // Reset the preview data
+        setImportPreview(null)
+        setPreviewRows([])
+        
+        // Show a temporary success message
+        setTimeout(() => {
+          setCancelSuccess(false)
+        }, 5000)
+      } else {
+        setCancelError("Failed to cancel import")
+      }
+    } catch (err) {
+      setCancelError("An error occurred while canceling the import")
+      console.error(err)
+    } finally {
+      setIsCancelling(false)
+    }
+  }
+
+  // Handle closing the results modal
+  const handleCloseResults = () => {
+    setIsResultsModalOpen(false)
   }
 
   // If not logged in or still initializing, show loading state
@@ -158,6 +216,13 @@ export default function ImportPage() {
             <Alert className="mb-6 bg-green-50 text-green-800 border-green-200">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>Import successfully executed!</AlertDescription>
+            </Alert>
+          )}
+          
+          {cancelSuccess && (
+            <Alert className="mb-6 bg-blue-50 text-blue-800 border-blue-200">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>Import cancelled successfully.</AlertDescription>
             </Alert>
           )}
           
@@ -252,10 +317,20 @@ What is NextJS?,A React framework for production"
         onOpenChange={setIsPreviewModalOpen}
         importPreview={importPreview}
         previewRows={previewRows}
-        onExecuteImport={handleExecuteImport}
+        onConfirmImport={handleConfirmImport}
         onCancel={handleCancelImport}
-        isExecuting={isExecuting}
-        executeError={executeError}
+        isConfirming={isConfirming}
+        confirmError={confirmError}
+        isCancelling={isCancelling}
+        cancelError={cancelError}
+      />
+      
+      {/* Import Results Modal */}
+      <ImportResultsModal
+        isOpen={isResultsModalOpen}
+        onOpenChange={setIsResultsModalOpen}
+        importResults={importResults}
+        onClose={handleCloseResults}
       />
     </div>
   )

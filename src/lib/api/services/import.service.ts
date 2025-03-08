@@ -42,23 +42,31 @@ export interface ImportPreviewResponse {
   };
 }
 
-export interface ExecuteImportRequest {
+export interface ConfirmImportRequest {
   importId: string;
 }
 
-export interface ExecuteImportResponse {
+export interface CancelImportRequest {
+  importId: string;
+}
+
+export interface CancelImportResponse {
   status: string;
   data: {
-    import: {
-      id: string;
-      deckId: string;
-      status: 'completed';
-      summary: {
-        totalRows: number;
-        importedRows: number;
-        skippedRows: number;
-      };
-      completedAt: string;
+    message: string;
+  };
+}
+
+export interface ConfirmImportResponse {
+  status: string;
+  data: {
+    importId: string;
+    status: 'completed' | 'failed';
+    summary: {
+      totalRows: number;
+      validRows: number;
+      invalidRows: number;
+      errors?: ImportError[];
     };
   };
 }
@@ -75,10 +83,17 @@ export class ImportService {
   }
 
   /**
-   * Execute an import
+   * Confirm an import
    */
-  async executeImport(data: ExecuteImportRequest): Promise<ApiResponse<ExecuteImportResponse>> {
-    return apiClient.post<ExecuteImportResponse>(API_ENDPOINTS.imports.execute, data);
+  async confirmImport(data: ConfirmImportRequest): Promise<ApiResponse<ConfirmImportResponse>> {
+    return apiClient.post<ConfirmImportResponse>(API_ENDPOINTS.imports.confirm, data);
+  }
+
+  /**
+   * Cancel an import
+   */
+  async cancelImport(data: CancelImportRequest): Promise<ApiResponse<CancelImportResponse>> {
+    return apiClient.post<CancelImportResponse>(API_ENDPOINTS.imports.cancel, data);
   }
 }
 

@@ -30,10 +30,12 @@ interface ImportPreviewModalProps {
   onOpenChange: (open: boolean) => void
   importPreview: ImportPreview | null
   previewRows: ImportRowPreview[]
-  onExecuteImport: () => void
+  onConfirmImport: () => void
   onCancel: () => void
-  isExecuting: boolean
-  executeError: string | null
+  isConfirming: boolean
+  confirmError: string | null
+  isCancelling: boolean
+  cancelError: string | null
 }
 
 export function ImportPreviewModal({
@@ -41,10 +43,12 @@ export function ImportPreviewModal({
   onOpenChange,
   importPreview,
   previewRows,
-  onExecuteImport,
+  onConfirmImport,
   onCancel,
-  isExecuting,
-  executeError
+  isConfirming,
+  confirmError,
+  isCancelling,
+  cancelError
 }: ImportPreviewModalProps) {
   if (!importPreview) return null
 
@@ -58,10 +62,17 @@ export function ImportPreviewModal({
           <DialogTitle>Import Preview</DialogTitle>
         </DialogHeader>
 
-        {executeError && (
+        {confirmError && (
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="h-4 w-4" />
-            <AlertDescription>{executeError}</AlertDescription>
+            <AlertDescription>{confirmError}</AlertDescription>
+          </Alert>
+        )}
+
+        {cancelError && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{cancelError}</AlertDescription>
           </Alert>
         )}
 
@@ -143,17 +154,17 @@ export function ImportPreviewModal({
             type="button"
             variant="outline"
             onClick={onCancel}
-            disabled={isExecuting}
+            disabled={isConfirming || isCancelling}
           >
-            Cancel
+            {isCancelling ? "Cancelling..." : "Cancel"}
           </Button>
           <Button
             type="button"
-            onClick={onExecuteImport}
-            disabled={hasErrors || isExecuting}
+            onClick={onConfirmImport}
+            disabled={hasErrors || isConfirming || isCancelling}
             className="flex items-center gap-2"
           >
-            {isExecuting ? "Processing..." : "Execute Import"}
+            {isConfirming ? "Processing..." : "Confirm Import"}
           </Button>
         </DialogFooter>
       </DialogContent>

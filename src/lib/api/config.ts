@@ -43,7 +43,8 @@ export const API_ENDPOINTS = {
   // Import endpoints
   imports: {
     preview: `${API_BASE_URL}/imports/preview`,
-    execute: `${API_BASE_URL}/imports/execute`,
+    confirm: `${API_BASE_URL}/imports/confirm`,
+    cancel: `${API_BASE_URL}/imports/cancel`,
   },
 };
 
