@@ -6,7 +6,7 @@ import { Header } from "@/components/header"
 import { useAuth } from "@/lib/hooks"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, RotateCcw, Check, X, ChevronDown, ChevronUp, ChevronRight, Edit } from "lucide-react"
+import { ChevronLeft, RotateCcw, Check, X, ChevronDown, ChevronUp, ChevronRight, Edit, Star } from "lucide-react"
 import Link from "next/link"
 import { deckService, CardReviewResponse, ReviewMetrics, DeckResponse, DailyProgress } from "@/lib/api/services/deck.service"
 import { cardService, CardLog } from "@/lib/api/services/card.service"
@@ -462,14 +462,14 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
             </Button>
             <CardContent className="p-6 h-full flex flex-col items-center justify-center">
               {!isFlipped ? (
-                <div className="text-center">
-                  <h3 className="text-xl font-semibold mb-4">Question</h3>
-                  <p className="text-lg">{studyState.card?.front}</p>
+                <div className="text-center w-full max-w-xl">
+                  <h3 className="text-xl font-semibold mb-6 text-muted-foreground">Question</h3>
+                  <p className="text-xl md:text-2xl font-medium leading-relaxed">{studyState.card?.front}</p>
                 </div>
               ) : (
-                <div className="text-center">
-                  <h3 className="text-xl font-semibold mb-4">Answer</h3>
-                  <p className="text-lg">{studyState.card?.back}</p>
+                <div className="text-center w-full max-w-xl">
+                  <h3 className="text-xl font-semibold mb-6 text-muted-foreground">Answer</h3>
+                  <p className="text-xl md:text-2xl font-medium leading-relaxed">{studyState.card?.back}</p>
                 </div>
               )}
             </CardContent>
@@ -505,7 +505,7 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
                 variant="outline" 
                 size="lg"
                 onClick={() => handleResponse('hard')}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white border-amber-600 hover:border-amber-700"
               >
                 <X className="h-4 w-4" />
                 Hard
@@ -527,7 +527,7 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
                 variant="default" 
                 size="lg"
                 onClick={() => handleResponse('good')}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
               >
                 <Check className="h-4 w-4" />
                 Good
@@ -549,9 +549,9 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
                 variant="secondary" 
                 size="lg"
                 onClick={() => handleResponse('easy')}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700"
               >
-                <Check className="h-4 w-4" />
+                <Star className="h-4 w-4" />
                 Easy
               </Button>
               {studyState.reviewMetrics && (

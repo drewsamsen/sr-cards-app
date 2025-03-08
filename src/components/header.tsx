@@ -17,7 +17,6 @@ export function Header() {
     { name: "Decks", href: "/decks" },
     { name: "Cards", href: "/cards" },
     { name: "Import", href: "/import" },
-    { name: "API", href: "/api" },
     { name: "Settings", href: "/settings" },
   ]
 
