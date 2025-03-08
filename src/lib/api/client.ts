@@ -16,12 +16,15 @@ export interface ApiResponse<T = any> {
 export class ApiError extends Error {
   status: number;
   data?: any;
+  code?: string;
 
   constructor(message: string, status: number, data?: any) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.data = data;
+    // Extract error code if available
+    this.code = data?.code || null;
   }
 }
 
@@ -78,7 +81,10 @@ export class ApiClient {
         handleAuthError(message);
       }
       
-      throw new ApiError(message, response.status, data);
+      // Create ApiError with all available error details
+      const apiError = new ApiError(message, response.status, data);
+      
+      throw apiError;
     }
 
     return {

@@ -87,7 +87,24 @@ export function CardAddModal({
         setError("Failed to create card")
       }
     } catch (err) {
-      setError("An error occurred while creating the card")
+      // Handle duplicate card error
+      if (err instanceof Error && 'status' in err && err.status === 409) {
+        // Extract the message from the error data
+        const errorData = (err as any).data
+        let errorMessage = "A similar card already exists in this deck"
+        
+        // If we have more specific error data, use it
+        if (errorData?.message) {
+          // Remove technical prefix if present
+          errorMessage = errorData.message.replace("Duplicate card detected: ", "")
+          // Add a user-friendly prefix
+          errorMessage = `Duplicate Card: ${errorMessage}`
+        }
+        
+        setError(errorMessage)
+      } else {
+        setError("An error occurred while creating the card")
+      }
       console.error(err)
     } finally {
       setIsSubmitting(false)
@@ -105,7 +122,13 @@ export function CardAddModal({
           {error && (
             <Alert variant="destructive" className="mb-6">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>
+                {error.startsWith("Duplicate Card:") ? (
+                  <span className="font-medium">{error}</span>
+                ) : (
+                  error
+                )}
+              </AlertDescription>
             </Alert>
           )}
           
