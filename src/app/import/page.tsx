@@ -290,7 +290,7 @@ export default function ImportPage() {
                   </Select>
                   {decks.length === 0 && !isLoadingDecks && (
                     <p className="text-sm text-destructive">
-                      You don't have any decks. Please create a deck first.
+                      You don&apos;t have any decks. Please create a deck first.
                     </p>
                   )}
                 </div>
@@ -341,7 +341,7 @@ What is NextJS?	A React framework for production"
                   <li>Each line after the header represents one flashcard</li>
                   <li>All cards will be imported into the selected deck</li>
                   <li>The import process has two steps: validation and confirmation</li>
-                  <li>You'll see a preview of the import before confirming</li>
+                  <li>You&apos;ll see a preview of the import before confirming</li>
                 </ul>
                 
                 <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">

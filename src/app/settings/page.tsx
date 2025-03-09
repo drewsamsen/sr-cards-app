@@ -89,7 +89,21 @@ export default function SettingsPage() {
         learningSettings.maxReviewsPerDay = maxReviewsPerDay;
       }
       
-      const updateData: any = {
+      interface UpdateSettingsData {
+        fsrsParams: {
+          requestRetention: number;
+          maximumInterval: number;
+          w: number[];
+          enableFuzz: boolean;
+          enableShortTerm: boolean;
+        };
+        learning?: {
+          newCardsPerDay?: number;
+          maxReviewsPerDay?: number;
+        };
+      }
+      
+      const updateData: UpdateSettingsData = {
         fsrsParams: {
           requestRetention,
           maximumInterval,

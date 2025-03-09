@@ -107,7 +107,14 @@ export function CardAddWithDeckModal({
       // Handle duplicate card error
       if (err instanceof Error && 'status' in err && err.status === 409) {
         // Extract the message from the error data
-        const errorData = (err as any).data
+        interface ErrorWithData extends Error {
+          status: number;
+          data?: {
+            message?: string;
+          };
+        }
+        
+        const errorData = (err as ErrorWithData).data
         let errorMessage = "A similar card already exists in this deck"
         
         // If we have more specific error data, use it

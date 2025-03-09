@@ -2,14 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  eslint: {
-    // Disable ESLint during production builds
-    ignoreDuringBuilds: true,
-  },
-  typescript: {
-    // Disable TypeScript checking during production builds
-    ignoreBuildErrors: true,
-  },
   async rewrites() {
     // Only apply rewrites in development mode
     if (process.env.NODE_ENV !== 'production') {

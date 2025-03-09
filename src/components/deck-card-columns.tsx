@@ -4,7 +4,6 @@ import type { ColumnDef } from "@tanstack/react-table"
 import { ArrowUpDown, Edit, Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import Link from "next/link"
 
 // Define the type for our data
 export type DeckCard = {
@@ -25,6 +24,7 @@ export type DeckCard = {
 }
 
 // Helper function to format dates
+/* Commented out as it's not currently used
 const formatDate = (dateString: string | null) => {
   if (!dateString) return "Not scheduled";
   
@@ -45,12 +45,15 @@ const formatDate = (dateString: string | null) => {
   
   return `${Math.floor(diffDays / 365)} yr`;
 };
+*/
 
 // Helper function to format numbers with 2 decimal places
+/* Commented out as it's not currently used
 const formatNumber = (num: number | undefined) => {
   if (num === undefined) return "N/A";
   return num.toFixed(2);
 };
+*/
 
 // Helper function to get state label
 const getStateLabel = (state: number | undefined) => {

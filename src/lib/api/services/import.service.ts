@@ -107,21 +107,21 @@ export class ImportService {
    * Create an import preview
    */
   async createImportPreview(data: ImportPreviewRequest): Promise<ApiResponse<ImportPreviewResponse>> {
-    return apiClient.post<ImportPreviewResponse>(API_ENDPOINTS.imports.preview, data);
+    return apiClient.post<ImportPreviewResponse>(API_ENDPOINTS.imports.preview, data as unknown as Record<string, unknown>);
   }
 
   /**
    * Confirm an import
    */
   async confirmImport(data: ConfirmImportRequest): Promise<ApiResponse<ConfirmImportResponse>> {
-    return apiClient.post<ConfirmImportResponse>(API_ENDPOINTS.imports.confirm, data);
+    return apiClient.post<ConfirmImportResponse>(API_ENDPOINTS.imports.confirm, data as unknown as Record<string, unknown>);
   }
 
   /**
    * Cancel an import
    */
   async cancelImport(data: CancelImportRequest): Promise<ApiResponse<CancelImportResponse>> {
-    return apiClient.post<CancelImportResponse>(API_ENDPOINTS.imports.cancel, data);
+    return apiClient.post<CancelImportResponse>(API_ENDPOINTS.imports.cancel, data as unknown as Record<string, unknown>);
   }
 
   /**

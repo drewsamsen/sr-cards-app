@@ -121,14 +121,14 @@ export class CardService {
    * Submit a review for a card
    */
   async reviewCard(cardId: string, reviewData: CardReviewRequest): Promise<ApiResponse<CardReviewApiResponse>> {
-    return apiClient.post<CardReviewApiResponse>(API_ENDPOINTS.cards.review(cardId), reviewData);
+    return apiClient.post<CardReviewApiResponse>(API_ENDPOINTS.cards.review(cardId), reviewData as unknown as Record<string, unknown>);
   }
 
   /**
    * Create a new card in a deck
    */
   async createCard(deckId: string, cardData: CreateCardRequest): Promise<ApiResponse<CardApiResponse>> {
-    return apiClient.post<CardApiResponse>(API_ENDPOINTS.cards.createForDeck(deckId), cardData);
+    return apiClient.post<CardApiResponse>(API_ENDPOINTS.cards.createForDeck(deckId), cardData as unknown as Record<string, unknown>);
   }
 
   /**
@@ -142,7 +142,7 @@ export class CardService {
    * Update an existing card
    */
   async updateCard(cardId: string, cardData: UpdateCardRequest): Promise<ApiResponse<CardApiResponse>> {
-    return apiClient.patch<CardApiResponse>(API_ENDPOINTS.cards.update(cardId), cardData);
+    return apiClient.patch<CardApiResponse>(API_ENDPOINTS.cards.update(cardId), cardData as unknown as Record<string, unknown>);
   }
 
   /**
@@ -153,12 +153,11 @@ export class CardService {
   }
 
   /**
-   * Search for cards by content (front or back text)
-   * @param params Search parameters including query, optional deckId, limit, and offset
+   * Search for cards
    */
   async searchCards(params: SearchCardsParams): Promise<ApiResponse<CardsApiResponse>> {
     // Use the main cards endpoint with search parameters
-    return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.list, params);
+    return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.list, params as unknown as Record<string, string | number | boolean>);
   }
 }
 

@@ -9,15 +9,19 @@ let isHandlingAuthError = false;
  * @param error The error message or object
  * @returns True if the error was an auth error and was handled
  */
-export const handleAuthError = (error: any): boolean => {
+export const handleAuthError = (error: string | Error | unknown): boolean => {
   // Check if the error is related to authentication
+  const errorMessage = typeof error === 'string' 
+    ? error 
+    : error instanceof Error 
+      ? error.message 
+      : String(error);
+      
   const isAuthError = 
-    typeof error === 'string' && (
-      error.includes('Invalid token') || 
-      error.includes('expired token') ||
-      error.includes('Unauthorized') ||
-      error.includes('Authentication required')
-    );
+    errorMessage.includes('Invalid token') || 
+    errorMessage.includes('expired token') ||
+    errorMessage.includes('Unauthorized') ||
+    errorMessage.includes('Authentication required');
   
   // If it's not an auth error or we're already handling one, return
   if (!isAuthError || isHandlingAuthError) {

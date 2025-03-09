@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { deckService, DeckResponse } from '@/lib/api/services/deck.service';
-import { ApiError } from '@/lib/api/client';
+import { deckService, DeckResponse } from '@/lib/api/services';
 import { useAuth } from './useAuth';
 import { handleAuthError } from '@/lib/utils/auth-utils';
 

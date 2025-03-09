@@ -8,7 +8,7 @@ import {
   DialogFooter 
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import { AlertCircle, CheckCircle, XCircle } from "lucide-react"
+import { AlertCircle, CheckCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { 
   Table, 

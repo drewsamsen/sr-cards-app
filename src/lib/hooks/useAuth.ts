@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { authService, AuthResponse, LoginRequest, ApiError, ApiAuthResponse } from '@/lib/api';
+import { authService, AuthResponse, LoginRequest, ApiError } from '@/lib/api';
 
 interface UseAuthReturn {
   user: AuthResponse['user'] | null;
@@ -35,7 +35,7 @@ export function useAuth(): UseAuthReturn {
           setRefreshToken(storedRefreshToken);
         }
         authService.setAuthToken(storedToken);
-      } catch (err) {
+      } catch {
         // Invalid stored data, clear it
         localStorage.removeItem('user');
         localStorage.removeItem('token');

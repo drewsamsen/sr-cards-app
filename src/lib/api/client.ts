@@ -4,7 +4,7 @@ import { handleAuthError } from '@/lib/utils/auth-utils';
 /**
  * API response interface
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data: T;
   error?: string;
   status: number;
@@ -15,16 +15,16 @@ export interface ApiResponse<T = any> {
  */
 export class ApiError extends Error {
   status: number;
-  data?: any;
+  data?: Record<string, unknown>;
   code?: string;
 
-  constructor(message: string, status: number, data?: any) {
+  constructor(message: string, status: number, data?: Record<string, unknown>) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.data = data;
     // Extract error code if available
-    this.code = data?.code || null;
+    this.code = data?.code as string | undefined;
   }
 }
 
@@ -65,7 +65,7 @@ export class ApiClient {
    */
   private async handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
     const contentType = response.headers.get('content-type');
-    let data: any = null;
+    let data: unknown = null;
 
     if (contentType && contentType.includes('application/json')) {
       data = await response.json();
@@ -74,7 +74,13 @@ export class ApiClient {
     }
 
     if (!response.ok) {
-      const message = data?.message || data?.error || response.statusText || 'Unknown error';
+      // Type guard for data
+      const errorData = data as Record<string, unknown>;
+      const message = 
+        (errorData?.message as string) || 
+        (errorData?.error as string) || 
+        response.statusText || 
+        'Unknown error';
       
       // Check for auth errors (401 Unauthorized, 403 Forbidden)
       if (response.status === 401 || response.status === 403) {
@@ -82,13 +88,17 @@ export class ApiClient {
       }
       
       // Create ApiError with all available error details
-      const apiError = new ApiError(message, response.status, data);
+      const apiError = new ApiError(
+        message, 
+        response.status, 
+        typeof data === 'object' && data !== null ? data as Record<string, unknown> : undefined
+      );
       
       throw apiError;
     }
 
     return {
-      data,
+      data: data as T,
       status: response.status,
     };
   }
@@ -128,7 +138,7 @@ export class ApiClient {
   private async request<T>(
     method: string,
     endpoint: string,
-    data?: any,
+    data?: Record<string, unknown> | unknown[],
     customHeaders?: Record<string, string>
   ): Promise<ApiResponse<T>> {
     let requestUrl = endpoint.startsWith('http') ? endpoint : `${this.baseUrl}${endpoint}`;
@@ -175,35 +185,35 @@ export class ApiClient {
   /**
    * HTTP GET request
    */
-  async get<T>(endpoint: string, params?: Record<string, any>, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+  async get<T>(endpoint: string, params?: Record<string, string | number | boolean>, headers?: Record<string, string>): Promise<ApiResponse<T>> {
     return this.request<T>('GET', endpoint, params, headers);
   }
 
   /**
    * HTTP POST request
    */
-  async post<T>(endpoint: string, data?: any, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+  async post<T>(endpoint: string, data?: Record<string, unknown> | unknown[], headers?: Record<string, string>): Promise<ApiResponse<T>> {
     return this.request<T>('POST', endpoint, data, headers);
   }
 
   /**
    * HTTP PUT request
    */
-  async put<T>(endpoint: string, data?: any, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+  async put<T>(endpoint: string, data?: Record<string, unknown> | unknown[], headers?: Record<string, string>): Promise<ApiResponse<T>> {
     return this.request<T>('PUT', endpoint, data, headers);
   }
 
   /**
    * HTTP PATCH request
    */
-  async patch<T>(endpoint: string, data?: any, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+  async patch<T>(endpoint: string, data?: Record<string, unknown> | unknown[], headers?: Record<string, string>): Promise<ApiResponse<T>> {
     return this.request<T>('PATCH', endpoint, data, headers);
   }
 
   /**
    * HTTP DELETE request
    */
-  async delete<T>(endpoint: string, data?: any, headers?: Record<string, string>): Promise<ApiResponse<T>> {
+  async delete<T>(endpoint: string, data?: Record<string, unknown> | unknown[], headers?: Record<string, string>): Promise<ApiResponse<T>> {
     return this.request<T>('DELETE', endpoint, data, headers);
   }
 }

@@ -1,17 +1,16 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, use } from "react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { useAuth } from "@/lib/hooks"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, RotateCcw, Check, X, ChevronDown, ChevronUp, ChevronRight, Edit, Star } from "lucide-react"
+import { RotateCcw, Check, X, ChevronRight, Edit, Star } from "lucide-react"
 import Link from "next/link"
 import { deckService, CardReviewResponse, ReviewMetrics, DeckResponse, DailyProgress } from "@/lib/api/services/deck.service"
 import { cardService } from "@/lib/api/services/card.service"
 import { CardEditModal } from "@/components/card-edit-modal"
-import { SingleCard } from "@/lib/hooks/useCard"
 
 // Helper function to calculate and format time difference
 const getTimeUntil = (dateString: string) => {
@@ -65,7 +64,9 @@ interface StudyState {
   dailyProgress?: DailyProgress
 }
 
-export default function StudyPage({ params }: { params: { slug: string } }) {
+export default function StudyPage(props: { params: Promise<{ slug: string }> }) {
+  const params = use(props.params);
+  const { slug } = params;
   const router = useRouter()
   const { user, isInitialized } = useAuth()
   const [isFlipped, setIsFlipped] = useState(false)
@@ -81,10 +82,10 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
   // Fetch card for review
-  const fetchCardForReview = async () => {
+  const fetchCardForReview = useCallback(async () => {
     try {
       setStudyState(prev => ({ ...prev, isLoading: true, error: null }))
-      const response = await deckService.getCardForReview(params.slug)
+      const response = await deckService.getCardForReview(slug)
       
       if (response.data.status === "success") {
         // Check which scenario we have
@@ -152,16 +153,20 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
         error: "Failed to load card" 
       }))
     }
-  }
+  }, [slug])
   
   // Redirect to login page if not logged in
   useEffect(() => {
-    if (isInitialized && !user) {
+    if (!isInitialized) {
+      return
+    }
+    
+    if (!user) {
       router.push('/login')
     } else if (isInitialized && user) {
       fetchCardForReview()
     }
-  }, [user, router, isInitialized, params.slug])
+  }, [user, router, isInitialized, slug, fetchCardForReview])
 
   // If not logged in or still initializing, show loading state
   if (!isInitialized || !user) {
@@ -266,10 +271,10 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
               </Link>
               <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
               <Link 
-                href={`/deck/${params.slug}`} 
+                href={`/deck/${slug}`} 
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
-                {studyState.deck?.name || params.slug.replace(/-/g, ' ')}
+                {studyState.deck?.name || slug.replace(/-/g, ' ')}
               </Link>
               <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
               <span className="text-foreground font-medium">Study</span>
@@ -291,7 +296,7 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
                   
                   <div className="p-6 flex flex-col items-center">
                     <div className="space-y-4 w-full">
-                      <Link href={`/deck/${params.slug}`} className="w-full">
+                      <Link href={`/deck/${slug}`} className="w-full">
                         <Button className="w-full">Back to Deck</Button>
                       </Link>
                     </div>
@@ -319,7 +324,7 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
                     </div>
                     
                     <div className="space-y-4 w-full">
-                      <Link href={`/deck/${params.slug}`} className="w-full">
+                      <Link href={`/deck/${slug}`} className="w-full">
                         <Button className="w-full">Back to Deck</Button>
                       </Link>
                       <Link href="/decks" className="w-full">
@@ -360,7 +365,7 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
                   
                   <div className="p-6 flex flex-col items-center">
                     <div className="space-y-4 w-full">
-                      <Link href={`/deck/${params.slug}`} className="w-full">
+                      <Link href={`/deck/${slug}`} className="w-full">
                         <Button className="w-full">Back to Deck</Button>
                       </Link>
                       <Link href="/decks" className="w-full">
@@ -391,7 +396,7 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
                       >
                         Try Again
                       </Button>
-                      <Link href={`/deck/${params.slug}`} className="w-full">
+                      <Link href={`/deck/${slug}`} className="w-full">
                         <Button variant="outline" className="w-full">Back to Deck</Button>
                       </Link>
                     </div>
@@ -421,10 +426,10 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
               </Link>
               <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
               <Link 
-                href={`/deck/${params.slug}`} 
+                href={`/deck/${slug}`} 
                 className="text-muted-foreground hover:text-primary transition-colors"
               >
-                {studyState.deck?.name || params.slug.replace(/-/g, ' ')}
+                {studyState.deck?.name || slug.replace(/-/g, ' ')}
               </Link>
               <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
               <span className="text-foreground font-medium">Study</span>
@@ -432,7 +437,7 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
           </div>
           <div className="flex flex-col items-center justify-center">
             <p className="text-xl">You are all caught up</p>
-            <Link href={`/deck/${params.slug}`}>
+            <Link href={`/deck/${slug}`}>
               <Button className="mt-4">Back to Deck</Button>
             </Link>
           </div>
@@ -455,10 +460,10 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
             </Link>
             <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
             <Link 
-              href={`/deck/${params.slug}`} 
+              href={`/deck/${slug}`} 
               className="text-muted-foreground hover:text-primary transition-colors"
             >
-              {studyState.deck?.name || params.slug.replace(/-/g, ' ')}
+              {studyState.deck?.name || slug.replace(/-/g, ' ')}
             </Link>
             <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
             <span className="text-foreground font-medium">Study</span>

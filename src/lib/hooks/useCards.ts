@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { cardService, CardResponse, deckService } from '@/lib/api/services';
+import { cardService, CardResponse } from '@/lib/api/services';
 import { useAuth } from './useAuth';
 import { handleAuthError } from '@/lib/utils/auth-utils';
 
@@ -18,7 +18,7 @@ export interface Card {
 }
 
 // Define pagination interface
-export interface Pagination {
+export interface CardsPagination {
   total: number;
   limit: number;
   offset: number;
@@ -29,7 +29,7 @@ interface UseCardsReturn {
   cards: Card[];
   isLoading: boolean;
   error: string | null;
-  pagination: Pagination;
+  pagination: CardsPagination;
   fetchCards: (limit?: number, offset?: number) => Promise<void>;
   searchCards: (query: string, limit?: number, offset?: number) => Promise<void>;
   setPage: (page: number) => void;
@@ -41,7 +41,7 @@ export function useCards(): UseCardsReturn {
   const [cards, setCards] = useState<Card[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [pagination, setPagination] = useState<Pagination>({
+  const [pagination, setPagination] = useState<CardsPagination>({
     total: 0,
     limit: 20,
     offset: 0,

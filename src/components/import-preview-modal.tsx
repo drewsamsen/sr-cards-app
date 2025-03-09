@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { 
   Dialog, 
   DialogContent, 
@@ -21,8 +20,7 @@ import {
 } from "@/components/ui/table"
 import { 
   ImportPreview, 
-  ImportRowPreview, 
-  importService 
+  ImportRowPreview 
 } from "@/lib/api/services/import.service"
 
 interface ImportPreviewModalProps {
@@ -145,7 +143,7 @@ export function ImportPreviewModal({
                 <ul className="list-disc pl-5 space-y-1">
                   {summary.duplicateDetails.slice(0, 5).map((duplicate, index) => (
                     <li key={index}>
-                      Row {duplicate.row}: "{duplicate.cardFront}" is similar to existing card "{duplicate.existingCardFront}"
+                      Row {duplicate.row}: &quot;{duplicate.cardFront}&quot; is similar to existing card &quot;{duplicate.existingCardFront}&quot;
                     </li>
                   ))}
                   {summary.duplicateDetails.length > 5 && (

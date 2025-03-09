@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import Link from "next/link"
-import React from "react"
+import React, { use } from "react"
 import { deckService, UpdateDeckRequest } from "@/lib/api/services/deck.service"
 import { cardService } from "@/lib/api/services/card.service"
 import { CardEditModal } from "@/components/card-edit-modal"
@@ -48,7 +48,9 @@ export interface DeckCard {
   onEdit?: (card: DeckCard) => void
 }
 
-export default function DeckPage({ params }: { params: { slug: string } }) {
+export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
+  const params = use(props.params);
+  const { slug: deckSlug } = params;
   const router = useRouter()
   const { user, isInitialized } = useAuth()
   
@@ -77,7 +79,7 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
   
   // TODO: In future Next.js versions, params will need to be unwrapped with React.use()
   // before accessing properties. For now, direct access is still supported.
-  const { deck, isLoading: isLoadingDeck, error: deckError, refetch: refetchDeck } = useDeck(params.slug)
+  const { deck, isLoading: isLoadingDeck, error: deckError, refetch: refetchDeck } = useDeck(deckSlug)
   const { 
     cards, 
     isLoading: isLoadingCards, 
@@ -459,7 +461,7 @@ export default function DeckPage({ params }: { params: { slug: string } }) {
                       size="sm" 
                       className="flex items-center gap-1"
                       disabled={isLoadingCards || cards.length === 0}
-                      onClick={() => router.push(`/deck/${params.slug}/study`)}
+                      onClick={() => router.push(`/deck/${deckSlug}/study`)}
                     >
                       <BookOpen className="h-4 w-4" />
                       Study

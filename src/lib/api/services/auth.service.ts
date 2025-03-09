@@ -46,14 +46,14 @@ export class AuthService {
    * Login user
    */
   async login(data: LoginRequest): Promise<ApiResponse<ApiAuthResponse>> {
-    return apiClient.post<ApiAuthResponse>(API_ENDPOINTS.auth.login, data);
+    return apiClient.post<ApiAuthResponse>(API_ENDPOINTS.auth.login, data as unknown as Record<string, unknown>);
   }
 
   /**
    * Register new user
    */
   async register(data: RegisterRequest): Promise<ApiResponse<ApiAuthResponse>> {
-    return apiClient.post<ApiAuthResponse>(API_ENDPOINTS.auth.register, data);
+    return apiClient.post<ApiAuthResponse>(API_ENDPOINTS.auth.register, data as unknown as Record<string, unknown>);
   }
 
   /**
