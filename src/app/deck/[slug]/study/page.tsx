@@ -277,50 +277,127 @@ export default function StudyPage({ params }: { params: { slug: string } }) {
           </div>
           <div className="flex flex-col items-center justify-center">
             {studyState.error === "empty_deck" ? (
-              <>
-                <p className="text-xl">{studyState.message || "This deck doesn't have any cards yet. Add some cards to start reviewing!"}</p>
-                <Link href={`/deck/${params.slug}`}>
-                  <Button className="mt-4">Back to Deck</Button>
-                </Link>
-              </>
+              <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+                <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+                  <div className="bg-primary/10 p-6 flex flex-col items-center">
+                    <div className="rounded-full bg-primary/20 p-3 mb-4">
+                      <RotateCcw className="h-8 w-8 text-primary" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-center mb-2">Empty Deck</h2>
+                    <p className="text-center text-muted-foreground">
+                      {studyState.message || "This deck doesn't have any cards yet. Add some cards to start reviewing!"}
+                    </p>
+                  </div>
+                  
+                  <div className="p-6 flex flex-col items-center">
+                    <div className="space-y-4 w-full">
+                      <Link href={`/deck/${params.slug}`} className="w-full">
+                        <Button className="w-full">Back to Deck</Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ) : studyState.error === "all_caught_up" ? (
-              <>
-                <p className="text-xl">{studyState.message || "You're all caught up! No cards due for review at this time."}</p>
-                <Link href={`/deck/${params.slug}`}>
-                  <Button className="mt-4">Back to Deck</Button>
-                </Link>
-              </>
+              <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+                <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+                  <div className="bg-primary/10 p-6 flex flex-col items-center">
+                    <div className="rounded-full bg-primary/20 p-3 mb-4">
+                      <Check className="h-8 w-8 text-primary" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-center mb-2">Great job!</h2>
+                    <p className="text-center text-muted-foreground">
+                      {studyState.message || "You've completed all your reviews for now. Check back later for more."}
+                    </p>
+                  </div>
+                  
+                  <div className="p-6 flex flex-col items-center">
+                    <div className="flex items-center justify-center space-x-1 mb-6">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="h-5 w-5 fill-primary text-primary" />
+                      ))}
+                    </div>
+                    
+                    <div className="space-y-4 w-full">
+                      <Link href={`/deck/${params.slug}`} className="w-full">
+                        <Button className="w-full">Back to Deck</Button>
+                      </Link>
+                      <Link href="/decks" className="w-full">
+                        <Button variant="outline" className="w-full">View All Decks</Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ) : studyState.error === "daily_limit_reached" ? (
-              <>
-                <div className="text-center max-w-lg">
-                  <p className="text-xl mb-4">{studyState.message || "You've reached your daily review limits for this deck. Come back later!"}</p>
+              <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+                <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+                  <div className="bg-primary/10 p-6 flex flex-col items-center">
+                    <div className="rounded-full bg-primary/20 p-3 mb-4">
+                      <X className="h-8 w-8 text-primary" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-center mb-2">Daily Limit Reached</h2>
+                    <p className="text-center text-muted-foreground">
+                      {studyState.message || "You've reached your daily review limits for this deck. Come back later!"}
+                    </p>
+                  </div>
                   
                   {studyState.dailyProgress && (
-                    <div className="bg-muted p-4 rounded-lg mb-6">
-                      <h3 className="font-medium mb-2">Daily Progress</h3>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div>
-                          <p>New Cards:</p>
-                          <p className="font-medium">{studyState.dailyProgress.newCardsSeen} / {studyState.dailyProgress.newCardsLimit}</p>
+                    <div className="px-6 pt-4">
+                      <h3 className="font-medium mb-2 text-center">Daily Progress</h3>
+                      <div className="grid grid-cols-2 gap-4 text-sm bg-muted p-4 rounded-lg">
+                        <div className="flex flex-col items-center">
+                          <p className="text-muted-foreground">New Cards</p>
+                          <p className="font-medium text-lg">{studyState.dailyProgress.newCardsSeen} / {studyState.dailyProgress.newCardsLimit}</p>
                         </div>
-                        <div>
-                          <p>Reviews:</p>
-                          <p className="font-medium">{studyState.dailyProgress.reviewCardsSeen} / {studyState.dailyProgress.reviewCardsLimit}</p>
+                        <div className="flex flex-col items-center">
+                          <p className="text-muted-foreground">Reviews</p>
+                          <p className="font-medium text-lg">{studyState.dailyProgress.reviewCardsSeen} / {studyState.dailyProgress.reviewCardsLimit}</p>
                         </div>
                       </div>
                     </div>
                   )}
                   
-                  <Link href={`/deck/${params.slug}`}>
-                    <Button className="mt-2">Back to Deck</Button>
-                  </Link>
+                  <div className="p-6 flex flex-col items-center">
+                    <div className="space-y-4 w-full">
+                      <Link href={`/deck/${params.slug}`} className="w-full">
+                        <Button className="w-full">Back to Deck</Button>
+                      </Link>
+                      <Link href="/decks" className="w-full">
+                        <Button variant="outline" className="w-full">View All Decks</Button>
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-              </>
+              </div>
             ) : (
-              <>
-                <p className="text-destructive">Error loading card. Please try again.</p>
-                <Button onClick={fetchCardForReview} className="mt-4">Retry</Button>
-              </>
+              <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+                <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+                  <div className="bg-destructive/10 p-6 flex flex-col items-center">
+                    <div className="rounded-full bg-destructive/20 p-3 mb-4">
+                      <X className="h-8 w-8 text-destructive" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-center mb-2">Error</h2>
+                    <p className="text-center text-muted-foreground">
+                      {studyState.message || "An error occurred while loading cards. Please try again."}
+                    </p>
+                  </div>
+                  
+                  <div className="p-6 flex flex-col items-center">
+                    <div className="space-y-4 w-full">
+                      <Button 
+                        className="w-full" 
+                        onClick={() => fetchCardForReview()}
+                      >
+                        Try Again
+                      </Button>
+                      <Link href={`/deck/${params.slug}`} className="w-full">
+                        <Button variant="outline" className="w-full">Back to Deck</Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         </main>
