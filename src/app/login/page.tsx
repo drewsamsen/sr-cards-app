@@ -83,7 +83,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
-      <div className="flex-1 flex items-center justify-center p-4">
+      <div className="flex-1 flex items-start justify-center p-4 pt-8 md:pt-12">
         <Card className="w-full max-w-md">
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
@@ -132,7 +132,7 @@ export default function LoginPage() {
                     />
                   </div>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="pt-4">
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? "Logging in..." : "Login"}
                   </Button>
@@ -187,7 +187,7 @@ export default function LoginPage() {
                     />
                   </div>
                 </CardContent>
-                <CardFooter>
+                <CardFooter className="pt-4">
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? "Creating account..." : "Create account"}
                   </Button>
