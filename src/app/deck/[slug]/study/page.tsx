@@ -55,13 +55,16 @@ const getTimeUntil = (dateString: string) => {
 
 // Define the study state interface
 interface StudyState {
-  card: CardReviewResponse | null
+  currentCard: CardReviewResponse | null
+  cardQueue: CardReviewResponse[]
   deck: DeckResponse | null
-  reviewMetrics: ReviewMetrics | null
   isLoading: boolean
   error: string | null
   message?: string
   dailyProgress?: DailyProgress
+  allCaughtUp: boolean
+  emptyDeck: boolean
+  processedCardIds: Set<string> // Track cards we've already seen
 }
 
 export default function StudyPage(props: { params: Promise<{ slug: string }> }) {
@@ -71,102 +74,195 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   const { user, isInitialized } = useAuth()
   const [isFlipped, setIsFlipped] = useState(false)
   const [studyState, setStudyState] = useState<StudyState>({
-    card: null,
+    currentCard: null,
+    cardQueue: [],
     deck: null,
-    reviewMetrics: null,
     isLoading: true,
-    error: null
+    error: null,
+    allCaughtUp: false,
+    emptyDeck: false,
+    processedCardIds: new Set<string>()
   })
   
   // Card edit modal state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
 
-  // Fetch card for review
-  const fetchCardForReview = useCallback(async () => {
+  // Function to get the next card from the queue
+  const getNextCard = useCallback(() => {
+    setStudyState(prev => {
+      // If there are cards in the queue, get the next one
+      if (prev.cardQueue.length > 0) {
+        const [nextCard, ...remainingCards] = prev.cardQueue;
+        
+        // If we're down to the last 2 cards, check for new cards
+        if (remainingCards.length <= 1 && !prev.allCaughtUp && !prev.emptyDeck) {
+          // Fetch more cards in the background
+          fetchCardsForReview(false);
+        }
+        
+        return {
+          ...prev,
+          currentCard: nextCard,
+          cardQueue: remainingCards,
+          isLoading: false,
+          error: null
+        };
+      } else if (prev.allCaughtUp) {
+        // No more cards and we're all caught up
+        return {
+          ...prev,
+          currentCard: null,
+          isLoading: false,
+          error: "all_caught_up"
+        };
+      } else if (prev.emptyDeck) {
+        // No cards in the deck
+        return {
+          ...prev,
+          currentCard: null,
+          isLoading: false,
+          error: "empty_deck"
+        };
+      } else {
+        // No cards in queue but not explicitly caught up - try fetching more
+        fetchCardsForReview(true);
+        return {
+          ...prev,
+          isLoading: true
+        };
+      }
+    });
+  }, []);
+
+  // Fetch cards for review
+  const fetchCardsForReview = useCallback(async (updateCurrentCard: boolean = true) => {
     try {
-      setStudyState(prev => ({ ...prev, isLoading: true, error: null }))
-      const response = await deckService.getCardForReview(slug)
+      if (updateCurrentCard) {
+        setStudyState(prev => ({ ...prev, isLoading: true, error: null }));
+      }
+      
+      const response = await deckService.getCardForReview(slug);
       
       if (response.data.status === "success") {
-        // Check which scenario we have
-        if (response.data.data.card) {
-          // Scenario 1: Card available for review
-          const newState: StudyState = {
-            card: response.data.data.card,
-            deck: response.data.data.deck,
-            reviewMetrics: response.data.data.reviewMetrics || null,
-            isLoading: false,
-            error: null
+        const { deck, cards, allCaughtUp, emptyDeck, message, dailyProgress } = response.data.data;
+        
+        // Update the study state based on the response
+        setStudyState(prev => {
+          // If we have cards in the response
+          if (cards && cards.length > 0) {
+            // Filter out cards we've already processed
+            const newCards = cards.filter(card => !prev.processedCardIds.has(card.id));
+            
+            // If no new cards and we're not updating the current card, we're caught up
+            if (newCards.length === 0 && !updateCurrentCard) {
+              return {
+                ...prev,
+                deck,
+                dailyProgress,
+                allCaughtUp: true
+              };
+            }
+            
+            // Add new card IDs to the processed set
+            const updatedProcessedIds = new Set(prev.processedCardIds);
+            newCards.forEach(card => updatedProcessedIds.add(card.id));
+            
+            // If we're updating the current card (initial load or empty queue)
+            if (updateCurrentCard) {
+              const [currentCard, ...queueCards] = newCards;
+              return {
+                ...prev,
+                currentCard,
+                cardQueue: [...queueCards, ...prev.cardQueue],
+                deck,
+                isLoading: false,
+                error: null,
+                dailyProgress,
+                allCaughtUp: false,
+                emptyDeck: false,
+                processedCardIds: updatedProcessedIds
+              };
+            } else {
+              // Just adding to the queue
+              return {
+                ...prev,
+                cardQueue: [...prev.cardQueue, ...newCards],
+                deck,
+                dailyProgress,
+                allCaughtUp: newCards.length < cards.length, // If we filtered some cards, we might be caught up
+                emptyDeck: false,
+                processedCardIds: updatedProcessedIds
+              };
+            }
+          } else if (allCaughtUp) {
+            // All caught up - no more cards to review
+            return {
+              ...prev,
+              deck,
+              isLoading: false,
+              error: updateCurrentCard ? "all_caught_up" : prev.error,
+              message: message || "You're all caught up! No cards due for review at this time.",
+              dailyProgress,
+              allCaughtUp: true,
+              emptyDeck: false
+            };
+          } else if (emptyDeck) {
+            // Empty deck - no cards in the deck
+            return {
+              ...prev,
+              deck,
+              isLoading: false,
+              error: updateCurrentCard ? "empty_deck" : prev.error,
+              message: message || "This deck doesn't have any cards yet. Add some cards to start reviewing!",
+              dailyProgress,
+              allCaughtUp: false,
+              emptyDeck: true
+            };
+          } else {
+            // Fallback for unexpected response format
+            return {
+              ...prev,
+              deck,
+              isLoading: false,
+              error: updateCurrentCard ? "Failed to load cards" : prev.error,
+              dailyProgress
+            };
           }
-          
-          setStudyState(newState)
-        } else if (response.data.data.dailyLimitReached) {
-          // Scenario 2: Daily limit reached
-          setStudyState(prev => ({ 
-            ...prev, 
-            deck: response.data.data.deck,
-            isLoading: false, 
-            error: "daily_limit_reached",
-            message: response.data.data.message || "You've reached your daily review limits for this deck. Come back later!",
-            dailyProgress: response.data.data.dailyProgress
-          }))
-        } else if (response.data.data.allCaughtUp) {
-          // Scenario 3: All caught up - no cards due for review
-          setStudyState(prev => ({ 
-            ...prev, 
-            deck: response.data.data.deck,
-            isLoading: false, 
-            error: "all_caught_up",
-            message: response.data.data.message || "You're all caught up! No cards due for review at this time."
-          }))
-        } else if (response.data.data.emptyDeck) {
-          // Scenario 4: Empty deck - no cards in the deck
-          setStudyState(prev => ({ 
-            ...prev, 
-            deck: response.data.data.deck,
-            isLoading: false, 
-            error: "empty_deck",
-            message: response.data.data.message || "This deck doesn't have any cards yet. Add some cards to start reviewing!"
-          }))
-        } else {
-          // Fallback for unexpected response format
-          setStudyState(prev => ({ 
-            ...prev, 
-            deck: response.data.data.deck,
-            isLoading: false, 
-            error: "Failed to load card" 
-          }))
-        }
+        });
       } else {
         // Error response
-        setStudyState(prev => ({ 
-          ...prev, 
-          isLoading: false, 
-          error: "Failed to load card" 
-        }))
+        if (updateCurrentCard) {
+          setStudyState(prev => ({
+            ...prev,
+            isLoading: false,
+            error: "Failed to load cards"
+          }));
+        }
       }
     } catch (error) {
-      console.error("Error fetching card for review:", error)
-      setStudyState(prev => ({ 
-        ...prev, 
-        isLoading: false, 
-        error: "Failed to load card" 
-      }))
+      console.error("Error fetching cards for review:", error);
+      if (updateCurrentCard) {
+        setStudyState(prev => ({
+          ...prev,
+          isLoading: false,
+          error: "Failed to load cards"
+        }));
+      }
     }
-  }, [slug])
+  }, [slug]);
   
   // Redirect to login page if not logged in
   useEffect(() => {
     if (!isInitialized) {
-      return
+      return;
     }
     
     if (!user) {
-      router.push('/login')
+      router.push('/login');
     } else if (isInitialized && user) {
-      fetchCardForReview()
+      fetchCardsForReview(true);
     }
-  }, [user, router, isInitialized, slug, fetchCardForReview])
+  }, [user, router, isInitialized, slug, fetchCardsForReview]);
 
   // If not logged in or still initializing, show loading state
   if (!isInitialized || !user) {
@@ -189,15 +285,15 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   
   const handleCardUpdated = async () => {
     // Refresh the current card to show the updated content
-    if (studyState.card) {
+    if (studyState.currentCard) {
       try {
-        const response = await cardService.getCard(studyState.card.id)
+        const response = await cardService.getCard(studyState.currentCard.id)
         if (response.data.status === "success") {
           // Update the card in the study state
           setStudyState(prev => ({
             ...prev,
-            card: {
-              ...prev.card!,
+            currentCard: {
+              ...prev.currentCard!,
               front: response.data.data.card.front,
               back: response.data.data.card.back
             }
@@ -210,7 +306,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   }
 
   const handleResponse = async (response: 'again' | 'hard' | 'good' | 'easy') => {
-    if (!studyState.card) return
+    if (!studyState.currentCard) return
     
     // Map the response to a rating number
     const ratingMap = {
@@ -224,22 +320,22 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
     
     try {
       // Log the due date based on the response
-      if (studyState.reviewMetrics) {
-        const dueDate = studyState.reviewMetrics[response]
+      if (studyState.currentCard.reviewMetrics) {
+        const dueDate = studyState.currentCard.reviewMetrics[response]
         console.log(`Next review due: ${dueDate}`)
       }
       
       // Submit the review to the API
-      await cardService.reviewCard(studyState.card.id, { rating })
+      await cardService.reviewCard(studyState.currentCard.id, { rating })
       
-      // Flip back to the front and fetch the next card
+      // Flip back to the front and get the next card
       setIsFlipped(false)
-      fetchCardForReview()
+      getNextCard()
     } catch (error) {
       console.error("Error submitting card review:", error)
-      // Still fetch the next card even if there was an error
+      // Still get the next card even if there was an error
       setIsFlipped(false)
-      fetchCardForReview()
+      getNextCard()
     }
   }
 
@@ -392,7 +488,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                     <div className="space-y-4 w-full">
                       <Button 
                         className="w-full" 
-                        onClick={() => fetchCardForReview()}
+                        onClick={() => fetchCardsForReview()}
                       >
                         Try Again
                       </Button>
@@ -411,7 +507,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   }
 
   // Show message if no cards to review
-  if (!studyState.card) {
+  if (!studyState.currentCard) {
     return (
       <div className="flex min-h-screen flex-col">
         <Header />
@@ -494,14 +590,14 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                   <div className="flex flex-col h-full">
                     {/* Front text always visible */}
                     <div className={isFlipped ? "" : "mb-auto"}>
-                      <p className="text-xl md:text-2xl font-medium leading-relaxed text-center whitespace-pre-line">{studyState.card?.front}</p>
+                      <p className="text-xl md:text-2xl font-medium leading-relaxed text-center whitespace-pre-line">{studyState.currentCard?.front}</p>
                     </div>
                     
                     {/* Back content only visible when flipped */}
                     {isFlipped && (
                       <div className="mt-4">
                         <hr className="mb-4 border-t border-border" />
-                        <p className="text-xl md:text-2xl font-medium text-left whitespace-pre-line leading-tight">{studyState.card?.back}</p>
+                        <p className="text-xl md:text-2xl font-medium text-left whitespace-pre-line leading-tight">{studyState.currentCard?.back}</p>
                       </div>
                     )}
                   </div>
@@ -527,10 +623,10 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                   <RotateCcw className="h-4 w-4 flex-shrink-0" />
                   <span className="whitespace-nowrap">Again</span>
                 </Button>
-                {studyState.reviewMetrics && (
+                {studyState.currentCard?.reviewMetrics && (
                   <div className="flex flex-col items-center">
                     <span className="text-xs text-muted-foreground mt-1">
-                      {getTimeUntil(studyState.reviewMetrics.again)}
+                      {getTimeUntil(studyState.currentCard.reviewMetrics.again)}
                     </span>
                   </div>
                 )}
@@ -546,10 +642,10 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                   <X className="h-4 w-4 flex-shrink-0" />
                   <span className="whitespace-nowrap">Hard</span>
                 </Button>
-                {studyState.reviewMetrics && (
+                {studyState.currentCard?.reviewMetrics && (
                   <div className="flex flex-col items-center">
                     <span className="text-xs text-muted-foreground mt-1">
-                      {getTimeUntil(studyState.reviewMetrics.hard)}
+                      {getTimeUntil(studyState.currentCard.reviewMetrics.hard)}
                     </span>
                   </div>
                 )}
@@ -565,10 +661,10 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                   <Check className="h-4 w-4 flex-shrink-0" />
                   <span className="whitespace-nowrap">Good</span>
                 </Button>
-                {studyState.reviewMetrics && (
+                {studyState.currentCard?.reviewMetrics && (
                   <div className="flex flex-col items-center">
                     <span className="text-xs text-muted-foreground mt-1">
-                      {getTimeUntil(studyState.reviewMetrics.good)}
+                      {getTimeUntil(studyState.currentCard.reviewMetrics.good)}
                     </span>
                   </div>
                 )}
@@ -584,10 +680,10 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                   <Star className="h-4 w-4 flex-shrink-0" />
                   <span className="whitespace-nowrap">Easy</span>
                 </Button>
-                {studyState.reviewMetrics && (
+                {studyState.currentCard?.reviewMetrics && (
                   <div className="flex flex-col items-center">
                     <span className="text-xs text-muted-foreground mt-1">
-                      {getTimeUntil(studyState.reviewMetrics.easy)}
+                      {getTimeUntil(studyState.currentCard.reviewMetrics.easy)}
                     </span>
                   </div>
                 )}
@@ -601,13 +697,13 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
       <CardEditModal
         isOpen={isEditModalOpen}
         onOpenChange={setIsEditModalOpen}
-        card={studyState.card ? {
-          id: studyState.card.id,
-          front: studyState.card.front,
-          back: studyState.card.back,
+        card={studyState.currentCard ? {
+          id: studyState.currentCard.id,
+          front: studyState.currentCard.front,
+          back: studyState.currentCard.back,
           status: 'active',
-          review_at: studyState.card.due,
-          deckId: studyState.card.deckId,
+          review_at: studyState.currentCard.due,
+          deckId: studyState.currentCard.deckId,
           deckName: studyState.deck?.name
         } : null}
         onCardUpdated={handleCardUpdated}

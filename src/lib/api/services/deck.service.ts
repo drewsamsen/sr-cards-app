@@ -48,6 +48,8 @@ export interface CardReviewResponse {
   createdAt: string;
   updatedAt: string;
   deckName: string;
+  deckSlug?: string;
+  reviewMetrics?: ReviewMetrics;
 }
 
 export interface ReviewMetrics {
@@ -69,8 +71,7 @@ export interface DeckReviewApiResponse {
   status: string;
   data: {
     deck: DeckResponse;
-    card?: CardReviewResponse;
-    reviewMetrics?: ReviewMetrics;
+    cards: CardReviewResponse[];
     allCaughtUp?: boolean;
     emptyDeck?: boolean;
     dailyLimitReached?: boolean;
