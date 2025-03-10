@@ -156,8 +156,8 @@ export class CardService {
    * Search for cards
    */
   async searchCards(params: SearchCardsParams): Promise<ApiResponse<CardsApiResponse>> {
-    // Use the main cards endpoint with search parameters
-    return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.list, params as unknown as Record<string, string | number | boolean>);
+    // Use the dedicated search endpoint
+    return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.search, params as unknown as Record<string, string | number | boolean>);
   }
 }
 

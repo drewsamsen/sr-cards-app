@@ -100,8 +100,48 @@ export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
       return;
     }
 
-    fetchDeckCards(limit, offset);
-  }, [fetchDeckCards]);
+    try {
+      setIsLoading(true);
+      setError(null);
+      
+      const response = await cardService.searchCards({
+        q: query,
+        deckId,
+        limit: limit !== undefined ? limit : pagination.limit,
+        offset: offset !== undefined ? offset : pagination.offset
+      });
+      
+      if (response.data.status === 'success') {
+        // Transform API card response to our UI format
+        const transformCards = (apiCards: CardResponse[]): DeckCard[] => {
+          return apiCards.map(card => ({
+            id: card.id,
+            front: card.front,
+            back: card.back,
+            status: card.status,
+            review_at: card.reviewAt,
+            state: card.state,
+            difficulty: card.difficulty,
+            stability: card.stability,
+            due: card.due,
+          }));
+        };
+        
+        setCards(transformCards(response.data.data.cards));
+        
+        // Update pagination if available
+        if (response.data.data.pagination) {
+          setPagination(response.data.data.pagination);
+        }
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to search cards. Please try again.';
+      handleAuthError(errorMessage);
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [deckId, pagination.limit, pagination.offset, handleAuthError]);
 
   // Helper function to change page
   const setPage = useCallback((page: number) => {
