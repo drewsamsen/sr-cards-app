@@ -141,7 +141,7 @@ export function useDeckCards(deckId: string | undefined): UseDeckCardsReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [deckId, pagination.limit, pagination.offset, handleAuthError]);
+  }, [deckId, pagination.limit, pagination.offset, fetchDeckCards]);
 
   // Helper function to change page
   const setPage = useCallback((page: number) => {
