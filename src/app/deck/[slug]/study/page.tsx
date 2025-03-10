@@ -472,7 +472,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
         
         <div className="flex flex-col items-center justify-between flex-grow">
           {/* Make this entire area clickable for flipping the card */}
-          <div className="w-full flex-grow flex flex-col items-center cursor-pointer" onClick={handleFlip}>
+          <div className="w-full flex-grow flex flex-col items-center cursor-pointer pb-32 md:pb-0" onClick={handleFlip}>
             <div className="w-full flex justify-center">
               <Card 
                 className="w-full max-w-2xl min-h-[16rem] md:min-h-[20rem] cursor-pointer transition-all duration-300 relative flex flex-col"
@@ -513,7 +513,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
             <div className="w-full max-w-2xl h-16 mt-4"></div>
           </div>
           
-          <div className={`w-full mt-auto pt-8 transition-opacity duration-300 ${
+          <div className={`w-full fixed bottom-0 left-0 right-0 bg-background pb-4 pt-4 px-4 md:static md:pb-0 md:pt-8 md:px-0 transition-opacity duration-300 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] md:shadow-none ${
             isFlipped ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}>
             <div className="grid grid-cols-4 gap-1 sm:gap-2 max-w-2xl w-full mx-auto">
