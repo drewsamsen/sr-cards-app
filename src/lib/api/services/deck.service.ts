@@ -131,6 +131,13 @@ export class DeckService {
   async updateDeck(id: string, data: UpdateDeckRequest): Promise<ApiResponse<DeckApiResponse>> {
     return apiClient.put<DeckApiResponse>(API_ENDPOINTS.decks.update(id), data as unknown as Record<string, unknown>);
   }
+
+  /**
+   * Delete a deck
+   */
+  async deleteDeck(id: string): Promise<ApiResponse<{ status: string; data: { message: string } }>> {
+    return apiClient.delete(API_ENDPOINTS.decks.delete(id));
+  }
 }
 
 // Create and export a default instance

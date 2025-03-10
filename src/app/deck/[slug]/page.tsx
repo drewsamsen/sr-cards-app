@@ -62,6 +62,8 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [formSuccess, setFormSuccess] = useState<boolean>(false)
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState<boolean>(false)
+  const [isDeleting, setIsDeleting] = useState<boolean>(false)
   
   // Card edit modal state
   const [isCardEditModalOpen, setIsCardEditModalOpen] = useState<boolean>(false)
@@ -73,7 +75,6 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
   // Card delete confirmation state
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false)
   const [cardToDelete, setCardToDelete] = useState<DeckCard | null>(null)
-  const [isDeleting, setIsDeleting] = useState<boolean>(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
   const [deleteSuccess, setDeleteSuccess] = useState<boolean>(false)
   
@@ -185,6 +186,30 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
       setIsSubmitting(false)
     }
   }
+
+  // Handle deck deletion
+  const handleDeleteDeck = async () => {
+    if (!deck?.id) return;
+    
+    try {
+      setIsDeleting(true);
+      const response = await deckService.deleteDeck(deck.id);
+      
+      if (response.data.status === "success") {
+        // Redirect to decks list page after successful deletion
+        router.push("/decks");
+      } else {
+        setFormError("Failed to delete deck");
+        setShowDeleteConfirmation(false);
+      }
+    } catch (err) {
+      setFormError("An error occurred while deleting the deck");
+      setShowDeleteConfirmation(false);
+      console.error(err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   // Handle card edit
   const handleCardEdit = (card: DeckCard) => {
@@ -386,22 +411,34 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
                     />
                   </div>
                   
-                  <div className="flex justify-end gap-4">
+                  <div className="flex justify-between gap-4">
                     <Button
                       type="button"
-                      variant="outline"
-                      onClick={() => setIsEditing(false)}
-                    >
-                      Cancel
-                    </Button>
-                    <Button 
-                      type="submit" 
+                      variant="destructive"
+                      onClick={() => setShowDeleteConfirmation(true)}
                       className="flex items-center gap-2"
-                      disabled={isSubmitting}
                     >
-                      <Save className="h-4 w-4" />
-                      {isSubmitting ? "Saving..." : "Save Changes"}
+                      <X className="h-4 w-4" />
+                      Delete Deck
                     </Button>
+                    
+                    <div className="flex gap-4">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsEditing(false)}
+                      >
+                        Cancel
+                      </Button>
+                      <Button 
+                        type="submit" 
+                        className="flex items-center gap-2"
+                        disabled={isSubmitting}
+                      >
+                        <Save className="h-4 w-4" />
+                        {isSubmitting ? "Saving..." : "Save Changes"}
+                      </Button>
+                    </div>
                   </div>
                 </form>
               ) : (
@@ -487,9 +524,9 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
       
       {/* Card Add Modal */}
       <CardAddModal
-        deckId={deck?.id || ""}
         isOpen={isCardAddModalOpen}
         onOpenChange={setIsCardAddModalOpen}
+        deckId={deck?.id || ""}
         onCardAdded={() => {
           fetchCards()
           setIsCardAddModalOpen(false)
@@ -522,6 +559,29 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
               className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
             >
               {isDeleting ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Deck Confirmation Modal */}
+      <AlertDialog open={showDeleteConfirmation} onOpenChange={setShowDeleteConfirmation}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure you want to delete this deck?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the deck
+              "{deck?.name}" and all its cards.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteDeck}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Deleting..." : "Delete Deck"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
