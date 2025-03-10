@@ -38,6 +38,7 @@ export const handleAuthError = (error: string | Error | unknown): boolean => {
       localStorage.removeItem('user');
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
+      localStorage.removeItem('tokenExpiry');
       
       // Clear auth token from API client
       authService.setAuthToken(null);

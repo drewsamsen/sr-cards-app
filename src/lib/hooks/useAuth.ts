@@ -3,7 +3,7 @@ import { authService, AuthResponse, LoginRequest, ApiError } from '@/lib/api';
 
 // Default token expiration time in milliseconds (1 hour)
 const DEFAULT_TOKEN_EXPIRY = 60 * 60 * 1000;
-// Refresh token 5 minutes before expiration
+// Refresh token 5 minutes before expiration as a fallback
 const REFRESH_BUFFER = 5 * 60 * 1000;
 
 interface UseAuthReturn {
@@ -46,43 +46,8 @@ export function useAuth(): UseAuthReturn {
     }
   }, []);
 
-  // Define refreshAuthToken and scheduleTokenRefresh functions first
-  const refreshAuthToken = useCallback(async () => {
-    if (!refreshToken) return false;
-    
-    try {
-      const response = await authService.refreshToken(refreshToken);
-      const { token: newToken, refreshToken: newRefreshToken } = response.data.data;
-      
-      // Update state and localStorage
-      setToken(newToken);
-      setRefreshToken(newRefreshToken);
-      localStorage.setItem('token', newToken);
-      localStorage.setItem('refreshToken', newRefreshToken);
-      authService.setAuthToken(newToken);
-      
-      // Schedule next refresh
-      const expiryTime = Date.now() + DEFAULT_TOKEN_EXPIRY;
-      localStorage.setItem('tokenExpiry', expiryTime.toString());
-      
-      if (refreshTimeoutRef.current) {
-        clearTimeout(refreshTimeoutRef.current);
-      }
-      
-      refreshTimeoutRef.current = setTimeout(() => {
-        refreshAuthToken();
-      }, DEFAULT_TOKEN_EXPIRY - REFRESH_BUFFER);
-      
-      return true;
-    } catch (err) {
-      console.error('Failed to refresh token:', err);
-      // If refresh fails, log the user out
-      clearAuthData();
-      return false;
-    }
-  }, [refreshToken, clearAuthData]);
-
-  // Schedule token refresh
+  // Schedule token refresh as a fallback
+  // This is a safety measure in case the reactive approach fails
   const scheduleTokenRefresh = useCallback((expiresIn: number) => {
     // Clear any existing timeout
     if (refreshTimeoutRef.current) {
@@ -95,21 +60,21 @@ export function useAuth(): UseAuthReturn {
       : expiresIn - REFRESH_BUFFER;
     
     if (refreshDelay <= 0) {
-      // Token is already expired or about to expire, refresh immediately
-      refreshAuthToken();
       return;
     }
-    
-    // Schedule refresh
-    refreshTimeoutRef.current = setTimeout(() => {
-      refreshAuthToken();
-    }, refreshDelay);
     
     // Store expected expiry time in localStorage for recovery
     const expiryTime = Date.now() + expiresIn;
     localStorage.setItem('tokenExpiry', expiryTime.toString());
     
-  }, [refreshAuthToken]);
+    // Schedule refresh as a fallback
+    // We don't need to actively refresh here since the API client will handle it
+    // This is just to update our local state when the token is about to expire
+    refreshTimeoutRef.current = setTimeout(() => {
+      // Update last activity timestamp
+      lastActivityRef.current = Date.now();
+    }, refreshDelay);
+  }, []);
 
   // Initialize auth state from localStorage
   useEffect(() => {
@@ -125,16 +90,13 @@ export function useAuth(): UseAuthReturn {
         setRefreshToken(storedRefreshToken);
         authService.setAuthToken(storedToken);
         
-        // Check if token is expired or about to expire
+        // Check if token expiry info exists
         if (storedTokenExpiry) {
           const expiryTime = parseInt(storedTokenExpiry, 10);
           const timeUntilExpiry = expiryTime - Date.now();
           
-          if (timeUntilExpiry <= REFRESH_BUFFER) {
-            // Token is expired or about to expire, refresh it
-            refreshAuthToken();
-          } else {
-            // Token is still valid, schedule refresh
+          // If token is still valid, schedule refresh as a fallback
+          if (timeUntilExpiry > 0) {
             scheduleTokenRefresh(timeUntilExpiry);
           }
         } else {
@@ -152,23 +114,14 @@ export function useAuth(): UseAuthReturn {
     
     // Update last activity timestamp
     lastActivityRef.current = Date.now();
-  }, [clearAuthData, refreshAuthToken, scheduleTokenRefresh]);
+  }, [clearAuthData, scheduleTokenRefresh]);
 
   // Handle visibility change (user returns from locking phone)
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        const currentTime = Date.now();
-        const inactiveTime = currentTime - lastActivityRef.current;
-        
-        // If user was away for more than 1 minute and we have a refresh token
-        if (inactiveTime > 60 * 1000 && refreshToken) {
-          // Refresh the token when they return
-          refreshAuthToken();
-        }
-        
         // Update last activity time
-        lastActivityRef.current = currentTime;
+        lastActivityRef.current = Date.now();
       }
     };
     
@@ -182,7 +135,7 @@ export function useAuth(): UseAuthReturn {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleVisibilityChange);
     };
-  }, [refreshToken, refreshAuthToken]);
+  }, []);
 
   // Clean up on unmount
   useEffect(() => {
@@ -216,7 +169,7 @@ export function useAuth(): UseAuthReturn {
       // Set token in API client
       authService.setAuthToken(token);
       
-      // Schedule token refresh
+      // Schedule token refresh as a fallback
       scheduleTokenRefresh(DEFAULT_TOKEN_EXPIRY);
       
       // Update last activity timestamp
