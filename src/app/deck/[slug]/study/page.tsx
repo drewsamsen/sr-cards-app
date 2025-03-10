@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, use } from "react"
+import { useEffect, useState, useCallback, use } from "react"
 import { useRouter } from "next/navigation"
 import { Header } from "@/components/header"
 import { useAuth } from "@/lib/hooks"
@@ -8,7 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { RotateCcw, Check, X, ChevronRight, Edit, Star } from "lucide-react"
 import Link from "next/link"
-import { deckService, CardReviewResponse, ReviewMetrics, DeckResponse, DailyProgress } from "@/lib/api/services/deck.service"
+import { deckService, CardReviewResponse, DeckResponse, DailyProgress } from "@/lib/api/services/deck.service"
 import { cardService } from "@/lib/api/services/card.service"
 import { CardEditModal } from "@/components/card-edit-modal"
 
@@ -86,53 +86,6 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   
   // Card edit modal state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-
-  // Function to get the next card from the queue
-  const getNextCard = useCallback(() => {
-    setStudyState(prev => {
-      // If there are cards in the queue, get the next one
-      if (prev.cardQueue.length > 0) {
-        const [nextCard, ...remainingCards] = prev.cardQueue;
-        
-        // If we're down to the last 2 cards, check for new cards
-        if (remainingCards.length <= 1 && !prev.allCaughtUp && !prev.emptyDeck) {
-          // Fetch more cards in the background
-          fetchCardsForReview(false);
-        }
-        
-        return {
-          ...prev,
-          currentCard: nextCard,
-          cardQueue: remainingCards,
-          isLoading: false,
-          error: null
-        };
-      } else if (prev.allCaughtUp) {
-        // No more cards and we're all caught up
-        return {
-          ...prev,
-          currentCard: null,
-          isLoading: false,
-          error: "all_caught_up"
-        };
-      } else if (prev.emptyDeck) {
-        // No cards in the deck
-        return {
-          ...prev,
-          currentCard: null,
-          isLoading: false,
-          error: "empty_deck"
-        };
-      } else {
-        // No cards in queue but not explicitly caught up - try fetching more
-        fetchCardsForReview(true);
-        return {
-          ...prev,
-          isLoading: true
-        };
-      }
-    });
-  }, []);
 
   // Fetch cards for review
   const fetchCardsForReview = useCallback(async (updateCurrentCard: boolean = true) => {
@@ -250,7 +203,54 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
       }
     }
   }, [slug]);
-  
+
+  // Function to get the next card from the queue
+  const getNextCard = useCallback(() => {
+    setStudyState(prev => {
+      // If there are cards in the queue, get the next one
+      if (prev.cardQueue.length > 0) {
+        const [nextCard, ...remainingCards] = prev.cardQueue;
+        
+        // If we're down to the last 2 cards, check for new cards
+        if (remainingCards.length <= 1 && !prev.allCaughtUp && !prev.emptyDeck) {
+          // Fetch more cards in the background
+          fetchCardsForReview(false);
+        }
+        
+        return {
+          ...prev,
+          currentCard: nextCard,
+          cardQueue: remainingCards,
+          isLoading: false,
+          error: null
+        };
+      } else if (prev.allCaughtUp) {
+        // No more cards and we're all caught up
+        return {
+          ...prev,
+          currentCard: null,
+          isLoading: false,
+          error: "all_caught_up"
+        };
+      } else if (prev.emptyDeck) {
+        // No cards in the deck
+        return {
+          ...prev,
+          currentCard: null,
+          isLoading: false,
+          error: "empty_deck"
+        };
+      } else {
+        // No cards in queue but not explicitly caught up - try fetching more
+        fetchCardsForReview(true);
+        return {
+          ...prev,
+          isLoading: true
+        };
+      }
+    });
+  }, [fetchCardsForReview]);
+
   // Redirect to login page if not logged in
   useEffect(() => {
     if (!isInitialized) {
