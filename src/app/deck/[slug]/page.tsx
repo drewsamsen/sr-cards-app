@@ -571,7 +571,7 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
             <AlertDialogTitle>Are you sure you want to delete this deck?</AlertDialogTitle>
             <AlertDialogDescription>
               This action cannot be undone. This will permanently delete the deck
-              "{deck?.name}" and all its cards.
+              &ldquo;{deck?.name}&rdquo; and all its cards.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
