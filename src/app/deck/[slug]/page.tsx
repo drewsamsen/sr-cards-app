@@ -174,8 +174,17 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
       if (response.data.status === "success") {
         setFormSuccess(true)
         setIsEditing(false)
-        // Refetch deck data to update the UI
-        refetchDeck()
+        
+        // Get the updated deck with the new slug
+        const updatedDeck = response.data.data.deck;
+        
+        // If the slug has changed, redirect to the new URL
+        if (updatedDeck.slug !== deckSlug) {
+          router.push(`/deck/${updatedDeck.slug}`);
+        } else {
+          // Otherwise just refetch the current deck data
+          refetchDeck();
+        }
       } else {
         setFormError("Failed to update deck")
       }

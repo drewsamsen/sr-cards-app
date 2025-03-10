@@ -129,7 +129,7 @@ export class DeckService {
    * Update an existing deck
    */
   async updateDeck(id: string, data: UpdateDeckRequest): Promise<ApiResponse<DeckApiResponse>> {
-    return apiClient.put<DeckApiResponse>(API_ENDPOINTS.decks.update(id), data as unknown as Record<string, unknown>);
+    return apiClient.patch<DeckApiResponse>(API_ENDPOINTS.decks.update(id), data as unknown as Record<string, unknown>);
   }
 
   /**
