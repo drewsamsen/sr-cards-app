@@ -59,7 +59,7 @@ export const API_ENDPOINTS = {
 };
 
 // Request timeout in milliseconds
-export const REQUEST_TIMEOUT = 10000;
+export const REQUEST_TIMEOUT = 60000;
 
 // Default headers for API requests
 export const DEFAULT_HEADERS = {
