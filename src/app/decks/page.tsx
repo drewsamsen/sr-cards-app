@@ -62,12 +62,6 @@ export default function DecksPage() {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 md:py-10">
-        <div className="mb-4 sm:mb-6">
-          <nav className="flex items-center text-sm">
-            <span className="text-foreground font-medium">Decks</span>
-          </nav>
-        </div>
-        
         <div className="mt-4 sm:mt-6">
           {decksError && (
             <Alert variant="destructive" className="mb-4 sm:mb-6">

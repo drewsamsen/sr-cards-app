@@ -300,21 +300,6 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 md:py-10">
-        <div className="mb-4 sm:mb-6">
-          <nav className="flex items-center text-sm">
-            <Link 
-              href="/decks" 
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              Decks
-            </Link>
-            <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
-            <span className="text-foreground font-medium">
-              {isLoadingDeck ? "Loading..." : deck?.name || "Deck not found"}
-            </span>
-          </nav>
-        </div>
-        
         <div className="mt-4 sm:mt-6">
           {deckError && (
             <Alert variant="destructive" className="mb-4 sm:mb-6">

@@ -357,25 +357,6 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
       <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
-          <div className="mb-6">
-            <nav className="flex items-center text-sm">
-              <Link 
-                href="/decks" 
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                Decks
-              </Link>
-              <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
-              <Link 
-                href={`/deck/${slug}`} 
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                {studyState.deck?.name || slug.replace(/-/g, ' ')}
-              </Link>
-              <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
-              <span className="text-foreground font-medium">Study</span>
-            </nav>
-          </div>
           <div className="flex flex-col items-center justify-center">
             {studyState.error === "empty_deck" ? (
               <div className="flex flex-col items-center justify-center max-w-md mx-auto">
@@ -512,25 +493,6 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
       <div className="flex min-h-screen flex-col">
         <Header />
         <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
-          <div className="mb-6">
-            <nav className="flex items-center text-sm">
-              <Link 
-                href="/decks" 
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                Decks
-              </Link>
-              <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
-              <Link 
-                href={`/deck/${slug}`} 
-                className="text-muted-foreground hover:text-primary transition-colors"
-              >
-                {studyState.deck?.name || slug.replace(/-/g, ' ')}
-              </Link>
-              <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
-              <span className="text-foreground font-medium">Study</span>
-            </nav>
-          </div>
           <div className="flex flex-col items-center justify-center">
             <p className="text-xl">You are all caught up</p>
             <Link href={`/deck/${slug}`}>
@@ -545,25 +507,135 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <main className="flex-1 container mx-auto px-4 py-6 md:py-10 flex flex-col">
-        <div className="mb-6">
-          <nav className="flex items-center text-sm">
-            <Link 
-              href="/decks" 
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              Decks
-            </Link>
-            <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
-            <Link 
-              href={`/deck/${slug}`} 
-              className="text-muted-foreground hover:text-primary transition-colors"
-            >
-              {studyState.deck?.name || slug.replace(/-/g, ' ')}
-            </Link>
-            <ChevronRight className="h-4 w-4 mx-2 text-muted-foreground" />
-            <span className="text-foreground font-medium">Study</span>
-          </nav>
+      <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 md:py-10">
+        <div className="mt-4 sm:mt-6">
+          {studyState.error && (
+            <div className="flex flex-col items-center justify-center">
+              {studyState.error === "empty_deck" ? (
+                <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+                  <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+                    <div className="bg-primary/10 p-6 flex flex-col items-center">
+                      <div className="rounded-full bg-primary/20 p-3 mb-4">
+                        <RotateCcw className="h-8 w-8 text-primary" />
+                      </div>
+                      <h2 className="text-2xl font-bold text-center mb-2">Empty Deck</h2>
+                      <p className="text-center text-muted-foreground">
+                        {studyState.message || "This deck doesn't have any cards yet. Add some cards to start reviewing!"}
+                      </p>
+                    </div>
+                    
+                    <div className="p-6 flex flex-col items-center">
+                      <div className="space-y-4 w-full">
+                        <Link href={`/deck/${slug}`} className="w-full">
+                          <Button className="w-full">Back to Deck</Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : studyState.error === "all_caught_up" ? (
+                <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+                  <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+                    <div className="bg-primary/10 p-6 flex flex-col items-center">
+                      <div className="rounded-full bg-primary/20 p-3 mb-4">
+                        <Check className="h-8 w-8 text-primary" />
+                      </div>
+                      <h2 className="text-2xl font-bold text-center mb-2">Great job!</h2>
+                      <p className="text-center text-muted-foreground">
+                        {studyState.message || "You've completed all your reviews for now. Check back later for more."}
+                      </p>
+                    </div>
+                    
+                    <div className="p-6 flex flex-col items-center">
+                      <div className="flex items-center justify-center space-x-1 mb-6">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="h-5 w-5 fill-primary text-primary" />
+                        ))}
+                      </div>
+                      
+                      <div className="space-y-4 w-full">
+                        <Link href={`/deck/${slug}`} className="w-full">
+                          <Button className="w-full">Back to Deck</Button>
+                        </Link>
+                        <Link href="/decks" className="w-full">
+                          <Button variant="outline" className="w-full">View All Decks</Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : studyState.error === "daily_limit_reached" ? (
+                <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+                  <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+                    <div className="bg-primary/10 p-6 flex flex-col items-center">
+                      <div className="rounded-full bg-primary/20 p-3 mb-4">
+                        <X className="h-8 w-8 text-primary" />
+                      </div>
+                      <h2 className="text-2xl font-bold text-center mb-2">Daily Limit Reached</h2>
+                      <p className="text-center text-muted-foreground">
+                        {studyState.message || "You've reached your daily review limits for this deck. Come back later!"}
+                      </p>
+                    </div>
+                    
+                    {studyState.dailyProgress && (
+                      <div className="px-6 pt-4">
+                        <h3 className="font-medium mb-2 text-center">Daily Progress</h3>
+                        <div className="grid grid-cols-2 gap-4 text-sm bg-muted p-4 rounded-lg">
+                          <div className="flex flex-col items-center">
+                            <p className="text-muted-foreground">New Cards</p>
+                            <p className="font-medium text-lg">{studyState.dailyProgress.newCardsSeen} / {studyState.dailyProgress.newCardsLimit}</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <p className="text-muted-foreground">Reviews</p>
+                            <p className="font-medium text-lg">{studyState.dailyProgress.reviewCardsSeen} / {studyState.dailyProgress.reviewCardsLimit}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="p-6 flex flex-col items-center">
+                      <div className="space-y-4 w-full">
+                        <Link href={`/deck/${slug}`} className="w-full">
+                          <Button className="w-full">Back to Deck</Button>
+                        </Link>
+                        <Link href="/decks" className="w-full">
+                          <Button variant="outline" className="w-full">View All Decks</Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+                  <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+                    <div className="bg-destructive/10 p-6 flex flex-col items-center">
+                      <div className="rounded-full bg-destructive/20 p-3 mb-4">
+                        <X className="h-8 w-8 text-destructive" />
+                      </div>
+                      <h2 className="text-2xl font-bold text-center mb-2">Error</h2>
+                      <p className="text-center text-muted-foreground">
+                        {studyState.message || "An error occurred while loading cards. Please try again."}
+                      </p>
+                    </div>
+                    
+                    <div className="p-6 flex flex-col items-center">
+                      <div className="space-y-4 w-full">
+                        <Button 
+                          className="w-full" 
+                          onClick={() => fetchCardsForReview()}
+                        >
+                          Try Again
+                        </Button>
+                        <Link href={`/deck/${slug}`} className="w-full">
+                          <Button variant="outline" className="w-full">Back to Deck</Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
         
         <div className="flex flex-col items-center justify-between flex-grow">

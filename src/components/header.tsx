@@ -37,7 +37,9 @@ export function Header() {
     <header className="w-full border-b bg-gray-100">
       <div className="max-w-screen-xl mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-8">
-          <h1 className="text-xl font-bold">SupaCards</h1>
+          <Link href="/decks" className="hover:opacity-80 transition-opacity">
+            <h1 className="text-xl font-bold">SupaCards</h1>
+          </Link>
           
           {/* Desktop Navigation */}
           {user && (
