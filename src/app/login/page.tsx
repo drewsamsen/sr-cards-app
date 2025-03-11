@@ -7,8 +7,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Header } from "@/components/header"
 import { useAuth } from "@/lib/hooks"
+import { PageLayout } from "@/components/page-layout"
 
 export default function LoginPage() {
   const router = useRouter()
@@ -81,9 +81,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <div className="flex-1 flex items-start justify-center p-4 pt-8 md:pt-12">
+    <PageLayout>
+      <div className="flex items-start justify-center">
         <Card className="w-full max-w-md">
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
@@ -197,6 +196,6 @@ export default function LoginPage() {
           </Tabs>
         </Card>
       </div>
-    </div>
+    </PageLayout>
   )
 } 

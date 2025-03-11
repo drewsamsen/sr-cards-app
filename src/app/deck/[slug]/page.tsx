@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { DataTable } from "@/components/data-table"
 import { deckCardColumns } from "@/components/deck-card-columns"
-import { Header } from "@/components/header"
 import { useAuth, useDeck, useDeckCards } from "@/lib/hooks"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -29,6 +28,7 @@ import { cardService } from "@/lib/api/services/card.service"
 import { CardEditModal } from "@/components/card-edit-modal"
 import { CardAddModal } from "@/components/card-add-modal"
 import { SingleCard } from "@/lib/hooks/useCard"
+import { PageLayout } from "@/components/page-layout"
 
 // Define the Card type to match the data structure
 export interface DeckCard {
@@ -296,213 +296,210 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 md:py-10">
-        <div className="mt-4 sm:mt-6">
-          {deckError && (
-            <Alert variant="destructive" className="mb-4 sm:mb-6">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                {deckError}
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          {formError && (
-            <Alert variant="destructive" className="mb-4 sm:mb-6">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                {formError}
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          {formSuccess && (
-            <Alert className="mb-4 sm:mb-6 bg-green-50 text-green-800 border-green-200">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>Deck updated successfully!</AlertDescription>
-            </Alert>
-          )}
-          
-          {deleteSuccess && (
-            <Alert className="mb-4 sm:mb-6 bg-green-50 text-green-800 border-green-200">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>Card deleted successfully!</AlertDescription>
-            </Alert>
-          )}
-          
-          <Card className="mb-4 sm:mb-6">
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle>
-                {isEditing ? "Edit Deck" : (isLoadingDeck ? "Loading..." : deck?.name || "Deck not found")}
-              </CardTitle>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => setIsEditing(!isEditing)}
-                className="h-8 w-8 p-0"
-              >
-                {isEditing ? <X className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
-              </Button>
-            </CardHeader>
-            <CardContent>
-              {isEditing ? (
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">Deck Name</Label>
+    <PageLayout>
+      <div className="mt-4 sm:mt-6">
+        {deckError && (
+          <Alert variant="destructive" className="mb-4 sm:mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {deckError}
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {formError && (
+          <Alert variant="destructive" className="mb-4 sm:mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {formError}
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {formSuccess && (
+          <Alert className="mb-4 sm:mb-6 bg-green-50 text-green-800 border-green-200">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>Deck updated successfully!</AlertDescription>
+          </Alert>
+        )}
+        
+        {deleteSuccess && (
+          <Alert className="mb-4 sm:mb-6 bg-green-50 text-green-800 border-green-200">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>Card deleted successfully!</AlertDescription>
+          </Alert>
+        )}
+        
+        <Card className="mb-4 sm:mb-6">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle>
+              {isEditing ? "Edit Deck" : (isLoadingDeck ? "Loading..." : deck?.name || "Deck not found")}
+            </CardTitle>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setIsEditing(!isEditing)}
+              className="h-8 w-8 p-0"
+            >
+              {isEditing ? <X className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {isEditing ? (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">Deck Name</Label>
+                  <Input
+                    id="name"
+                    value={name}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      const newName = e.target.value;
+                      setName(newName);
+                      // Only auto-generate slug if the user hasn't manually edited it
+                      // or if it's empty or if it was derived from the previous name
+                      if (!slug || slug === generateSlug(name)) {
+                        setSlug(generateSlug(newName));
+                      }
+                    }}
+                    placeholder="e.g. JavaScript Basics"
+                    required
+                  />
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="slug">Slug (URL-friendly identifier)</Label>
+                  <div className="flex gap-2">
                     <Input
-                      id="name"
-                      value={name}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        const newName = e.target.value;
-                        setName(newName);
-                        // Only auto-generate slug if the user hasn't manually edited it
-                        // or if it's empty or if it was derived from the previous name
-                        if (!slug || slug === generateSlug(name)) {
-                          setSlug(generateSlug(newName));
-                        }
-                      }}
-                      placeholder="e.g. JavaScript Basics"
+                      id="slug"
+                      value={slug}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSlug(e.target.value)}
+                      placeholder="e.g. javascript-basics"
                       required
                     />
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setSlug(generateSlug(name))}
+                      className="whitespace-nowrap"
+                    >
+                      Generate from Name
+                    </Button>
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    This will be used in the URL: /deck/<span className="font-mono">{slug || 'your-slug'}</span>
+                  </p>
+                </div>
+                
+                <div className="grid gap-2">
+                  <Label htmlFor="description">Description (Optional)</Label>
+                  <Textarea
+                    id="description"
+                    value={description}
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+                    placeholder="Describe what this deck is about..."
+                    rows={4}
+                  />
+                </div>
+                
+                <div className="flex justify-between gap-4">
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={() => setShowDeleteConfirmation(true)}
+                    className="flex items-center gap-2"
+                  >
+                    <X className="h-4 w-4" />
+                    Delete Deck
+                  </Button>
                   
-                  <div className="grid gap-2">
-                    <Label htmlFor="slug">Slug (URL-friendly identifier)</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="slug"
-                        value={slug}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSlug(e.target.value)}
-                        placeholder="e.g. javascript-basics"
-                        required
-                      />
-                      <Button 
-                        type="button" 
-                        variant="outline" 
-                        size="sm"
-                        onClick={() => setSlug(generateSlug(name))}
-                        className="whitespace-nowrap"
-                      >
-                        Generate from Name
-                      </Button>
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      This will be used in the URL: /deck/<span className="font-mono">{slug || 'your-slug'}</span>
-                    </p>
-                  </div>
-                  
-                  <div className="grid gap-2">
-                    <Label htmlFor="description">Description (Optional)</Label>
-                    <Textarea
-                      id="description"
-                      value={description}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
-                      placeholder="Describe what this deck is about..."
-                      rows={4}
-                    />
-                  </div>
-                  
-                  <div className="flex justify-between gap-4">
+                  <div className="flex gap-4">
                     <Button
                       type="button"
-                      variant="destructive"
-                      onClick={() => setShowDeleteConfirmation(true)}
+                      variant="outline"
+                      onClick={() => setIsEditing(false)}
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      type="submit" 
                       className="flex items-center gap-2"
+                      disabled={isSubmitting}
                     >
-                      <X className="h-4 w-4" />
-                      Delete Deck
+                      <Save className="h-4 w-4" />
+                      {isSubmitting ? "Saving..." : "Save Changes"}
                     </Button>
-                    
-                    <div className="flex gap-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => setIsEditing(false)}
-                      >
-                        Cancel
-                      </Button>
-                      <Button 
-                        type="submit" 
-                        className="flex items-center gap-2"
-                        disabled={isSubmitting}
-                      >
-                        <Save className="h-4 w-4" />
-                        {isSubmitting ? "Saving..." : "Save Changes"}
-                      </Button>
-                    </div>
                   </div>
-                </form>
-              ) : (
-                <div>
-                  {deck?.description ? (
-                    <p className="text-muted-foreground">{deck.description}</p>
-                  ) : (
-                    <p className="text-muted-foreground italic">No description provided</p>
-                  )}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-          
-          {cardsError && (
-            <Alert variant="destructive" className="mb-4 sm:mb-6">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>
-                {cardsError}
-              </AlertDescription>
-            </Alert>
-          )}
-          
-          <Card>
-            <CardContent className="pt-2 sm:pt-3 px-2 sm:px-6 pb-4 sm:pb-6">
-              <DataTable 
-                columns={deckCardColumns} 
-                data={cardsWithHandlers} 
-                searchPlaceholder="Search cards..." 
-                emptyMessage={
-                  isLoadingCards 
-                    ? "Loading cards..." 
-                    : cardsError 
-                      ? "Error loading cards" 
-                      : "No cards found in this deck."
-                }
-                pagination={tablePagination}
-                onPaginationChange={{
-                  onPageChange: handlePageChange,
-                  onPageSizeChange: handlePageSizeChange
-                }}
-                onSearch={handleSearch}
-                useServerSearch={true}
-                actionButton={
-                  <div className="flex gap-2">
-                    <Button 
-                      variant="default" 
-                      size="sm" 
-                      className="flex items-center gap-1"
-                      onClick={() => setIsCardAddModalOpen(true)}
-                    >
-                      <Plus className="h-4 w-4" />
-                      Add Card
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="flex items-center gap-1"
-                      disabled={isLoadingCards || cards.length === 0}
-                      onClick={() => router.push(`/deck/${deckSlug}/study`)}
-                    >
-                      <BookOpen className="h-4 w-4" />
-                      Study
-                    </Button>
-                  </div>
-                }
-              />
-            </CardContent>
-          </Card>
-        </div>
-      </main>
+              </form>
+            ) : (
+              <div>
+                {deck?.description ? (
+                  <p className="text-muted-foreground">{deck.description}</p>
+                ) : (
+                  <p className="text-muted-foreground italic">No description provided</p>
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+        
+        {cardsError && (
+          <Alert variant="destructive" className="mb-4 sm:mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              {cardsError}
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        <Card>
+          <CardContent className="pt-2 sm:pt-3 px-2 sm:px-6 pb-4 sm:pb-6">
+            <DataTable 
+              columns={deckCardColumns} 
+              data={cardsWithHandlers} 
+              searchPlaceholder="Search cards..." 
+              emptyMessage={
+                isLoadingCards 
+                  ? "Loading cards..." 
+                  : cardsError 
+                    ? "Error loading cards" 
+                    : "No cards found in this deck."
+              }
+              pagination={tablePagination}
+              onPaginationChange={{
+                onPageChange: handlePageChange,
+                onPageSizeChange: handlePageSizeChange
+              }}
+              onSearch={handleSearch}
+              useServerSearch={true}
+              actionButton={
+                <div className="flex gap-2">
+                  <Button 
+                    variant="default" 
+                    size="sm" 
+                    className="flex items-center gap-1"
+                    onClick={() => setIsCardAddModalOpen(true)}
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add Card
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex items-center gap-1"
+                    disabled={isLoadingCards || cards.length === 0}
+                    onClick={() => router.push(`/deck/${deckSlug}/study`)}
+                  >
+                    <BookOpen className="h-4 w-4" />
+                    Study
+                  </Button>
+                </div>
+              }
+            />
+          </CardContent>
+        </Card>
+      </div>
       
       {/* Card Edit Modal */}
       <CardEditModal
@@ -579,6 +576,6 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageLayout>
   )
 } 

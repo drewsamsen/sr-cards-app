@@ -1,16 +1,15 @@
 "use client"
 
 import Link from "next/link"
-import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Home, Search } from "lucide-react"
+import { PageLayout } from "@/components/page-layout"
 
 export default function NotFound() {
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1 container mx-auto px-4 py-6 md:py-10 flex items-center justify-center">
+    <PageLayout>
+      <div className="flex items-center justify-center">
         <Card className="max-w-md w-full">
           <CardContent className="pt-6 flex flex-col items-center text-center">
             <div className="bg-gray-100 rounded-full p-6 mb-6">
@@ -36,7 +35,7 @@ export default function NotFound() {
             </div>
           </CardContent>
         </Card>
-      </main>
-    </div>
+      </div>
+    </PageLayout>
   )
 } 

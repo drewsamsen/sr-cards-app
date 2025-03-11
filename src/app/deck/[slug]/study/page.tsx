@@ -11,6 +11,7 @@ import Link from "next/link"
 import { deckService, CardReviewResponse, DeckResponse, DailyProgress } from "@/lib/api/services/deck.service"
 import { cardService } from "@/lib/api/services/card.service"
 import { CardEditModal } from "@/components/card-edit-modal"
+import { PageLayout } from "@/components/page-layout"
 
 // Helper function to calculate and format time difference
 const getTimeUntil = (dateString: string) => {
@@ -65,6 +66,7 @@ interface StudyState {
   allCaughtUp: boolean
   emptyDeck: boolean
   processedCardIds: Set<string> // Track cards we've already seen
+  isComplete: boolean
 }
 
 export default function StudyPage(props: { params: Promise<{ slug: string }> }) {
@@ -81,7 +83,8 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
     error: null,
     allCaughtUp: false,
     emptyDeck: false,
-    processedCardIds: new Set<string>()
+    processedCardIds: new Set<string>(),
+    isComplete: false
   })
   
   // Card edit modal state
@@ -342,148 +345,182 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   // Show loading state while fetching card
   if (studyState.isLoading) {
     return (
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <main className="flex-1 container mx-auto px-4 py-6 md:py-10 flex items-center justify-center">
+      <PageLayout>
+        <div className="flex items-center justify-center">
           <p>Loading card...</p>
-        </main>
-      </div>
+        </div>
+      </PageLayout>
     )
   }
 
   // Show error state if there was an error
   if (studyState.error) {
     return (
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
-          <div className="flex flex-col items-center justify-center">
-            {studyState.error === "empty_deck" ? (
-              <div className="flex flex-col items-center justify-center max-w-md mx-auto">
-                <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
-                  <div className="bg-primary/10 p-6 flex flex-col items-center">
-                    <div className="rounded-full bg-primary/20 p-3 mb-4">
-                      <RotateCcw className="h-8 w-8 text-primary" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-center mb-2">Empty Deck</h2>
-                    <p className="text-center text-muted-foreground">
-                      {studyState.message || "This deck doesn't have any cards yet. Add some cards to start reviewing!"}
-                    </p>
+      <PageLayout>
+        <div className="flex flex-col items-center justify-center">
+          {studyState.error === "empty_deck" ? (
+            <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+              <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+                <div className="bg-primary/10 p-6 flex flex-col items-center">
+                  <div className="rounded-full bg-primary/20 p-3 mb-4">
+                    <RotateCcw className="h-8 w-8 text-primary" />
                   </div>
-                  
-                  <div className="p-6 flex flex-col items-center">
-                    <div className="space-y-4 w-full">
-                      <Link href={`/deck/${slug}`} className="w-full">
-                        <Button className="w-full">Back to Deck</Button>
-                      </Link>
-                    </div>
+                  <h2 className="text-2xl font-bold text-center mb-2">Empty Deck</h2>
+                  <p className="text-center text-muted-foreground">
+                    {studyState.message || "This deck doesn't have any cards yet. Add some cards to start reviewing!"}
+                  </p>
+                </div>
+                
+                <div className="p-6 flex flex-col items-center">
+                  <div className="space-y-4 w-full">
+                    <Link href={`/deck/${slug}`} className="w-full">
+                      <Button className="w-full">Back to Deck</Button>
+                    </Link>
                   </div>
                 </div>
               </div>
-            ) : studyState.error === "all_caught_up" ? (
-              <div className="flex flex-col items-center justify-center max-w-md mx-auto">
-                <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
-                  <div className="bg-primary/10 p-6 flex flex-col items-center">
-                    <div className="rounded-full bg-primary/20 p-3 mb-4">
-                      <Check className="h-8 w-8 text-primary" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-center mb-2">Great job!</h2>
-                    <p className="text-center text-muted-foreground">
-                      {studyState.message || "You've completed all your reviews for now. Check back later for more."}
-                    </p>
+            </div>
+          ) : studyState.error === "all_caught_up" ? (
+            <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+              <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+                <div className="bg-primary/10 p-6 flex flex-col items-center">
+                  <div className="rounded-full bg-primary/20 p-3 mb-4">
+                    <Check className="h-8 w-8 text-primary" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-center mb-2">Great job!</h2>
+                  <p className="text-center text-muted-foreground">
+                    {studyState.message || "You've completed all your reviews for now. Check back later for more."}
+                  </p>
+                </div>
+                
+                <div className="p-6 flex flex-col items-center">
+                  <div className="flex items-center justify-center space-x-1 mb-6">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="h-5 w-5 fill-primary text-primary" />
+                    ))}
                   </div>
                   
-                  <div className="p-6 flex flex-col items-center">
-                    <div className="flex items-center justify-center space-x-1 mb-6">
-                      {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-5 w-5 fill-primary text-primary" />
-                      ))}
-                    </div>
-                    
-                    <div className="space-y-4 w-full">
-                      <Link href={`/deck/${slug}`} className="w-full">
-                        <Button className="w-full">Back to Deck</Button>
-                      </Link>
-                      <Link href="/decks" className="w-full">
-                        <Button variant="outline" className="w-full">View All Decks</Button>
-                      </Link>
-                    </div>
+                  <div className="space-y-4 w-full">
+                    <Link href={`/deck/${slug}`} className="w-full">
+                      <Button className="w-full">Back to Deck</Button>
+                    </Link>
+                    <Link href="/decks" className="w-full">
+                      <Button variant="outline" className="w-full">View All Decks</Button>
+                    </Link>
                   </div>
                 </div>
               </div>
-            ) : studyState.error === "daily_limit_reached" ? (
-              <div className="flex flex-col items-center justify-center max-w-md mx-auto">
-                <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
-                  <div className="bg-primary/10 p-6 flex flex-col items-center">
-                    <div className="rounded-full bg-primary/20 p-3 mb-4">
-                      <X className="h-8 w-8 text-primary" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-center mb-2">Daily Limit Reached</h2>
-                    <p className="text-center text-muted-foreground">
-                      {studyState.message || "You've reached your daily review limits for this deck. Come back later!"}
-                    </p>
+            </div>
+          ) : studyState.error === "daily_limit_reached" ? (
+            <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+              <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+                <div className="bg-primary/10 p-6 flex flex-col items-center">
+                  <div className="rounded-full bg-primary/20 p-3 mb-4">
+                    <X className="h-8 w-8 text-primary" />
                   </div>
-                  
-                  {studyState.dailyProgress && (
-                    <div className="px-6 pt-4">
-                      <h3 className="font-medium mb-2 text-center">Daily Progress</h3>
-                      <div className="grid grid-cols-2 gap-4 text-sm bg-muted p-4 rounded-lg">
-                        <div className="flex flex-col items-center">
-                          <p className="text-muted-foreground">New Cards</p>
-                          <p className="font-medium text-lg">{studyState.dailyProgress.newCardsSeen} / {studyState.dailyProgress.newCardsLimit}</p>
-                        </div>
-                        <div className="flex flex-col items-center">
-                          <p className="text-muted-foreground">Reviews</p>
-                          <p className="font-medium text-lg">{studyState.dailyProgress.reviewCardsSeen} / {studyState.dailyProgress.reviewCardsLimit}</p>
-                        </div>
+                  <h2 className="text-2xl font-bold text-center mb-2">Daily Limit Reached</h2>
+                  <p className="text-center text-muted-foreground">
+                    {studyState.message || "You've reached your daily review limits for this deck. Come back later!"}
+                  </p>
+                </div>
+                
+                {studyState.dailyProgress && (
+                  <div className="px-6 pt-4">
+                    <h3 className="font-medium mb-2 text-center">Daily Progress</h3>
+                    <div className="grid grid-cols-2 gap-4 text-sm bg-muted p-4 rounded-lg">
+                      <div className="flex flex-col items-center">
+                        <p className="text-muted-foreground">New Cards</p>
+                        <p className="font-medium text-lg">{studyState.dailyProgress.newCardsSeen} / {studyState.dailyProgress.newCardsLimit}</p>
+                      </div>
+                      <div className="flex flex-col items-center">
+                        <p className="text-muted-foreground">Reviews</p>
+                        <p className="font-medium text-lg">{studyState.dailyProgress.reviewCardsSeen} / {studyState.dailyProgress.reviewCardsLimit}</p>
                       </div>
                     </div>
-                  )}
-                  
-                  <div className="p-6 flex flex-col items-center">
-                    <div className="space-y-4 w-full">
-                      <Link href={`/deck/${slug}`} className="w-full">
-                        <Button className="w-full">Back to Deck</Button>
-                      </Link>
-                      <Link href="/decks" className="w-full">
-                        <Button variant="outline" className="w-full">View All Decks</Button>
-                      </Link>
-                    </div>
+                  </div>
+                )}
+                
+                <div className="p-6 flex flex-col items-center">
+                  <div className="space-y-4 w-full">
+                    <Link href={`/deck/${slug}`} className="w-full">
+                      <Button className="w-full">Back to Deck</Button>
+                    </Link>
+                    <Link href="/decks" className="w-full">
+                      <Button variant="outline" className="w-full">View All Decks</Button>
+                    </Link>
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center max-w-md mx-auto">
-                <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
-                  <div className="bg-destructive/10 p-6 flex flex-col items-center">
-                    <div className="rounded-full bg-destructive/20 p-3 mb-4">
-                      <X className="h-8 w-8 text-destructive" />
-                    </div>
-                    <h2 className="text-2xl font-bold text-center mb-2">Error</h2>
-                    <p className="text-center text-muted-foreground">
-                      {studyState.message || "An error occurred while loading cards. Please try again."}
-                    </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+              <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+                <div className="bg-destructive/10 p-6 flex flex-col items-center">
+                  <div className="rounded-full bg-destructive/20 p-3 mb-4">
+                    <X className="h-8 w-8 text-destructive" />
                   </div>
-                  
-                  <div className="p-6 flex flex-col items-center">
-                    <div className="space-y-4 w-full">
-                      <Button 
-                        className="w-full" 
-                        onClick={() => fetchCardsForReview()}
-                      >
-                        Try Again
-                      </Button>
-                      <Link href={`/deck/${slug}`} className="w-full">
-                        <Button variant="outline" className="w-full">Back to Deck</Button>
-                      </Link>
-                    </div>
+                  <h2 className="text-2xl font-bold text-center mb-2">Error</h2>
+                  <p className="text-center text-muted-foreground">
+                    {studyState.message || "An error occurred while loading cards. Please try again."}
+                  </p>
+                </div>
+                
+                <div className="p-6 flex flex-col items-center">
+                  <div className="space-y-4 w-full">
+                    <Button 
+                      className="w-full" 
+                      onClick={() => fetchCardsForReview()}
+                    >
+                      Try Again
+                    </Button>
+                    <Link href={`/deck/${slug}`} className="w-full">
+                      <Button variant="outline" className="w-full">Back to Deck</Button>
+                    </Link>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
+          )}
+        </div>
+      </PageLayout>
+    )
+  }
+
+  // Show completion state if study session is complete
+  if (studyState.isComplete) {
+    return (
+      <PageLayout>
+        <div className="flex flex-col items-center justify-center">
+          <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
+            <div className="bg-primary/10 p-6 flex flex-col items-center">
+              <div className="rounded-full bg-primary/20 p-3 mb-4">
+                <Check className="h-8 w-8 text-primary" />
+              </div>
+              <h2 className="text-2xl font-bold text-center mb-2">Great job!</h2>
+              <p className="text-center text-muted-foreground">
+                {studyState.message || "You've completed all your reviews for now. Check back later for more."}
+              </p>
+            </div>
+            
+            <div className="p-6 flex flex-col items-center">
+              <div className="flex items-center justify-center space-x-1 mb-6">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="h-5 w-5 fill-primary text-primary" />
+                ))}
+              </div>
+              
+              <div className="space-y-4 w-full">
+                <Link href={`/deck/${slug}`} className="w-full">
+                  <Button className="w-full">Back to Deck</Button>
+                </Link>
+                <Link href="/decks" className="w-full">
+                  <Button variant="outline" className="w-full">View All Decks</Button>
+                </Link>
+              </div>
+            </div>
           </div>
-        </main>
-      </div>
+        </div>
+      </PageLayout>
     )
   }
 
@@ -505,265 +542,132 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 md:py-10">
-        <div className="mt-4 sm:mt-6">
-          {studyState.error && (
-            <div className="flex flex-col items-center justify-center">
-              {studyState.error === "empty_deck" ? (
-                <div className="flex flex-col items-center justify-center max-w-md mx-auto">
-                  <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
-                    <div className="bg-primary/10 p-6 flex flex-col items-center">
-                      <div className="rounded-full bg-primary/20 p-3 mb-4">
-                        <RotateCcw className="h-8 w-8 text-primary" />
-                      </div>
-                      <h2 className="text-2xl font-bold text-center mb-2">Empty Deck</h2>
-                      <p className="text-center text-muted-foreground">
-                        {studyState.message || "This deck doesn't have any cards yet. Add some cards to start reviewing!"}
-                      </p>
-                    </div>
-                    
-                    <div className="p-6 flex flex-col items-center">
-                      <div className="space-y-4 w-full">
-                        <Link href={`/deck/${slug}`} className="w-full">
-                          <Button className="w-full">Back to Deck</Button>
-                        </Link>
-                      </div>
-                    </div>
+    <PageLayout>
+      <div className="flex flex-col items-center justify-between flex-grow">
+        {/* Make this entire area clickable for flipping the card */}
+        <div className="w-full flex-grow flex flex-col items-center cursor-pointer pb-32 md:pb-0" onClick={handleFlip}>
+          <div className="w-full flex justify-center">
+            <Card 
+              className="w-full max-w-2xl min-h-[16rem] md:min-h-[20rem] cursor-pointer transition-all duration-300 relative flex flex-col"
+              onClick={handleFlip}
+            >
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 h-8 w-8 rounded-full opacity-70 hover:opacity-100 z-10"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent card flip when clicking edit
+                  handleEditClick(e);
+                }}
+                title="Edit card"
+              >
+                <Edit className="h-4 w-4" />
+              </Button>
+              <CardContent className="p-6 flex flex-col flex-grow">
+                <div className="flex flex-col h-full">
+                  {/* Front text always visible */}
+                  <div className={isFlipped ? "" : "mb-auto"}>
+                    <p className="text-xl md:text-2xl font-medium leading-relaxed text-center whitespace-pre-line">{studyState.currentCard?.front}</p>
                   </div>
+                  
+                  {/* Back content only visible when flipped */}
+                  {isFlipped && (
+                    <div className="mt-4">
+                      <hr className="mb-4 border-t border-border" />
+                      <p className="text-xl md:text-2xl font-medium text-left whitespace-pre-line leading-tight">{studyState.currentCard?.back}</p>
+                    </div>
+                  )}
                 </div>
-              ) : studyState.error === "all_caught_up" ? (
-                <div className="flex flex-col items-center justify-center max-w-md mx-auto">
-                  <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
-                    <div className="bg-primary/10 p-6 flex flex-col items-center">
-                      <div className="rounded-full bg-primary/20 p-3 mb-4">
-                        <Check className="h-8 w-8 text-primary" />
-                      </div>
-                      <h2 className="text-2xl font-bold text-center mb-2">Great job!</h2>
-                      <p className="text-center text-muted-foreground">
-                        {studyState.message || "You've completed all your reviews for now. Check back later for more."}
-                      </p>
-                    </div>
-                    
-                    <div className="p-6 flex flex-col items-center">
-                      <div className="flex items-center justify-center space-x-1 mb-6">
-                        {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="h-5 w-5 fill-primary text-primary" />
-                        ))}
-                      </div>
-                      
-                      <div className="space-y-4 w-full">
-                        <Link href={`/deck/${slug}`} className="w-full">
-                          <Button className="w-full">Back to Deck</Button>
-                        </Link>
-                        <Link href="/decks" className="w-full">
-                          <Button variant="outline" className="w-full">View All Decks</Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : studyState.error === "daily_limit_reached" ? (
-                <div className="flex flex-col items-center justify-center max-w-md mx-auto">
-                  <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
-                    <div className="bg-primary/10 p-6 flex flex-col items-center">
-                      <div className="rounded-full bg-primary/20 p-3 mb-4">
-                        <X className="h-8 w-8 text-primary" />
-                      </div>
-                      <h2 className="text-2xl font-bold text-center mb-2">Daily Limit Reached</h2>
-                      <p className="text-center text-muted-foreground">
-                        {studyState.message || "You've reached your daily review limits for this deck. Come back later!"}
-                      </p>
-                    </div>
-                    
-                    {studyState.dailyProgress && (
-                      <div className="px-6 pt-4">
-                        <h3 className="font-medium mb-2 text-center">Daily Progress</h3>
-                        <div className="grid grid-cols-2 gap-4 text-sm bg-muted p-4 rounded-lg">
-                          <div className="flex flex-col items-center">
-                            <p className="text-muted-foreground">New Cards</p>
-                            <p className="font-medium text-lg">{studyState.dailyProgress.newCardsSeen} / {studyState.dailyProgress.newCardsLimit}</p>
-                          </div>
-                          <div className="flex flex-col items-center">
-                            <p className="text-muted-foreground">Reviews</p>
-                            <p className="font-medium text-lg">{studyState.dailyProgress.reviewCardsSeen} / {studyState.dailyProgress.reviewCardsLimit}</p>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                    
-                    <div className="p-6 flex flex-col items-center">
-                      <div className="space-y-4 w-full">
-                        <Link href={`/deck/${slug}`} className="w-full">
-                          <Button className="w-full">Back to Deck</Button>
-                        </Link>
-                        <Link href="/decks" className="w-full">
-                          <Button variant="outline" className="w-full">View All Decks</Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center max-w-md mx-auto">
-                  <div className="w-full bg-card text-card-foreground rounded-lg border shadow-lg overflow-hidden">
-                    <div className="bg-destructive/10 p-6 flex flex-col items-center">
-                      <div className="rounded-full bg-destructive/20 p-3 mb-4">
-                        <X className="h-8 w-8 text-destructive" />
-                      </div>
-                      <h2 className="text-2xl font-bold text-center mb-2">Error</h2>
-                      <p className="text-center text-muted-foreground">
-                        {studyState.message || "An error occurred while loading cards. Please try again."}
-                      </p>
-                    </div>
-                    
-                    <div className="p-6 flex flex-col items-center">
-                      <div className="space-y-4 w-full">
-                        <Button 
-                          className="w-full" 
-                          onClick={() => fetchCardsForReview()}
-                        >
-                          Try Again
-                        </Button>
-                        <Link href={`/deck/${slug}`} className="w-full">
-                          <Button variant="outline" className="w-full">Back to Deck</Button>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
+              </CardContent>
+            </Card>
+          </div>
+          
+          {/* This empty div provides additional clickable area below the card */}
+          <div className="w-full max-w-2xl h-16 mt-4"></div>
+        </div>
+        
+        <div className={`w-full fixed bottom-0 left-0 right-0 bg-background pb-4 pt-4 px-4 md:static md:pb-0 md:pt-8 md:px-0 transition-opacity duration-300 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] md:shadow-none ${
+          isFlipped ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}>
+          <div className="grid grid-cols-4 gap-1 sm:gap-2 max-w-2xl w-full mx-auto">
+            <div className="flex flex-col items-center">
+              <Button 
+                variant="destructive" 
+                size="lg"
+                onClick={() => handleResponse('again')}
+                className="flex items-center gap-1 w-full px-2 sm:px-4"
+              >
+                <RotateCcw className="h-4 w-4 flex-shrink-0" />
+                <span className="whitespace-nowrap">Again</span>
+              </Button>
+              {studyState.currentCard?.reviewMetrics && (
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-muted-foreground mt-1">
+                    {getTimeUntil(studyState.currentCard.reviewMetrics.again)}
+                  </span>
                 </div>
               )}
             </div>
-          )}
-        </div>
-        
-        <div className="flex flex-col items-center justify-between flex-grow">
-          {/* Make this entire area clickable for flipping the card */}
-          <div className="w-full flex-grow flex flex-col items-center cursor-pointer pb-32 md:pb-0" onClick={handleFlip}>
-            <div className="w-full flex justify-center">
-              <Card 
-                className="w-full max-w-2xl min-h-[16rem] md:min-h-[20rem] cursor-pointer transition-all duration-300 relative flex flex-col"
-                onClick={handleFlip}
+            
+            <div className="flex flex-col items-center">
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => handleResponse('hard')}
+                className="flex items-center gap-1 w-full px-2 sm:px-4 bg-amber-600 hover:bg-amber-700 text-white border-amber-600 hover:border-amber-700"
               >
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-2 right-2 h-8 w-8 rounded-full opacity-70 hover:opacity-100 z-10"
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent card flip when clicking edit
-                    handleEditClick(e);
-                  }}
-                  title="Edit card"
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
-                <CardContent className="p-6 flex flex-col flex-grow">
-                  <div className="flex flex-col h-full">
-                    {/* Front text always visible */}
-                    <div className={isFlipped ? "" : "mb-auto"}>
-                      <p className="text-xl md:text-2xl font-medium leading-relaxed text-center whitespace-pre-line">{studyState.currentCard?.front}</p>
-                    </div>
-                    
-                    {/* Back content only visible when flipped */}
-                    {isFlipped && (
-                      <div className="mt-4">
-                        <hr className="mb-4 border-t border-border" />
-                        <p className="text-xl md:text-2xl font-medium text-left whitespace-pre-line leading-tight">{studyState.currentCard?.back}</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                <X className="h-4 w-4 flex-shrink-0" />
+                <span className="whitespace-nowrap">Hard</span>
+              </Button>
+              {studyState.currentCard?.reviewMetrics && (
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-muted-foreground mt-1">
+                    {getTimeUntil(studyState.currentCard.reviewMetrics.hard)}
+                  </span>
+                </div>
+              )}
             </div>
             
-            {/* This empty div provides additional clickable area below the card */}
-            <div className="w-full max-w-2xl h-16 mt-4"></div>
-          </div>
-          
-          <div className={`w-full fixed bottom-0 left-0 right-0 bg-background pb-4 pt-4 px-4 md:static md:pb-0 md:pt-8 md:px-0 transition-opacity duration-300 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] md:shadow-none ${
-            isFlipped ? "opacity-100" : "opacity-0 pointer-events-none"
-          }`}>
-            <div className="grid grid-cols-4 gap-1 sm:gap-2 max-w-2xl w-full mx-auto">
-              <div className="flex flex-col items-center">
-                <Button 
-                  variant="destructive" 
-                  size="lg"
-                  onClick={() => handleResponse('again')}
-                  className="flex items-center gap-1 w-full px-2 sm:px-4"
-                >
-                  <RotateCcw className="h-4 w-4 flex-shrink-0" />
-                  <span className="whitespace-nowrap">Again</span>
-                </Button>
-                {studyState.currentCard?.reviewMetrics && (
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs text-muted-foreground mt-1">
-                      {getTimeUntil(studyState.currentCard.reviewMetrics.again)}
-                    </span>
-                  </div>
-                )}
-              </div>
-              
-              <div className="flex flex-col items-center">
-                <Button 
-                  variant="outline" 
-                  size="lg"
-                  onClick={() => handleResponse('hard')}
-                  className="flex items-center gap-1 w-full px-2 sm:px-4 bg-amber-600 hover:bg-amber-700 text-white border-amber-600 hover:border-amber-700"
-                >
-                  <X className="h-4 w-4 flex-shrink-0" />
-                  <span className="whitespace-nowrap">Hard</span>
-                </Button>
-                {studyState.currentCard?.reviewMetrics && (
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs text-muted-foreground mt-1">
-                      {getTimeUntil(studyState.currentCard.reviewMetrics.hard)}
-                    </span>
-                  </div>
-                )}
-              </div>
-              
-              <div className="flex flex-col items-center">
-                <Button 
-                  variant="default" 
-                  size="lg"
-                  onClick={() => handleResponse('good')}
-                  className="flex items-center gap-1 w-full px-2 sm:px-4 bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
-                >
-                  <Check className="h-4 w-4 flex-shrink-0" />
-                  <span className="whitespace-nowrap">Good</span>
-                </Button>
-                {studyState.currentCard?.reviewMetrics && (
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs text-muted-foreground mt-1">
-                      {getTimeUntil(studyState.currentCard.reviewMetrics.good)}
-                    </span>
-                  </div>
-                )}
-              </div>
-              
-              <div className="flex flex-col items-center">
-                <Button 
-                  variant="secondary" 
-                  size="lg"
-                  onClick={() => handleResponse('easy')}
-                  className="flex items-center gap-1 w-full px-2 sm:px-4 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700"
-                >
-                  <Star className="h-4 w-4 flex-shrink-0" />
-                  <span className="whitespace-nowrap">Easy</span>
-                </Button>
-                {studyState.currentCard?.reviewMetrics && (
-                  <div className="flex flex-col items-center">
-                    <span className="text-xs text-muted-foreground mt-1">
-                      {getTimeUntil(studyState.currentCard.reviewMetrics.easy)}
-                    </span>
-                  </div>
-                )}
-              </div>
+            <div className="flex flex-col items-center">
+              <Button 
+                variant="default" 
+                size="lg"
+                onClick={() => handleResponse('good')}
+                className="flex items-center gap-1 w-full px-2 sm:px-4 bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
+              >
+                <Check className="h-4 w-4 flex-shrink-0" />
+                <span className="whitespace-nowrap">Good</span>
+              </Button>
+              {studyState.currentCard?.reviewMetrics && (
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-muted-foreground mt-1">
+                    {getTimeUntil(studyState.currentCard.reviewMetrics.good)}
+                  </span>
+                </div>
+              )}
+            </div>
+            
+            <div className="flex flex-col items-center">
+              <Button 
+                variant="secondary" 
+                size="lg"
+                onClick={() => handleResponse('easy')}
+                className="flex items-center gap-1 w-full px-2 sm:px-4 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700"
+              >
+                <Star className="h-4 w-4 flex-shrink-0" />
+                <span className="whitespace-nowrap">Easy</span>
+              </Button>
+              {studyState.currentCard?.reviewMetrics && (
+                <div className="flex flex-col items-center">
+                  <span className="text-xs text-muted-foreground mt-1">
+                    {getTimeUntil(studyState.currentCard.reviewMetrics.easy)}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
-      </main>
+      </div>
       
       {/* Card edit modal */}
       <CardEditModal
@@ -780,6 +684,6 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
         } : null}
         onCardUpdated={handleCardUpdated}
       />
-    </div>
+    </PageLayout>
   )
 } 

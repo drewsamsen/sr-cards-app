@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Header } from "@/components/header"
 import { useAuth } from "@/lib/hooks"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -12,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { AlertCircle, Save } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { deckService, CreateDeckRequest } from "@/lib/api/services/deck.service"
+import { PageLayout } from "@/components/page-layout"
 
 export default function NewDeckPage() {
   const router = useRouter()
@@ -66,7 +66,7 @@ export default function NewDeckPage() {
     return null
   }
   
-  // If still initializing, show loading state
+  // If not logged in or still initializing, show loading state
   if (!isInitialized) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -76,67 +76,62 @@ export default function NewDeckPage() {
   }
   
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1 container mx-auto px-2 sm:px-4 py-4 sm:py-6 md:py-10">
-        <div className="mt-4 sm:mt-6">
-          {error && (
-            <Alert variant="destructive" className="mb-6">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Create New Deck</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Deck Name</Label>
-                  <Input
-                    id="name"
-                    value={name}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-                    placeholder="e.g. JavaScript Basics"
-                    required
-                  />
-                </div>
-                
-                <div className="grid gap-2">
-                  <Label htmlFor="description">Description (Optional)</Label>
-                  <Textarea
-                    id="description"
-                    value={description}
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
-                    placeholder="Describe what this deck is about..."
-                    rows={4}
-                  />
-                </div>
-                
-                <div className="flex justify-end gap-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => router.push('/decks')}
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="flex items-center gap-2"
-                    disabled={isSubmitting}
-                  >
-                    <Save className="h-4 w-4" />
-                    {isSubmitting ? "Creating..." : "Create Deck"}
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      </main>
-    </div>
+    <PageLayout>
+      {error && (
+        <Alert variant="destructive" className="mb-2 sm:mb-3">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Create New Deck</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="grid gap-2">
+              <Label htmlFor="name">Deck Name</Label>
+              <Input
+                id="name"
+                value={name}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                placeholder="e.g. JavaScript Basics"
+                required
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="description">Description (Optional)</Label>
+              <Textarea
+                id="description"
+                value={description}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
+                placeholder="Describe what this deck is about..."
+                rows={4}
+              />
+            </div>
+            
+            <div className="flex justify-end gap-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.push('/decks')}
+              >
+                Cancel
+              </Button>
+              <Button 
+                type="submit" 
+                className="flex items-center gap-2"
+                disabled={isSubmitting}
+              >
+                <Save className="h-4 w-4" />
+                {isSubmitting ? "Creating..." : "Create Deck"}
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </PageLayout>
   )
 } 
