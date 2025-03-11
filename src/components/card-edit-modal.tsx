@@ -1,11 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { 
   Dialog, 
   DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
   DialogFooter 
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -15,6 +13,53 @@ import { AlertCircle, Save } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { cardService, UpdateCardRequest } from "@/lib/api/services/card.service"
 import { SingleCard } from "@/lib/hooks/useCard"
+
+// Custom DialogContent component for mobile positioning
+function MobileDialogContent({ 
+  children, 
+  className = "" 
+}: { 
+  children: React.ReactNode; 
+  className?: string;
+}) {
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Check if we're on mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Listen for resize events
+    window.addEventListener('resize', checkMobile);
+    
+    // Apply styles to the dialog content
+    if (contentRef.current && isMobile) {
+      const style = contentRef.current.style;
+      style.position = 'fixed';
+      style.top = '5%';
+      style.left = '50%';
+      style.transform = 'translateX(-50%)';
+      style.width = 'calc(100% - 32px)';
+      style.maxHeight = '90vh';
+      style.overflowY = 'auto';
+    }
+    
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, [isMobile]);
+
+  return (
+    <DialogContent ref={contentRef} className={`sm:max-w-[500px] ${className}`}>
+      {children}
+    </DialogContent>
+  );
+}
 
 interface CardEditModalProps {
   card: SingleCard | null
@@ -97,11 +142,7 @@ export function CardEditModal({
   
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Edit Card</DialogTitle>
-        </DialogHeader>
-        
+      <MobileDialogContent>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           {error && (
             <Alert variant="destructive" className="mb-6">
@@ -153,7 +194,7 @@ export function CardEditModal({
             </Button>
           </DialogFooter>
         </form>
-      </DialogContent>
+      </MobileDialogContent>
     </Dialog>
   )
 } 

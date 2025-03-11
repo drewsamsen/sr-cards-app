@@ -4,8 +4,6 @@ import { useState, useEffect } from "react"
 import { 
   Dialog, 
   DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
   DialogFooter 
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
@@ -50,8 +48,6 @@ export function CardAddModal({
     e.preventDefault()
     setError(null)
     
-    if (!deckId) return
-    
     try {
       setIsSubmitting(true)
       
@@ -76,10 +72,6 @@ export function CardAddModal({
       const response = await cardService.createCard(deckId, cardData)
       
       if (response.data.status === "success") {
-        // Clear form
-        setFront("")
-        setBack("")
-        
         // Close modal and notify parent component
         onOpenChange(false)
         onCardAdded()
@@ -87,9 +79,11 @@ export function CardAddModal({
         setError("Failed to create card")
       }
     } catch (err) {
-      // Handle duplicate card error
-      if (err instanceof Error && 'status' in err && err.status === 409) {
-        // Extract the message from the error data
+      // Check if it's a duplicate card error
+      if (err instanceof Error && 
+          (err as any).status === 409 && 
+          (err as any).data) {
+        
         interface ErrorWithData extends Error {
           status: number;
           data?: {
@@ -121,10 +115,6 @@ export function CardAddModal({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
-          <DialogTitle>Add New Card</DialogTitle>
-        </DialogHeader>
-        
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
           {error && (
             <Alert variant="destructive" className="mb-6">
@@ -178,7 +168,7 @@ export function CardAddModal({
               disabled={isSubmitting}
             >
               <Plus className="h-4 w-4" />
-              {isSubmitting ? "Creating..." : "Create Card"}
+              {isSubmitting ? "Creating..." : "Add Card"}
             </Button>
           </DialogFooter>
         </form>
