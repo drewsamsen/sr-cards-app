@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Plus, AlertCircle, BookOpen, ChevronRight, Save, Edit, X } from "lucide-react"
+import { Plus, AlertCircle, BookOpen, Save, Edit, X } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import {
   AlertDialog,
@@ -23,7 +23,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
-import Link from "next/link"
 import React, { use } from "react"
 import { deckService, UpdateDeckRequest } from "@/lib/api/services/deck.service"
 import { cardService } from "@/lib/api/services/card.service"

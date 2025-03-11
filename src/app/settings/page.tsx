@@ -6,12 +6,11 @@ import { Header } from "@/components/header"
 import { useAuth, useUserSettings } from "@/lib/hooks"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { AlertCircle, ChevronRight, Save } from "lucide-react"
+import { AlertCircle, Save } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import Link from "next/link"
 import { LearningSettings } from "@/lib/api/services/user.service"
 
 export default function SettingsPage() {

@@ -8,9 +8,10 @@ export interface DeckResponse {
   name: string;
   slug: string;
   description: string;
-  reviewCount?: number;
   totalCards?: number;
   remainingReviews?: number;
+  newCards?: number;
+  dueCards?: number;
   createdAt: string;
   updatedAt: string;
 }

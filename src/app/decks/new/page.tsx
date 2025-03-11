@@ -9,9 +9,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { AlertCircle, ChevronRight, Save } from "lucide-react"
+import { AlertCircle, Save } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import Link from "next/link"
 import { deckService, CreateDeckRequest } from "@/lib/api/services/deck.service"
 
 export default function NewDeckPage() {

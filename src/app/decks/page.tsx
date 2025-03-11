@@ -16,9 +16,10 @@ export interface Deck {
   id: string
   name: string
   slug: string
-  reviewCount: number
   remainingReviews: number
   totalCards: number
+  newCards: number
+  dueCards: number
 }
 
 export default function DecksPage() {
@@ -34,9 +35,10 @@ export default function DecksPage() {
         id: deck.id,
         name: deck.name,
         slug: deck.slug,
-        reviewCount: deck.reviewCount || 0,
         remainingReviews: deck.remainingReviews || 0,
-        totalCards: deck.totalCards || 0
+        totalCards: deck.totalCards || 0,
+        newCards: deck.newCards || 0,
+        dueCards: deck.dueCards || 0
       }))
       setDecks(transformedDecks)
     }
