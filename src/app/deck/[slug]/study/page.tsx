@@ -586,18 +586,18 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
           <div className="w-full max-w-2xl h-16 mt-4"></div>
         </div>
         
-        <div className={`w-full fixed bottom-0 left-0 right-0 bg-background pb-4 pt-4 px-4 md:static md:pb-0 md:pt-8 md:px-0 transition-opacity duration-300 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] md:shadow-none ${
+        <div className={`w-full fixed bottom-0 left-0 right-0 bg-background pb-4 pt-4 px-2 md:static md:pb-0 md:pt-8 md:px-0 transition-opacity duration-300 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] md:shadow-none ${
           isFlipped ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}>
-          <div className="grid grid-cols-4 gap-1 sm:gap-2 max-w-2xl w-full mx-auto">
+          <div className="grid grid-cols-4 gap-0.5 xs:gap-1 sm:gap-2 max-w-2xl w-full mx-auto">
             <div className="flex flex-col items-center">
               <Button 
                 variant="destructive" 
                 size="lg"
                 onClick={() => handleResponse('again')}
-                className="flex items-center gap-1 w-full px-2 sm:px-4"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 text-xs xs:text-sm sm:text-base"
               >
-                <RotateCcw className="h-4 w-4 flex-shrink-0" />
+                <RotateCcw className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
                 <span className="whitespace-nowrap">Again</span>
               </Button>
               {studyState.currentCard?.reviewMetrics && (
@@ -614,9 +614,9 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 variant="outline" 
                 size="lg"
                 onClick={() => handleResponse('hard')}
-                className="flex items-center gap-1 w-full px-2 sm:px-4 bg-amber-600 hover:bg-amber-700 text-white border-amber-600 hover:border-amber-700"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-amber-600 hover:bg-amber-700 text-white border-amber-600 hover:border-amber-700 text-xs xs:text-sm sm:text-base"
               >
-                <X className="h-4 w-4 flex-shrink-0" />
+                <X className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
                 <span className="whitespace-nowrap">Hard</span>
               </Button>
               {studyState.currentCard?.reviewMetrics && (
@@ -633,9 +633,9 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 variant="default" 
                 size="lg"
                 onClick={() => handleResponse('good')}
-                className="flex items-center gap-1 w-full px-2 sm:px-4 bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700 text-xs xs:text-sm sm:text-base"
               >
-                <Check className="h-4 w-4 flex-shrink-0" />
+                <Check className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
                 <span className="whitespace-nowrap">Good</span>
               </Button>
               {studyState.currentCard?.reviewMetrics && (
@@ -652,9 +652,9 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 variant="secondary" 
                 size="lg"
                 onClick={() => handleResponse('easy')}
-                className="flex items-center gap-1 w-full px-2 sm:px-4 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 text-xs xs:text-sm sm:text-base"
               >
-                <Star className="h-4 w-4 flex-shrink-0" />
+                <Star className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
                 <span className="whitespace-nowrap">Easy</span>
               </Button>
               {studyState.currentCard?.reviewMetrics && (

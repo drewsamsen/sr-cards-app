@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth, useDecks } from "@/lib/hooks"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { AlertCircle, Upload, FileText } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -258,10 +258,7 @@ export default function ImportPage() {
       )}
       
       <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Import Options</CardTitle>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <form onSubmit={handleCreatePreview} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="deck-select">Select Deck</Label>
