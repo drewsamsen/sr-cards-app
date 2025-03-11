@@ -126,3 +126,11 @@
 }
 
 /* Remove Card flip animation styles */
+
+/* Position dialogs at the top on narrow screens */
+@media (max-width: 640px) {
+  [role="dialog"] {
+    top: 0 !important;
+    translate: -50% 0 !important;
+  }
+}
