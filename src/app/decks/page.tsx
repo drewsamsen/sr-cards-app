@@ -6,7 +6,6 @@ import { DataTable } from "@/components/data-table"
 import { deckColumns } from "@/components/deck-columns"
 import { Header } from "@/components/header"
 import { useAuth, useDecks } from "@/lib/hooks"
-import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -74,17 +73,13 @@ export default function DecksPage() {
             </Alert>
           )}
           
-          <Card>
-            <CardContent className="pt-2 sm:pt-3 px-2 sm:px-6 pb-4 sm:pb-6">
-              <DataTable 
-                columns={deckColumns} 
-                data={decks} 
-                searchPlaceholder="Search decks..." 
-                emptyMessage={isLoadingDecks ? "Loading decks..." : "No flashcard decks found."}
-                hideSearch={true}
-              />
-            </CardContent>
-          </Card>
+          <DataTable 
+            columns={deckColumns} 
+            data={decks} 
+            searchPlaceholder="Search decks..." 
+            emptyMessage={isLoadingDecks ? "Loading decks..." : "No flashcard decks found."}
+            hideSearch={true}
+          />
           
           <div className="mt-4 flex justify-end">
             <Button 

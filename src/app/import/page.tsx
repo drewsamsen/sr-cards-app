@@ -238,10 +238,6 @@ export default function ImportPage() {
     <div className="flex min-h-screen flex-col">
       <Header />
       <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
-        <div className="space-y-4">
-          <h1 className="text-2xl font-bold tracking-tight">Import Flashcards</h1>
-          <p className="text-muted-foreground">Import flashcards from comma-delimited or tab-delimited format.</p>
-        </div>
         <div className="mt-6">
           {error && (
             <Alert variant="destructive" className="mb-6">
