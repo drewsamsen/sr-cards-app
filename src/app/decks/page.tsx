@@ -61,33 +61,31 @@ export default function DecksPage() {
 
   return (
     <PageLayout>
-      <div className="mt-4 sm:mt-6">
-        {decksError && (
-          <Alert variant="destructive" className="mb-4 sm:mb-6">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              {decksError}
-            </AlertDescription>
-          </Alert>
-        )}
-        
-        <DataTable 
-          columns={deckColumns} 
-          data={decks} 
-          searchPlaceholder="Search decks..." 
-          emptyMessage={isLoadingDecks ? "Loading decks..." : "No flashcard decks found."}
-          hideSearch={true}
-        />
-        
-        <div className="mt-4 flex justify-end">
-          <Button 
-            className="flex items-center gap-1" 
-            onClick={() => router.push('/decks/new')}
-          >
-            <Plus className="h-4 w-4" />
-            Create new deck
-          </Button>
-        </div>
+      {decksError && (
+        <Alert variant="destructive" className="mb-4 sm:mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {decksError}
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      <DataTable 
+        columns={deckColumns} 
+        data={decks} 
+        searchPlaceholder="Search decks..." 
+        emptyMessage={isLoadingDecks ? "Loading decks..." : "No flashcard decks found."}
+        hideSearch={true}
+      />
+      
+      <div className="flex justify-end mt-4 sm:mt-6">
+        <Button 
+          onClick={() => router.push('/decks/new')}
+          className="flex items-center gap-1"
+        >
+          <Plus className="h-4 w-4" />
+          Create new deck
+        </Button>
       </div>
     </PageLayout>
   )

@@ -118,9 +118,10 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-2 sm:space-y-4">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
-        {!hideSearch && (
-          <div className="w-full sm:max-w-xs">
+      {!(hideSearch || actionButton) && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4">
+          {!hideSearch && (
+            <div className="w-full sm:max-w-xs">
             <form onSubmit={handleSearchSubmit}>
               <Input
                 placeholder={searchPlaceholder}
@@ -132,10 +133,11 @@ export function DataTable<TData, TValue>({
             </form>
           </div>
         )}
-        {actionButton && (
-          <div className="flex justify-end">{actionButton}</div>
-        )}
-      </div>
+          {actionButton && (
+            <div className="flex justify-end">{actionButton}</div>
+          )}
+        </div>
+      )}
       
       {pagination && showTopPagination && (
         <div className="flex justify-between items-center">
