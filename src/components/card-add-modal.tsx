@@ -13,6 +13,14 @@ import { AlertCircle, Plus } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { cardService, CreateCardRequest } from "@/lib/api/services/card.service"
 
+// Define the error interface
+interface ErrorWithData extends Error {
+  status: number;
+  data?: {
+    message?: string;
+  };
+}
+
 interface CardAddModalProps {
   deckId: string
   isOpen: boolean
@@ -81,15 +89,9 @@ export function CardAddModal({
     } catch (err) {
       // Check if it's a duplicate card error
       if (err instanceof Error && 
-          (err as any).status === 409 && 
-          (err as any).data) {
-        
-        interface ErrorWithData extends Error {
-          status: number;
-          data?: {
-            message?: string;
-          };
-        }
+          typeof (err as ErrorWithData).status === 'number' && 
+          (err as ErrorWithData).status === 409 && 
+          (err as ErrorWithData).data) {
         
         const errorData = (err as ErrorWithData).data
         let errorMessage = "A similar card already exists in this deck"
