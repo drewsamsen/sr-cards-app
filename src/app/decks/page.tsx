@@ -24,7 +24,7 @@ export interface Deck {
 export default function DecksPage() {
   const router = useRouter()
   const { user, isInitialized } = useAuth()
-  const { decks: apiDecks, isLoading: isLoadingDecks, error: decksError } = useDecks()
+  const { decks: apiDecks, isLoading: isLoadingDecks, error: decksError, fetchDecks } = useDecks()
   const [decks, setDecks] = useState<Deck[]>([])
 
   // Transform API decks to our Deck format
@@ -42,6 +42,39 @@ export default function DecksPage() {
       setDecks(transformedDecks)
     }
   }, [apiDecks])
+
+  // Set up periodic refetching (every 10 minutes)
+  useEffect(() => {
+    if (!user) return;
+    
+    // Refetch every 10 minutes
+    const intervalId = setInterval(() => {
+      fetchDecks();
+    }, 10 * 60 * 1000);
+    
+    // Clean up on unmount
+    return () => clearInterval(intervalId);
+  }, [user, fetchDecks]);
+  
+  // Set up visibility change detection
+  useEffect(() => {
+    if (!user) return;
+    
+    // Function to handle visibility change
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        fetchDecks();
+      }
+    };
+    
+    // Add event listener
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Clean up on unmount
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [user, fetchDecks]);
 
   // Redirect to login page if not logged in
   useEffect(() => {
