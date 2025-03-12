@@ -11,6 +11,9 @@ export interface RegisterRequest {
   email: string;
   password: string;
   name: string;
+  options?: {
+    emailRedirectTo?: string;
+  };
 }
 
 // API response structure

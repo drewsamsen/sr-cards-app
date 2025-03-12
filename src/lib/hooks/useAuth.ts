@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { authService, AuthResponse, LoginRequest, ApiError } from '@/lib/api';
+import { authService, AuthResponse, LoginRequest, RegisterRequest, ApiError } from '@/lib/api';
 
 // Default token expiration time in milliseconds (1 hour)
 const DEFAULT_TOKEN_EXPIRY = 60 * 60 * 1000;
@@ -14,6 +14,7 @@ interface UseAuthReturn {
   isInitialized: boolean;
   error: string | null;
   login: (credentials: LoginRequest) => Promise<boolean>;
+  register: (userData: RegisterRequest) => Promise<boolean>;
   logout: () => Promise<void>;
   clearError: () => void;
 }
@@ -188,6 +189,42 @@ export function useAuth(): UseAuthReturn {
     }
   }, [scheduleTokenRefresh]);
 
+  const register = useCallback(async (userData: RegisterRequest): Promise<boolean> => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Add redirect URL for email confirmation
+      const requestData = {
+        ...userData,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/confirm`
+        }
+      };
+      
+      const response = await authService.register(requestData);
+      
+      // With email confirmation enabled, we won't get tokens back immediately
+      // We just need to check if the registration was successful
+      if (response.data.status === "success") {
+        // Update last activity timestamp
+        lastActivityRef.current = Date.now();
+        return true;
+      } else {
+        throw new Error("Registration failed");
+      }
+    } catch (err) {
+      const message = err instanceof ApiError 
+        ? err.message 
+        : 'An unexpected error occurred during registration';
+      
+      setError(message);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const logout = useCallback(async (): Promise<void> => {
     setIsLoading(true);
     
@@ -218,6 +255,7 @@ export function useAuth(): UseAuthReturn {
     isInitialized,
     error,
     login,
+    register,
     logout,
     clearError,
   };

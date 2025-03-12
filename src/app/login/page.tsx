@@ -9,16 +9,20 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useAuth } from "@/lib/hooks"
 import { PageLayout } from "@/components/page-layout"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { CheckCircle2, AlertCircle } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login, isLoading, error, clearError, user, isInitialized } = useAuth()
+  const { login, register, isLoading, error, clearError, user, isInitialized } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     name: '',
   })
   const [formError, setFormError] = useState<string | null>(null)
+  const [registrationSuccess, setRegistrationSuccess] = useState(false)
+  const [activeTab, setActiveTab] = useState("login")
 
   // Redirect to decks page if already logged in
   useEffect(() => {
@@ -43,21 +47,26 @@ export default function LoginPage() {
       setFormError(null)
       clearError()
     }
+    
+    // Clear registration success when user types
+    if (registrationSuccess) {
+      setRegistrationSuccess(false)
+    }
   }
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     
-    // Basic validation
-    if (!formData.email || !formData.password) {
-      setFormError('Please fill in all required fields')
-      return
-    }
-
     // Get the form ID to determine if it's login or register
     const formId = event.currentTarget.id
     
     if (formId === 'login-form') {
+      // Basic validation
+      if (!formData.email || !formData.password) {
+        setFormError('Please fill in all required fields')
+        return
+      }
+      
       const success = await login({
         email: formData.email,
         password: formData.password,
@@ -74,9 +83,39 @@ export default function LoginPage() {
         // Navigate to decks page
         router.push('/decks')
       }
-    } else {
-      // Handle registration (to be implemented)
-      console.log('Registration to be implemented')
+    } else if (formId === 'register-form') {
+      // Basic validation for registration
+      if (!formData.email || !formData.password || !formData.name) {
+        setFormError('Please fill in all required fields')
+        return
+      }
+      
+      // Password strength validation
+      if (formData.password.length < 8) {
+        setFormError('Password must be at least 8 characters long')
+        return
+      }
+      
+      const success = await register({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+      })
+      
+      if (success) {
+        // Reset form data after successful registration
+        setFormData({
+          email: '',
+          password: '',
+          name: '',
+        })
+        
+        // Show success message
+        setRegistrationSuccess(true)
+        
+        // Switch to login tab after successful registration
+        setActiveTab("login")
+      }
     }
   }
 
@@ -84,7 +123,7 @@ export default function LoginPage() {
     <PageLayout>
       <div className="flex items-start justify-center">
         <Card className="w-full max-w-md">
-          <Tabs defaultValue="login" className="w-full">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Login</TabsTrigger>
               <TabsTrigger value="register">Register</TabsTrigger>
@@ -98,10 +137,25 @@ export default function LoginPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {formError && (
-                    <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md">
-                      {formError}
-                    </div>
+                    <Alert variant="destructive" className="mb-4">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{formError}</AlertDescription>
+                    </Alert>
                   )}
+                  
+                  {registrationSuccess && (
+                    <Alert className="mb-4 bg-green-50 text-green-800 border-green-200">
+                      <CheckCircle2 className="h-4 w-4" />
+                      <AlertDescription>
+                        <p className="font-medium">Registration successful!</p>
+                        <p className="mt-1">
+                          We&apos;ve sent a confirmation link to your email address. 
+                          Please check your inbox (and spam folder) and click the link to activate your account.
+                        </p>
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                  
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input 
@@ -147,9 +201,10 @@ export default function LoginPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {formError && (
-                    <div className="bg-destructive/10 text-destructive text-sm p-3 rounded-md">
-                      {formError}
-                    </div>
+                    <Alert variant="destructive" className="mb-4">
+                      <AlertCircle className="h-4 w-4" />
+                      <AlertDescription>{formError}</AlertDescription>
+                    </Alert>
                   )}
                   <div className="space-y-2">
                     <Label htmlFor="name">Full Name</Label>
@@ -184,6 +239,9 @@ export default function LoginPage() {
                       onChange={handleInputChange}
                       required 
                     />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Password must be at least 8 characters long
+                    </p>
                   </div>
                 </CardContent>
                 <CardFooter className="pt-4">
