@@ -8,6 +8,7 @@ export interface DeckResponse {
   name: string;
   slug: string;
   description: string;
+  dailyScaler?: number;
   totalCards?: number;
   remainingReviews?: number;
   newCards?: number;
@@ -93,6 +94,7 @@ export interface UpdateDeckRequest {
   name: string;
   description: string;
   slug?: string;
+  dailyScaler?: number;
 }
 
 /**

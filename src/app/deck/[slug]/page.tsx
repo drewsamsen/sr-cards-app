@@ -58,6 +58,7 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
   const [name, setName] = useState<string>("")
   const [description, setDescription] = useState<string>("")
   const [slug, setSlug] = useState<string>("")
+  const [dailyScaler, setDailyScaler] = useState<number | string>(1.0)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [formSuccess, setFormSuccess] = useState<boolean>(false)
@@ -119,6 +120,7 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
       setName(deck.name)
       setDescription(deck.description || "")
       setSlug(deck.slug || "")
+      setDailyScaler(deck.dailyScaler || 1.0)
     }
   }, [deck])
 
@@ -160,11 +162,21 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
         return
       }
       
+      // Validate dailyScaler
+      const scalerValue = typeof dailyScaler === 'string' ? 
+        (dailyScaler === '' ? 1.0 : parseFloat(dailyScaler) || 0) : dailyScaler;
+      
+      if (isNaN(scalerValue) || scalerValue < 0 || scalerValue > 10) {
+        setFormError("Daily Scaler must be a number between 0 and 10")
+        return
+      }
+      
       // Update deck data
       const deckData: UpdateDeckRequest = {
         name: name.trim(),
         description: description.trim(),
-        slug: slug.trim()
+        slug: slug.trim(),
+        dailyScaler: scalerValue
       }
       
       // Submit to API
@@ -411,6 +423,17 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
                   onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
                   placeholder="Describe what this deck is about..."
                   rows={4}
+                />
+              </div>
+              
+              <div className="grid gap-2">
+                <Label htmlFor="dailyScaler">Daily Scaler</Label>
+                <Input
+                  id="dailyScaler"
+                  type="text"
+                  value={dailyScaler}
+                  onChange={(e) => setDailyScaler(e.target.value)}
+                  className="w-24"
                 />
               </div>
               
