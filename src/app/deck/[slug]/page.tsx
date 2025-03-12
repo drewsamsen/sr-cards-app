@@ -329,21 +329,34 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
         </Alert>
       )}
       
-      <Card className="mb-4 sm:mb-6">
-        <CardHeader className="flex flex-row items-center justify-between pb-2">
-          <CardTitle>
-            {isEditing ? "Edit Deck" : (isLoadingDeck ? "Loading..." : deck?.name || "Deck not found")}
-          </CardTitle>
+      {/* Ultra compact deck header */}
+      {!isEditing ? (
+        <div className="flex items-center mb-2 sm:mb-3 px-4 sm:px-6">
+          <h1 className="text-xl font-semibold">
+            {isLoadingDeck ? "Loading..." : deck?.name || "Deck not found"}
+          </h1>
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={() => setIsEditing(!isEditing)}
-            className="h-8 w-8 p-0"
+            onClick={() => setIsEditing(true)}
+            className="h-7 w-7 p-0 ml-2"
           >
-            {isEditing ? <X className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+            <Edit className="h-4 w-4" />
           </Button>
-        </CardHeader>
-        {isEditing && (
+        </div>
+      ) : (
+        <Card className="mb-4 sm:mb-6">
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle>Edit Deck</CardTitle>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setIsEditing(false)}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid gap-2">
@@ -426,14 +439,14 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
                     disabled={isSubmitting}
                   >
                     <Save className="h-4 w-4" />
-                    {isSubmitting ? "Saving..." : "Save Changes"}
+                    {isSubmitting ? "Saving..." : "Save"}
                   </Button>
                 </div>
               </div>
             </form>
           </CardContent>
-        )}
-      </Card>
+        </Card>
+      )}
       
       {cardsError && (
         <Alert variant="destructive" className="mb-4 sm:mb-6">
@@ -536,7 +549,7 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
             <AlertDialogAction 
               onClick={confirmCardDelete}
               disabled={isDeleting}
-              className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+              className="bg-red-600 hover:bg-red-700 focus:ring-red-600 text-white"
             >
               {isDeleting ? "Deleting..." : "Delete"}
             </AlertDialogAction>
@@ -559,7 +572,7 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
             <AlertDialogAction
               onClick={handleDeleteDeck}
               disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-white hover:bg-destructive/90 hover:text-white"
             >
               {isDeleting ? "Deleting..." : "Delete Deck"}
             </AlertDialogAction>
