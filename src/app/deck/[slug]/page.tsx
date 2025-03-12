@@ -343,8 +343,8 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
             {isEditing ? <X className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
           </Button>
         </CardHeader>
-        <CardContent>
-          {isEditing ? (
+        {isEditing && (
+          <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid gap-2">
                 <Label htmlFor="name">Deck Name</Label>
@@ -431,16 +431,8 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
                 </div>
               </div>
             </form>
-          ) : (
-            <div>
-              {deck?.description ? (
-                <p className="text-muted-foreground">{deck.description}</p>
-              ) : (
-                <p className="text-muted-foreground italic">No description provided</p>
-              )}
-            </div>
-          )}
-        </CardContent>
+          </CardContent>
+        )}
       </Card>
       
       {cardsError && (
@@ -481,7 +473,7 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
                   onClick={() => setIsCardAddModalOpen(true)}
                 >
                   <Plus className="h-4 w-4" />
-                  Add Card
+                  Card
                 </Button>
                 <Button 
                   variant="outline" 
