@@ -14,6 +14,7 @@ import { LearningSettings } from "@/lib/api/services/user.service"
 import { PageLayout } from "@/components/page-layout"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useTheme } from "@/components/theme-provider"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -177,169 +178,190 @@ export default function SettingsPage() {
           {isLoading ? (
             <p>Loading settings...</p>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid gap-4">
-                <h2 className="text-xl font-semibold mb-4">Appearance</h2>
-                <div className="grid gap-2">
-                  <Label htmlFor="theme">Theme</Label>
-                  <Select
-                    value={theme}
-                    onValueChange={(value) => {
-                      console.log("Theme selected:", value);
-                      setTheme(value as "light" | "dark" | "system");
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue>
-                        {theme === "light" && (
-                          <div className="flex items-center gap-2">
-                            <Sun className="h-4 w-4" />
-                            <span>Light</span>
-                          </div>
-                        )}
-                        {theme === "dark" && (
-                          <div className="flex items-center gap-2">
-                            <Moon className="h-4 w-4" />
-                            <span>Dark</span>
-                          </div>
-                        )}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="light" className="flex items-center">
-                        <div className="flex items-center gap-2">
-                          <Sun className="h-4 w-4" />
-                          <span>Light</span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="dark" className="flex items-center">
-                        <div className="flex items-center gap-2">
-                          <Moon className="h-4 w-4" />
-                          <span>Dark</span>
-                        </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <p className="text-sm text-muted-foreground">
-                    Choose between light and dark mode for the application.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="grid gap-4">
-                <h2 className="text-xl font-semibold mb-4">Daily Limits</h2>
-                <div className="grid gap-2">
-                  <Label htmlFor="newCardsPerDay">New Cards Per Day</Label>
-                  <Input
-                    id="newCardsPerDay"
-                    type="number"
-                    min="0"
-                    value={newCardsPerDay === undefined ? "" : newCardsPerDay}
-                    onChange={(e) => {
-                      const value = e.target.value === "" ? undefined : parseInt(e.target.value);
-                      setNewCardsPerDay(value);
-                    }}
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Maximum number of new cards to show per day.
-                  </p>
-                </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <Accordion type="single" collapsible className="w-full">
+                {/* Appearance Section */}
+                <AccordionItem value="appearance">
+                  <AccordionTrigger className="text-xl font-semibold">
+                    Appearance
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="grid gap-4 pt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="theme">Theme</Label>
+                        <Select
+                          value={theme}
+                          onValueChange={(value) => {
+                            console.log("Theme selected:", value);
+                            setTheme(value as "light" | "dark" | "system");
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue>
+                              {theme === "light" && (
+                                <div className="flex items-center gap-2">
+                                  <Sun className="h-4 w-4" />
+                                  <span>Light</span>
+                                </div>
+                              )}
+                              {theme === "dark" && (
+                                <div className="flex items-center gap-2">
+                                  <Moon className="h-4 w-4" />
+                                  <span>Dark</span>
+                                </div>
+                              )}
+                            </SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="light" className="flex items-center">
+                              <div className="flex items-center gap-2">
+                                <Sun className="h-4 w-4" />
+                                <span>Light</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="dark" className="flex items-center">
+                              <div className="flex items-center gap-2">
+                                <Moon className="h-4 w-4" />
+                                <span>Dark</span>
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <p className="text-sm text-muted-foreground">
+                          Choose between light and dark mode for the application.
+                        </p>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
                 
-                <div className="grid gap-2">
-                  <Label htmlFor="maxReviewsPerDay">Maximum Reviews Per Day</Label>
-                  <Input
-                    id="maxReviewsPerDay"
-                    type="number"
-                    min="0"
-                    value={maxReviewsPerDay === undefined ? "" : maxReviewsPerDay}
-                    onChange={(e) => {
-                      const value = e.target.value === "" ? undefined : parseInt(e.target.value);
-                      setMaxReviewsPerDay(value);
-                    }}
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Maximum number of review cards to show per day.
-                  </p>
-                </div>
-              </div>
-              
-              <div className="mt-8">
-                <h2 className="text-xl font-semibold mb-4">FSRS Parameters</h2>
-                <div className="grid gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="requestRetention">Request Retention</Label>
-                    <Input
-                      id="requestRetention"
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      max="1"
-                      value={requestRetention}
-                      onChange={(e) => setRequestRetention(parseFloat(e.target.value))}
-                      required
-                    />
-                    <p className="text-sm text-muted-foreground">
-                      Target retention rate (0-1). Higher values create longer intervals.
-                    </p>
-                  </div>
-                  
-                  <div className="grid gap-2">
-                    <Label htmlFor="maximumInterval">Maximum Interval (days)</Label>
-                    <Input
-                      id="maximumInterval"
-                      type="number"
-                      min="1"
-                      value={maximumInterval}
-                      onChange={(e) => setMaximumInterval(parseInt(e.target.value))}
-                      required
-                    />
-                    <p className="text-sm text-muted-foreground">
-                      Maximum interval between reviews in days.
-                    </p>
-                  </div>
-                  
-                  <div className="grid gap-2">
-                    <Label htmlFor="weights">Weights</Label>
-                    <Input
-                      id="weights"
-                      value={weights}
-                      onChange={(e) => setWeights(e.target.value)}
-                      required
-                    />
-                    <p className="text-sm text-muted-foreground">
-                      FSRS algorithm weights as comma-separated values.
-                    </p>
-                  </div>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="enableFuzz" 
-                      checked={enableFuzz}
-                      onCheckedChange={(checked: boolean | "indeterminate") => setEnableFuzz(checked === true)}
-                    />
-                    <Label htmlFor="enableFuzz" className="cursor-pointer">Enable Fuzz</Label>
-                  </div>
-                  <p className="text-sm text-muted-foreground ml-6 -mt-1">
-                    When enabled, this adds a small random delay to the new interval time to prevent cards from sticking together and always being reviewed on the same day.
-                  </p>
-                  
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
-                      id="enableShortTerm" 
-                      checked={enableShortTerm}
-                      onCheckedChange={(checked: boolean | "indeterminate") => setEnableShortTerm(checked === true)}
-                    />
-                    <Label htmlFor="enableShortTerm" className="cursor-pointer">Enable Short Term</Label>
-                  </div>
-                  <p className="text-sm text-muted-foreground ml-6 -mt-1">
-                    When disabled, this allows user to skip the short-term schedule.
-                  </p>
-                </div>
-              </div>
+                {/* Daily Limits Section */}
+                <AccordionItem value="daily-limits">
+                  <AccordionTrigger className="text-xl font-semibold">
+                    Daily Limits
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="grid gap-4 pt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="newCardsPerDay">New Cards Per Day</Label>
+                        <Input
+                          id="newCardsPerDay"
+                          type="number"
+                          min="0"
+                          value={newCardsPerDay === undefined ? "" : newCardsPerDay}
+                          onChange={(e) => {
+                            const value = e.target.value === "" ? undefined : parseInt(e.target.value);
+                            setNewCardsPerDay(value);
+                          }}
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          Maximum number of new cards to show per day.
+                        </p>
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="maxReviewsPerDay">Maximum Reviews Per Day</Label>
+                        <Input
+                          id="maxReviewsPerDay"
+                          type="number"
+                          min="0"
+                          value={maxReviewsPerDay === undefined ? "" : maxReviewsPerDay}
+                          onChange={(e) => {
+                            const value = e.target.value === "" ? undefined : parseInt(e.target.value);
+                            setMaxReviewsPerDay(value);
+                          }}
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          Maximum number of review cards to show per day.
+                        </p>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+                
+                {/* FSRS Parameters Section */}
+                <AccordionItem value="fsrs-parameters">
+                  <AccordionTrigger className="text-xl font-semibold">
+                    FSRS Parameters
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    <div className="grid gap-4 pt-4">
+                      <div className="grid gap-2">
+                        <Label htmlFor="requestRetention">Request Retention</Label>
+                        <Input
+                          id="requestRetention"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          max="1"
+                          value={requestRetention}
+                          onChange={(e) => setRequestRetention(parseFloat(e.target.value))}
+                          required
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          Target retention rate (0-1). Higher values create longer intervals.
+                        </p>
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="maximumInterval">Maximum Interval (days)</Label>
+                        <Input
+                          id="maximumInterval"
+                          type="number"
+                          min="1"
+                          value={maximumInterval}
+                          onChange={(e) => setMaximumInterval(parseInt(e.target.value))}
+                          required
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          Maximum interval between reviews in days.
+                        </p>
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="weights">Weights</Label>
+                        <Input
+                          id="weights"
+                          value={weights}
+                          onChange={(e) => setWeights(e.target.value)}
+                          required
+                        />
+                        <p className="text-sm text-muted-foreground">
+                          FSRS algorithm weights as comma-separated values.
+                        </p>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id="enableFuzz" 
+                          checked={enableFuzz}
+                          onCheckedChange={(checked: boolean | "indeterminate") => setEnableFuzz(checked === true)}
+                        />
+                        <Label htmlFor="enableFuzz" className="cursor-pointer">Enable Fuzz</Label>
+                      </div>
+                      <p className="text-sm text-muted-foreground ml-6 -mt-1">
+                        When enabled, this adds a small random delay to the new interval time to prevent cards from sticking together and always being reviewed on the same day.
+                      </p>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Checkbox 
+                          id="enableShortTerm" 
+                          checked={enableShortTerm}
+                          onCheckedChange={(checked: boolean | "indeterminate") => setEnableShortTerm(checked === true)}
+                        />
+                        <Label htmlFor="enableShortTerm" className="cursor-pointer">Enable Short Term</Label>
+                      </div>
+                      <p className="text-sm text-muted-foreground ml-6 -mt-1">
+                        When disabled, this allows user to skip the short-term schedule.
+                      </p>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
               
               <Button 
                 type="submit" 
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 mt-6"
                 disabled={isSaving}
               >
                 <Save className="h-4 w-4" />
