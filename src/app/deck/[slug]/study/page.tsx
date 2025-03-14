@@ -320,26 +320,23 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
     }
     
     const rating = ratingMap[response]
+    const currentCardId = studyState.currentCard.id
     
-    try {
-      // Log the due date based on the response
-      if (studyState.currentCard.reviewMetrics) {
-        const dueDate = studyState.currentCard.reviewMetrics[response]
-        console.log(`Next review due: ${dueDate}`)
-      }
-      
-      // Submit the review to the API
-      await cardService.reviewCard(studyState.currentCard.id, { rating })
-      
-      // Flip back to the front and get the next card
-      setIsFlipped(false)
-      getNextCard()
-    } catch (error) {
-      console.error("Error submitting card review:", error)
-      // Still get the next card even if there was an error
-      setIsFlipped(false)
-      getNextCard()
+    // Log the due date based on the response
+    if (studyState.currentCard.reviewMetrics) {
+      const dueDate = studyState.currentCard.reviewMetrics[response]
+      console.log(`Next review due: ${dueDate}`)
     }
+    
+    // Immediately flip back to the front and get the next card
+    setIsFlipped(false)
+    getNextCard()
+    
+    // Submit the review to the API in the background
+    cardService.reviewCard(currentCardId, { rating })
+      .catch(error => {
+        console.error("Error submitting card review:", error)
+      })
   }
 
   // Show loading state while fetching card
