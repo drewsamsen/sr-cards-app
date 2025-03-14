@@ -7,16 +7,19 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { AlertCircle, Save } from "lucide-react"
+import { AlertCircle, Save, Moon, Sun } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Checkbox } from "@/components/ui/checkbox"
 import { LearningSettings } from "@/lib/api/services/user.service"
 import { PageLayout } from "@/components/page-layout"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useTheme } from "@/components/theme-provider"
 
 export default function SettingsPage() {
   const router = useRouter()
   const { user, isInitialized } = useAuth()
   const { settings, isLoading, error, updateSettings } = useUserSettings()
+  const { theme, setTheme } = useTheme()
   
   // Form state
   const [requestRetention, setRequestRetention] = useState<number>(0.9)
@@ -33,6 +36,8 @@ export default function SettingsPage() {
   // Update form state when settings are loaded
   useEffect(() => {
     if (settings && settings.settings) {
+      console.log("Settings loaded:", settings.settings);
+      
       if (settings.settings.fsrsParams) {
         const { fsrsParams } = settings.settings
         setRequestRetention(fsrsParams.requestRetention)
@@ -89,6 +94,7 @@ export default function SettingsPage() {
       }
       
       interface UpdateSettingsData {
+        theme?: string;
         fsrsParams: {
           requestRetention: number;
           maximumInterval: number;
@@ -103,6 +109,7 @@ export default function SettingsPage() {
       }
       
       const updateData: UpdateSettingsData = {
+        theme,
         fsrsParams: {
           requestRetention,
           maximumInterval,
@@ -115,6 +122,11 @@ export default function SettingsPage() {
       // Only include learning settings if at least one value is defined
       if (Object.keys(learningSettings).length > 0) {
         updateData.learning = learningSettings;
+      }
+      
+      // Save theme to localStorage before API call to ensure immediate persistence
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('theme', theme);
       }
       
       await updateSettings(updateData);
@@ -166,6 +178,54 @@ export default function SettingsPage() {
             <p>Loading settings...</p>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid gap-4">
+                <h2 className="text-xl font-semibold mb-4">Appearance</h2>
+                <div className="grid gap-2">
+                  <Label htmlFor="theme">Theme</Label>
+                  <Select
+                    value={theme}
+                    onValueChange={(value) => {
+                      console.log("Theme selected:", value);
+                      setTheme(value as "light" | "dark" | "system");
+                    }}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue>
+                        {theme === "light" && (
+                          <div className="flex items-center gap-2">
+                            <Sun className="h-4 w-4" />
+                            <span>Light</span>
+                          </div>
+                        )}
+                        {theme === "dark" && (
+                          <div className="flex items-center gap-2">
+                            <Moon className="h-4 w-4" />
+                            <span>Dark</span>
+                          </div>
+                        )}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="light" className="flex items-center">
+                        <div className="flex items-center gap-2">
+                          <Sun className="h-4 w-4" />
+                          <span>Light</span>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="dark" className="flex items-center">
+                        <div className="flex items-center gap-2">
+                          <Moon className="h-4 w-4" />
+                          <span>Dark</span>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-sm text-muted-foreground">
+                    Choose between light and dark mode for the application.
+                  </p>
+                </div>
+              </div>
+              
               <div className="grid gap-4">
                 <h2 className="text-xl font-semibold mb-4">Daily Limits</h2>
                 <div className="grid gap-2">

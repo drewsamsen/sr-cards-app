@@ -638,7 +638,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 variant="destructive" 
                 size="lg"
                 onClick={() => handleResponse('again')}
-                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 text-xs xs:text-sm sm:text-base"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 text-xs xs:text-sm sm:text-base dark:bg-red-900 dark:hover:bg-red-800"
                 disabled={isTransitioning}
               >
                 <RotateCcw className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
@@ -658,7 +658,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 variant="outline" 
                 size="lg"
                 onClick={() => handleResponse('hard')}
-                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-amber-600 hover:bg-amber-700 text-white border-amber-600 hover:border-amber-700 text-xs xs:text-sm sm:text-base"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-amber-600 hover:bg-amber-700 text-white border-amber-600 hover:border-amber-700 text-xs xs:text-sm sm:text-base dark:bg-amber-800 dark:hover:bg-amber-700 dark:border-amber-800"
                 disabled={isTransitioning}
               >
                 <X className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
@@ -678,7 +678,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 variant="default" 
                 size="lg"
                 onClick={() => handleResponse('good')}
-                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700 text-xs xs:text-sm sm:text-base"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700 text-xs xs:text-sm sm:text-base dark:bg-green-800 dark:hover:bg-green-700 dark:border-green-800"
                 disabled={isTransitioning}
               >
                 <Check className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
@@ -698,7 +698,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 variant="secondary" 
                 size="lg"
                 onClick={() => handleResponse('easy')}
-                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 text-xs xs:text-sm sm:text-base"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 text-xs xs:text-sm sm:text-base dark:bg-blue-800 dark:hover:bg-blue-700 dark:border-blue-800"
                 disabled={isTransitioning}
               >
                 <Star className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />

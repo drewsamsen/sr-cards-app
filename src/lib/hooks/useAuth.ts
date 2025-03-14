@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { authService, AuthResponse, LoginRequest, RegisterRequest, ApiError } from '@/lib/api';
+import { userService } from '@/lib/api/services/user.service';
 
 // Default token expiration time in milliseconds (1 hour)
 const DEFAULT_TOKEN_EXPIRY = 60 * 60 * 1000;
@@ -169,6 +170,22 @@ export function useAuth(): UseAuthReturn {
       
       // Set token in API client
       authService.setAuthToken(token);
+      
+      // Fetch user settings immediately after login
+      try {
+        const settingsResponse = await userService.getUserSettings();
+        if (settingsResponse.data.status === 'success' && settingsResponse.data.data.settings?.settings?.theme) {
+          const userTheme = settingsResponse.data.data.settings.settings.theme;
+          // Save theme to localStorage for immediate use
+          localStorage.setItem('theme', userTheme);
+          // Apply theme to document
+          document.documentElement.classList.remove('light', 'dark');
+          document.documentElement.classList.add(userTheme);
+        }
+      } catch (settingsError) {
+        console.error('Error fetching user settings after login:', settingsError);
+        // Continue with login process even if settings fetch fails
+      }
       
       // Schedule token refresh as a fallback
       scheduleTokenRefresh(DEFAULT_TOKEN_EXPIRY);

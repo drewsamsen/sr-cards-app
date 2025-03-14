@@ -144,7 +144,7 @@ export default function LoginPage() {
                   )}
                   
                   {registrationSuccess && (
-                    <Alert className="mb-4 bg-green-50 text-green-800 border-green-200">
+                    <Alert className="mb-4 bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800">
                       <CheckCircle2 className="h-4 w-4" />
                       <AlertDescription>
                         <p className="font-medium">Registration successful!</p>

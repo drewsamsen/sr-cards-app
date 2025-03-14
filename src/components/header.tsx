@@ -34,11 +34,11 @@ export function Header() {
   }
 
   return (
-    <header className="w-full border-b bg-gray-100">
+    <header className="w-full border-b bg-background">
       <div className="max-w-screen-xl mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-8">
           <Link href="/decks" className="hover:opacity-80 transition-opacity">
-            <h1 className="text-xl font-bold">SupaCards</h1>
+            <h1 className="text-xl font-bold text-foreground">SupaCards</h1>
           </Link>
           
           {/* Desktop Navigation */}
@@ -49,7 +49,7 @@ export function Header() {
                   <li key={item.name}>
                     <Link 
                       href={item.href}
-                      className="text-sm font-medium text-gray-700 hover:text-primary transition-colors"
+                      className="text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
                     >
                       {item.name}
                     </Link>
@@ -63,7 +63,7 @@ export function Header() {
         {/* Mobile menu button */}
         {user && (
           <button 
-            className="md:hidden p-2 rounded-md text-gray-700 hover:bg-gray-200"
+            className="md:hidden p-2 rounded-md text-foreground hover:bg-accent"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
@@ -78,7 +78,7 @@ export function Header() {
           {user ? (
             <>
               <div className="flex flex-col items-end">
-                <span className="text-sm font-medium">
+                <span className="text-sm font-medium text-foreground">
                   {user.fullName}
                 </span>
                 <span className="text-xs text-muted-foreground">
@@ -113,14 +113,14 @@ export function Header() {
       
       {/* Mobile Navigation */}
       {mobileMenuOpen && user && (
-        <div className="md:hidden border-t border-gray-200">
+        <div className="md:hidden border-t border-border">
           <nav className="px-4 py-3">
             <ul className="space-y-3">
               {navItems.map((item) => (
                 <li key={item.name}>
                   <Link 
                     href={item.href}
-                    className="block text-sm font-medium text-gray-700 hover:text-primary transition-colors"
+                    className="block text-sm font-medium text-foreground/80 hover:text-primary transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     {item.name}
@@ -130,9 +130,9 @@ export function Header() {
             </ul>
           </nav>
           
-          <div className="px-4 py-3 border-t border-gray-200">
+          <div className="px-4 py-3 border-t border-border">
             <div className="flex flex-col mb-2">
-              <span className="text-sm font-medium">
+              <span className="text-sm font-medium text-foreground">
                 {user.fullName}
               </span>
               <span className="text-xs text-muted-foreground">
