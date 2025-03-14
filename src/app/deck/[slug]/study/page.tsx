@@ -12,6 +12,7 @@ import { deckService, CardReviewResponse, DeckResponse, DailyProgress } from "@/
 import { cardService } from "@/lib/api/services/card.service"
 import { CardEditModal } from "@/components/card-edit-modal"
 import { PageLayout } from "@/components/page-layout"
+import { motion, AnimatePresence } from "framer-motion"
 
 // Helper function to calculate and format time difference
 const getTimeUntil = (dateString: string) => {
@@ -75,6 +76,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   const router = useRouter()
   const { user, isInitialized } = useAuth()
   const [isFlipped, setIsFlipped] = useState(false)
+  const [isTransitioning, setIsTransitioning] = useState(false)
   const [studyState, setStudyState] = useState<StudyState>({
     currentCard: null,
     cardQueue: [],
@@ -332,10 +334,19 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
     setIsFlipped(false)
     getNextCard()
     
+    // Start transition animation for the buttons
+    setIsTransitioning(true)
+    
     // Submit the review to the API in the background
     cardService.reviewCard(currentCardId, { rating })
       .catch(error => {
         console.error("Error submitting card review:", error)
+      })
+      .finally(() => {
+        // Reset transitioning state after a short delay to allow animations to complete
+        setTimeout(() => {
+          setIsTransitioning(false)
+        }, 300)
       })
   }
 
@@ -544,48 +555,83 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
         {/* Make this entire area clickable for flipping the card */}
         <div className="w-full flex-grow flex flex-col items-center cursor-pointer pb-32 md:pb-0" onClick={handleFlip}>
           <div className="w-full flex justify-center">
-            <Card 
-              className="w-full max-w-2xl min-h-[16rem] md:min-h-[20rem] cursor-pointer transition-all duration-300 relative flex flex-col"
-              onClick={handleFlip}
-            >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute top-2 right-2 h-8 w-8 rounded-full opacity-70 hover:opacity-100 z-10"
-                onClick={(e) => {
-                  e.stopPropagation(); // Prevent card flip when clicking edit
-                  handleEditClick(e);
-                }}
-                title="Edit card"
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={studyState.currentCard?.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.3 }}
+                className="w-full"
               >
-                <Edit className="h-4 w-4" />
-              </Button>
-              <CardContent className="p-6 flex flex-col flex-grow">
-                <div className="flex flex-col h-full">
-                  {/* Front text always visible */}
-                  <div className={isFlipped ? "" : "mb-auto"}>
-                    <p className="text-xl md:text-2xl font-medium leading-relaxed text-center whitespace-pre-line">{studyState.currentCard?.front}</p>
-                  </div>
-                  
-                  {/* Back content only visible when flipped */}
-                  {isFlipped && (
-                    <div className="mt-4">
-                      <hr className="mb-4 border-t border-border" />
-                      <p className="text-xl md:text-2xl font-medium text-left whitespace-pre-line leading-tight">{studyState.currentCard?.back}</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+                <Card 
+                  className="w-full max-w-2xl min-h-[16rem] md:min-h-[20rem] cursor-pointer transition-all duration-300 relative flex flex-col perspective"
+                  onClick={handleFlip}
+                >
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute top-2 right-2 h-8 w-8 rounded-full opacity-70 hover:opacity-100 z-10"
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent card flip when clicking edit
+                      handleEditClick(e);
+                    }}
+                    title="Edit card"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <motion.div
+                    className="w-full h-full"
+                    animate={{ rotateY: isFlipped ? 180 : 0 }}
+                    transition={{ duration: 0.5, type: "spring", stiffness: 260, damping: 20 }}
+                    style={{ transformStyle: "preserve-3d" }}
+                  >
+                    <CardContent className={`p-6 flex flex-col flex-grow ${isFlipped ? "backface-hidden" : ""}`}>
+                      <div className="flex flex-col h-full">
+                        {/* Front text always visible */}
+                        <div className="mb-auto">
+                          <p className="text-xl md:text-2xl font-medium leading-relaxed text-center whitespace-pre-line">{studyState.currentCard?.front}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                    
+                    {/* Back content */}
+                    <CardContent 
+                      className="p-6 flex flex-col flex-grow absolute inset-0 backface-hidden"
+                      style={{ transform: "rotateY(180deg)" }}
+                    >
+                      <div className="flex flex-col h-full">
+                        <div>
+                          <p className="text-xl md:text-2xl font-medium leading-relaxed text-center whitespace-pre-line">{studyState.currentCard?.front}</p>
+                        </div>
+                        <div className="mt-4">
+                          <hr className="mb-4 border-t border-border" />
+                          <p className="text-xl md:text-2xl font-medium text-left whitespace-pre-line leading-tight">{studyState.currentCard?.back}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </motion.div>
+                </Card>
+              </motion.div>
+            </AnimatePresence>
           </div>
           
           {/* This empty div provides additional clickable area below the card */}
           <div className="w-full max-w-2xl h-16 mt-4"></div>
         </div>
         
-        <div className={`w-full fixed bottom-0 left-0 right-0 bg-background pb-4 pt-4 px-2 md:static md:pb-0 md:pt-8 md:px-0 transition-opacity duration-300 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] md:shadow-none ${
-          isFlipped ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}>
+        <motion.div 
+          className={`w-full fixed bottom-0 left-0 right-0 bg-background pb-4 pt-4 px-2 md:static md:pb-0 md:pt-8 md:px-0 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] md:shadow-none`}
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ 
+            y: isFlipped ? 0 : 100, 
+            opacity: isFlipped ? 1 : 0,
+            transition: { 
+              y: { duration: 0.3, type: "spring", stiffness: 500, damping: 30 },
+              opacity: { duration: 0.2 }
+            }
+          }}
+        >
           <div className="grid grid-cols-4 gap-0.5 xs:gap-1 sm:gap-2 max-w-2xl w-full mx-auto">
             <div className="flex flex-col items-center">
               <Button 
@@ -593,6 +639,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 size="lg"
                 onClick={() => handleResponse('again')}
                 className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 text-xs xs:text-sm sm:text-base"
+                disabled={isTransitioning}
               >
                 <RotateCcw className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
                 <span className="whitespace-nowrap">Again</span>
@@ -612,6 +659,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 size="lg"
                 onClick={() => handleResponse('hard')}
                 className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-amber-600 hover:bg-amber-700 text-white border-amber-600 hover:border-amber-700 text-xs xs:text-sm sm:text-base"
+                disabled={isTransitioning}
               >
                 <X className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
                 <span className="whitespace-nowrap">Hard</span>
@@ -631,6 +679,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 size="lg"
                 onClick={() => handleResponse('good')}
                 className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700 text-xs xs:text-sm sm:text-base"
+                disabled={isTransitioning}
               >
                 <Check className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
                 <span className="whitespace-nowrap">Good</span>
@@ -650,6 +699,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 size="lg"
                 onClick={() => handleResponse('easy')}
                 className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 text-xs xs:text-sm sm:text-base"
+                disabled={isTransitioning}
               >
                 <Star className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
                 <span className="whitespace-nowrap">Easy</span>
@@ -663,7 +713,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
       
       {/* Card edit modal */}
@@ -681,6 +731,16 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
         } : null}
         onCardUpdated={handleCardUpdated}
       />
+      
+      <style jsx global>{`
+        .perspective {
+          perspective: 1000px;
+        }
+        
+        .backface-hidden {
+          backface-visibility: hidden;
+        }
+      `}</style>
     </PageLayout>
   )
 } 
