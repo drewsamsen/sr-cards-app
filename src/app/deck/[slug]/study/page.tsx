@@ -565,7 +565,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 className="w-full"
               >
                 <Card 
-                  className="w-full max-w-2xl min-h-[16rem] md:min-h-[20rem] cursor-pointer transition-all duration-300 relative flex flex-col perspective"
+                  className="w-full max-w-2xl min-h-[16rem] md:min-h-[20rem] cursor-pointer transition-all duration-300 relative flex flex-col"
                   onClick={handleFlip}
                 >
                   <Button
@@ -580,37 +580,32 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <motion.div
-                    className="w-full h-full"
-                    animate={{ rotateY: isFlipped ? 180 : 0 }}
-                    transition={{ duration: 0.5, type: "spring", stiffness: 260, damping: 20 }}
-                    style={{ transformStyle: "preserve-3d" }}
-                  >
-                    <CardContent className={`p-6 flex flex-col flex-grow ${isFlipped ? "backface-hidden" : ""}`}>
-                      <div className="flex flex-col h-full">
-                        {/* Front text always visible */}
-                        <div className="mb-auto">
-                          <p className="text-xl md:text-2xl font-medium leading-relaxed text-center whitespace-pre-line">{studyState.currentCard?.front}</p>
-                        </div>
+                  
+                  <CardContent className="p-6 flex flex-col flex-grow">
+                    {/* Front content - always visible */}
+                    <div className="flex flex-col h-full">
+                      <div className="mb-auto">
+                        <p className="text-xl md:text-2xl font-medium leading-relaxed text-center whitespace-pre-line">{studyState.currentCard?.front}</p>
                       </div>
-                    </CardContent>
-                    
-                    {/* Back content */}
-                    <CardContent 
-                      className="p-6 flex flex-col flex-grow absolute inset-0 backface-hidden"
-                      style={{ transform: "rotateY(180deg)" }}
-                    >
-                      <div className="flex flex-col h-full">
-                        <div>
-                          <p className="text-xl md:text-2xl font-medium leading-relaxed text-center whitespace-pre-line">{studyState.currentCard?.front}</p>
-                        </div>
-                        <div className="mt-4">
-                          <hr className="mb-4 border-t border-border" />
-                          <p className="text-xl md:text-2xl font-medium text-left whitespace-pre-line leading-tight">{studyState.currentCard?.back}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </motion.div>
+                      
+                      {/* Back content - only visible when flipped */}
+                      <AnimatePresence>
+                        {isFlipped && (
+                          <motion.div
+                            key="answer"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="mt-4"
+                          >
+                            <hr className="mb-4 border-t border-border dark:border-gray-600" />
+                            <p className="text-xl md:text-2xl font-medium text-left whitespace-pre-line leading-tight">{studyState.currentCard?.back}</p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </CardContent>
                 </Card>
               </motion.div>
             </AnimatePresence>
@@ -733,13 +728,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
       />
       
       <style jsx global>{`
-        .perspective {
-          perspective: 1000px;
-        }
-        
-        .backface-hidden {
-          backface-visibility: hidden;
-        }
+        /* Removed perspective and backface-hidden styles */
       `}</style>
     </PageLayout>
   )
