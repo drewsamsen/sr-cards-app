@@ -368,20 +368,6 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 <Skeleton className="h-4 w-4/6" />
               </CardContent>
             </Card>
-            
-            {/* Button skeletons for response options */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full mt-4">
-              <Skeleton className="h-10 w-full rounded-md" />
-              <Skeleton className="h-10 w-full rounded-md" />
-              <Skeleton className="h-10 w-full rounded-md" />
-              <Skeleton className="h-10 w-full rounded-md" />
-            </div>
-            
-            {/* Deck progress skeleton */}
-            <div className="mt-6">
-              <Skeleton className="h-6 w-32 mb-2" />
-              <Skeleton className="h-3 w-full" />
-            </div>
           </div>
         </div>
       </PageLayout>
