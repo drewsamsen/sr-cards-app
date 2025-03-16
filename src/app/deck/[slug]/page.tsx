@@ -12,6 +12,15 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Plus, AlertCircle, BookOpen, Save, Edit, X } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Skeleton } from "@/components/ui/skeleton"
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,6 +38,147 @@ import { CardEditModal } from "@/components/card-edit-modal"
 import { CardAddModal } from "@/components/card-add-modal"
 import { SingleCard } from "@/lib/hooks/useCard"
 import { PageLayout } from "@/components/page-layout"
+
+// Create a DeckDetailSkeleton component for loading state
+function DeckDetailSkeleton() {
+  return (
+    <div className="w-full space-y-6">
+      {/* Deck header skeleton */}
+      <div className="w-full space-y-4">
+        {/* Deck title */}
+        <div className="flex items-center mb-2 sm:mb-3 px-4 sm:px-6">
+          <Skeleton className="h-8 w-[250px]" />
+          <Skeleton className="h-7 w-7 ml-2 rounded-full" />
+        </div>
+        
+        {/* Deck stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <Skeleton className="h-5 w-[120px]" />
+            </CardHeader>
+            <CardContent className="pb-4">
+              <div className="space-y-2">
+                <Skeleton className="h-7 w-[80px]" />
+                <Skeleton className="h-4 w-[150px]" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <Skeleton className="h-5 w-[120px]" />
+            </CardHeader>
+            <CardContent className="pb-4">
+              <div className="space-y-2">
+                <Skeleton className="h-7 w-[80px]" />
+                <Skeleton className="h-4 w-[150px]" />
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader className="pb-2">
+              <Skeleton className="h-5 w-[120px]" />
+            </CardHeader>
+            <CardContent className="pb-4">
+              <div className="space-y-2">
+                <Skeleton className="h-7 w-[80px]" />
+                <Skeleton className="h-4 w-[150px]" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+      
+      {/* Cards table skeleton */}
+      <Card>
+        <CardContent className="pt-2 sm:pt-3 px-2 sm:px-6 pb-4 sm:pb-6">
+          {/* Search and header section skeleton */}
+          <div className="flex items-center justify-between py-4">
+            <Skeleton className="h-9 w-[250px]" />
+            <div className="flex items-center gap-2">
+              <Skeleton className="h-9 w-[90px] rounded-md" />
+              <Skeleton className="h-9 w-[90px] rounded-md" />
+            </div>
+          </div>
+          
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-8 w-16" />
+                      <Skeleton className="h-4 w-4" />
+                    </div>
+                  </TableHead>
+                  <TableHead>
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-8 w-16" />
+                      <Skeleton className="h-4 w-4" />
+                    </div>
+                  </TableHead>
+                  <TableHead>
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-8 w-16" />
+                      <Skeleton className="h-4 w-4" />
+                    </div>
+                  </TableHead>
+                  <TableHead>
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-8 w-16" />
+                      <Skeleton className="h-4 w-4" />
+                    </div>
+                  </TableHead>
+                  <TableHead style={{ width: "100px" }}>
+                    <Skeleton className="h-8 w-16" />
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {Array(5).fill(0).map((_, index) => (
+                  <TableRow key={index}>
+                    <TableCell>
+                      <div className="max-w-[200px]">
+                        <Skeleton className="h-5 w-full" />
+                        <Skeleton className="h-4 w-3/4 mt-1" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="max-w-[200px]">
+                        <Skeleton className="h-5 w-full" />
+                        <Skeleton className="h-4 w-3/4 mt-1" />
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-6 w-16 rounded-full" />
+                    </TableCell>
+                    <TableCell>
+                      <Skeleton className="h-5 w-24" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          
+          {/* Footer/pagination skeleton */}
+          <div className="flex items-center justify-between space-x-2 py-4">
+            <Skeleton className="h-9 w-[250px]" />
+            <Skeleton className="h-9 w-[150px]" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
 
 // Define the Card type to match the data structure
 export interface DeckCard {
@@ -304,6 +454,15 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
       <div className="flex min-h-screen items-center justify-center">
         <p>Loading...</p>
       </div>
+    )
+  }
+
+  // Show loading skeleton while deck or cards are loading
+  if (isLoadingDeck || isLoadingCards) {
+    return (
+      <PageLayout>
+        <DeckDetailSkeleton />
+      </PageLayout>
     )
   }
 

@@ -13,6 +13,7 @@ import { cardService } from "@/lib/api/services/card.service"
 import { CardEditModal } from "@/components/card-edit-modal"
 import { PageLayout } from "@/components/page-layout"
 import { motion, AnimatePresence } from "framer-motion"
+import { Skeleton } from "@/components/ui/skeleton"
 
 // Helper function to calculate and format time difference
 const getTimeUntil = (dateString: string) => {
@@ -354,8 +355,34 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   if (studyState.isLoading) {
     return (
       <PageLayout>
-        <div className="flex items-center justify-center">
-          <p>Loading card...</p>
+        <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
+          <div className="w-full">
+            {/* Card skeleton */}
+            <Card className="w-full min-h-[16rem] md:min-h-[20rem] mb-6">
+              <CardContent className="flex flex-col items-center justify-center h-full p-6">
+                {/* Title/question skeleton */}
+                <Skeleton className="h-8 w-3/4 mb-4" />
+                {/* Content skeleton lines */}
+                <Skeleton className="h-4 w-full mb-2" />
+                <Skeleton className="h-4 w-5/6 mb-2" />
+                <Skeleton className="h-4 w-4/6" />
+              </CardContent>
+            </Card>
+            
+            {/* Button skeletons for response options */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full mt-4">
+              <Skeleton className="h-10 w-full rounded-md" />
+              <Skeleton className="h-10 w-full rounded-md" />
+              <Skeleton className="h-10 w-full rounded-md" />
+              <Skeleton className="h-10 w-full rounded-md" />
+            </div>
+            
+            {/* Deck progress skeleton */}
+            <div className="mt-6">
+              <Skeleton className="h-6 w-32 mb-2" />
+              <Skeleton className="h-3 w-full" />
+            </div>
+          </div>
         </div>
       </PageLayout>
     )
@@ -653,7 +680,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 variant="outline" 
                 size="lg"
                 onClick={() => handleResponse('hard')}
-                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-amber-600 hover:bg-amber-700 text-white border-amber-600 hover:border-amber-700 text-xs xs:text-sm sm:text-base dark:bg-amber-800 dark:hover:bg-amber-700 dark:border-amber-800"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 text-xs xs:text-sm sm:text-base"
                 disabled={isTransitioning}
               >
                 <X className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
@@ -670,10 +697,10 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
             
             <div className="flex flex-col items-center">
               <Button 
-                variant="default" 
+                variant="secondary" 
                 size="lg"
                 onClick={() => handleResponse('good')}
-                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-green-600 hover:bg-green-700 text-white border-green-600 hover:border-green-700 text-xs xs:text-sm sm:text-base dark:bg-green-800 dark:hover:bg-green-700 dark:border-green-800"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 text-xs xs:text-sm sm:text-base"
                 disabled={isTransitioning}
               >
                 <Check className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
@@ -690,13 +717,13 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
             
             <div className="flex flex-col items-center">
               <Button 
-                variant="secondary" 
+                variant="default" 
                 size="lg"
                 onClick={() => handleResponse('easy')}
-                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 bg-blue-600 hover:bg-blue-700 text-white border-blue-600 hover:border-blue-700 text-xs xs:text-sm sm:text-base dark:bg-blue-800 dark:hover:bg-blue-700 dark:border-blue-800"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 text-xs xs:text-sm sm:text-base"
                 disabled={isTransitioning}
               >
-                <Star className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
+                <Check className="h-4 w-4 xs:h-5 xs:w-5 flex-shrink-0 mr-0.5 xs:mr-1" />
                 <span className="whitespace-nowrap">Easy</span>
               </Button>
               {studyState.currentCard?.reviewMetrics && (

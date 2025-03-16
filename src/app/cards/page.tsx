@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { DataTable } from "@/components/data-table"
 import { deckCardColumns, DeckCard } from "@/components/deck-card-columns"
 import { useAuth, useCards } from "@/lib/hooks"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Plus, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
@@ -14,6 +13,15 @@ import { PageLayout } from "@/components/page-layout"
 import { CardEditModal } from "@/components/card-edit-modal"
 import { SingleCard } from "@/lib/hooks/useCard"
 import { cardService } from "@/lib/api/services/card.service"
+import { Skeleton } from "@/components/ui/skeleton"
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +32,94 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+
+// Create a CardsTableSkeleton component for loading state
+function CardsTableSkeleton() {
+  // Display 7 skeleton rows
+  const skeletonRows = Array(7).fill(0)
+  
+  return (
+    <div className="w-full">
+      {/* Search and header section skeleton */}
+      <div className="flex items-center justify-between py-4">
+        <Skeleton className="h-9 w-[250px]" />
+        <Skeleton className="h-9 w-[120px] rounded-md" />
+      </div>
+      
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-4 w-4" />
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-4 w-4" />
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-4 w-4" />
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-4 w-4" />
+                </div>
+              </TableHead>
+              <TableHead style={{ width: "100px" }}>
+                <Skeleton className="h-8 w-16" />
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {skeletonRows.map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <div className="max-w-[200px]">
+                    <Skeleton className="h-5 w-full" />
+                    <Skeleton className="h-4 w-3/4 mt-1" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="max-w-[200px]">
+                    <Skeleton className="h-5 w-full" />
+                    <Skeleton className="h-4 w-3/4 mt-1" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-6 w-16 rounded-full" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-5 w-24" />
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                    <Skeleton className="h-8 w-8 rounded-md" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      
+      {/* Footer/pagination skeleton */}
+      <div className="flex items-center justify-between space-x-2 py-4">
+        <Skeleton className="h-9 w-[250px]" />
+        <Skeleton className="h-9 w-[150px]" />
+      </div>
+    </div>
+  )
+}
 
 export default function CardsPage() {
   const router = useRouter()
@@ -51,7 +147,6 @@ export default function CardsPage() {
   const [cardToDelete, setCardToDelete] = useState<DeckCard | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
-  const [deleteSuccess, setDeleteSuccess] = useState(false)
 
   // Calculate pagination values for the DataTable
   const tablePagination = {
@@ -111,16 +206,10 @@ export default function CardsPage() {
       const response = await cardService.deleteCard(cardToDelete.id)
       
       if (response.status === 200 && response.data.status === "success") {
-        setDeleteSuccess(true)
         setIsDeleteDialogOpen(false)
         
         // Refresh the cards list
         refreshCards()
-        
-        // Show success message briefly
-        setTimeout(() => {
-          setDeleteSuccess(false)
-        }, 3000)
       } else {
         setDeleteError("Failed to delete card")
       }
@@ -131,13 +220,6 @@ export default function CardsPage() {
       setIsDeleting(false)
     }
   }
-
-  // Add onEdit and onDelete handlers to each card
-  const cardsWithHandlers = cards.map(card => ({
-    ...card,
-    onEdit: handleCardEdit,
-    onDelete: handleCardDelete
-  }))
 
   // Redirect to login page if not logged in
   useEffect(() => {
@@ -158,7 +240,7 @@ export default function CardsPage() {
   return (
     <PageLayout>
       {cardsError && (
-        <Alert variant="destructive" className="mb-2 sm:mb-3">
+        <Alert variant="destructive" className="mb-4 sm:mb-6">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             {cardsError}
@@ -166,41 +248,37 @@ export default function CardsPage() {
         </Alert>
       )}
       
-      {deleteSuccess && (
-        <Alert className="mb-2 sm:mb-3 bg-green-50 text-green-800 border-green-200">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>Card deleted successfully!</AlertDescription>
-        </Alert>
+      {isLoadingCards ? (
+        <CardsTableSkeleton />
+      ) : (
+        <DataTable 
+          columns={deckCardColumns} 
+          data={cards.map(card => ({
+            ...card,
+            onEdit: handleCardEdit,
+            onDelete: handleCardDelete
+          }))} 
+          searchPlaceholder="Search cards..." 
+          emptyMessage="No cards found."
+          pagination={tablePagination}
+          onPaginationChange={{
+            onPageChange: handlePageChange,
+            onPageSizeChange: handlePageSizeChange
+          }}
+          onSearch={handleSearch}
+          useServerSearch={true}
+          actionButton={
+            <Button 
+              onClick={() => setIsAddCardModalOpen(true)}
+              className="flex items-center gap-1"
+              size="sm"
+            >
+              <Plus className="h-4 w-4" />
+              Add Card
+            </Button>
+          }
+        />
       )}
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle>All Cards</CardTitle>
-          <Button 
-            size="sm" 
-            className="flex items-center gap-1"
-            onClick={() => setIsAddCardModalOpen(true)}
-          >
-            <Plus className="h-4 w-4" />
-            Create new card
-          </Button>
-        </CardHeader>
-        <CardContent>
-          <DataTable 
-            columns={deckCardColumns} 
-            data={cardsWithHandlers} 
-            searchPlaceholder="Search across all cards..." 
-            emptyMessage={isLoadingCards ? "Loading cards..." : "No flashcards found."}
-            pagination={tablePagination}
-            onPaginationChange={{
-              onPageChange: handlePageChange,
-              onPageSizeChange: handlePageSizeChange
-            }}
-            onSearch={handleSearch}
-            useServerSearch={true}
-          />
-        </CardContent>
-      </Card>
       
       <CardAddWithDeckModal
         isOpen={isAddCardModalOpen}

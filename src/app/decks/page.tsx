@@ -9,6 +9,15 @@ import { Button } from "@/components/ui/button"
 import { Plus, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { PageLayout } from "@/components/page-layout"
+import { Skeleton } from "@/components/ui/skeleton"
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table"
 
 // Define the Deck type to match the data structure
 export interface Deck {
@@ -19,6 +28,85 @@ export interface Deck {
   totalCards: number
   newCards: number
   dueCards: number
+}
+
+// Create a DeckTableSkeleton component for loading state
+function DeckTableSkeleton() {
+  // Display 5 skeleton rows
+  const skeletonRows = Array(5).fill(0)
+  
+  return (
+    <div className="w-full">
+      {/* Search and header section skeleton */}
+      <div className="flex items-center justify-between py-4">
+        <Skeleton className="h-9 w-[250px]" />
+        <div className="flex items-center gap-1">
+          <Skeleton className="h-9 w-9 rounded-md" />
+          <Skeleton className="h-9 w-9 rounded-md" />
+        </div>
+      </div>
+      
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead style={{ width: "70px" }}>
+                <Skeleton className="h-8 w-16" />
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-4 w-4" />
+                </div>
+              </TableHead>
+              <TableHead>
+                <div className="flex items-center gap-2">
+                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="h-4 w-4" />
+                </div>
+              </TableHead>
+              <TableHead style={{ width: "50px" }}>
+                <Skeleton className="h-8 w-8" />
+              </TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {skeletonRows.map((_, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  <Skeleton className="h-8 w-16 rounded-md" />
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-5 w-[200px]" />
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-col gap-1">
+                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      
+      {/* Footer/pagination skeleton */}
+      <div className="flex items-center justify-between space-x-2 py-4">
+        <Skeleton className="h-9 w-[250px]" />
+        <Skeleton className="h-9 w-[150px]" />
+      </div>
+      
+      {/* Button skeleton */}
+      <div className="flex justify-end mt-4 sm:mt-6">
+        <Skeleton className="h-10 w-[150px] rounded-md" />
+      </div>
+    </div>
+  )
 }
 
 export default function DecksPage() {
@@ -103,23 +191,29 @@ export default function DecksPage() {
         </Alert>
       )}
       
-      <DataTable 
-        columns={deckColumns} 
-        data={decks} 
-        searchPlaceholder="Search decks..." 
-        emptyMessage={isLoadingDecks ? "Loading decks..." : "No flashcard decks found."}
-        hideSearch={true}
-      />
-      
-      <div className="flex justify-end mt-4 sm:mt-6">
-        <Button 
-          onClick={() => router.push('/decks/new')}
-          className="flex items-center gap-1"
-        >
-          <Plus className="h-4 w-4" />
-          Create new deck
-        </Button>
-      </div>
+      {isLoadingDecks ? (
+        <DeckTableSkeleton />
+      ) : (
+        <>
+          <DataTable 
+            columns={deckColumns} 
+            data={decks} 
+            searchPlaceholder="Search decks..." 
+            emptyMessage="No flashcard decks found."
+            hideSearch={true}
+          />
+          
+          <div className="flex justify-end mt-4 sm:mt-6">
+            <Button 
+              onClick={() => router.push('/decks/new')}
+              className="flex items-center gap-1"
+            >
+              <Plus className="h-4 w-4" />
+              Create new deck
+            </Button>
+          </div>
+        </>
+      )}
     </PageLayout>
   )
 } 
