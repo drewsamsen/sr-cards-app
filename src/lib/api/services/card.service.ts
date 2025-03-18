@@ -27,6 +27,17 @@ export interface CardResponse {
   lastReview?: string | null;
 }
 
+// New interface for card expound API response
+export interface CardExpoundResponse {
+  status: string;
+  data: {
+    cardId: string;
+    front: string;
+    back: string;
+    explanation: string;
+  };
+}
+
 export interface CardsApiResponse {
   status: string;
   data: {
@@ -158,6 +169,13 @@ export class CardService {
   async searchCards(params: SearchCardsParams): Promise<ApiResponse<CardsApiResponse>> {
     // Use the dedicated search endpoint
     return apiClient.get<CardsApiResponse>(API_ENDPOINTS.cards.search, params as unknown as Record<string, string | number | boolean>);
+  }
+
+  /**
+   * Get expanded explanation for a card using AI
+   */
+  async expoundCard(cardId: string): Promise<ApiResponse<CardExpoundResponse>> {
+    return apiClient.post<CardExpoundResponse>(API_ENDPOINTS.cards.expound(cardId));
   }
 }
 

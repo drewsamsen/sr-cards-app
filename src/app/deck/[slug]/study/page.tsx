@@ -6,11 +6,12 @@ import { Header } from "@/components/header"
 import { useAuth } from "@/lib/hooks"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { RotateCcw, Check, X, Edit, Star } from "lucide-react"
+import { RotateCcw, Check, X, Edit, Star, Lightbulb } from "lucide-react"
 import Link from "next/link"
 import { deckService, CardReviewResponse, DeckResponse, DailyProgress } from "@/lib/api/services/deck.service"
 import { cardService } from "@/lib/api/services/card.service"
 import { CardEditModal } from "@/components/card-edit-modal"
+import { CardAIExplanationModal } from "@/components/card-ai-explanation-modal"
 import { PageLayout } from "@/components/page-layout"
 import { motion, AnimatePresence } from "framer-motion"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -92,6 +93,11 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   
   // Card edit modal state
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  
+  // AI explanation modal state
+  const [isAIExplanationModalOpen, setIsAIExplanationModalOpen] = useState(false)
+  const [aiExplanation, setAIExplanation] = useState("")
+  const [isLoadingExplanation, setIsLoadingExplanation] = useState(false)
 
   // Fetch cards for review
   const fetchCardsForReview = useCallback(async (updateCurrentCard: boolean = true) => {
@@ -287,6 +293,32 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
     // Prevent the card from flipping when clicking the edit button
     e.stopPropagation()
     setIsEditModalOpen(true)
+  }
+
+  const handleAIHelpClick = async (e: React.MouseEvent) => {
+    // Prevent the card from flipping when clicking the AI help button
+    e.stopPropagation()
+    
+    if (!studyState.currentCard) return
+    
+    setIsAIExplanationModalOpen(true)
+    setIsLoadingExplanation(true)
+    setAIExplanation("")
+    
+    try {
+      const response = await cardService.expoundCard(studyState.currentCard.id)
+      
+      if (response.data.status === "success") {
+        setAIExplanation(response.data.data.explanation)
+      } else {
+        setAIExplanation("Sorry, we couldn't generate an explanation for this card at the moment.")
+      }
+    } catch (error) {
+      console.error("Error fetching AI explanation:", error)
+      setAIExplanation("Sorry, we couldn't generate an explanation for this card at the moment.")
+    } finally {
+      setIsLoadingExplanation(false)
+    }
   }
   
   const handleCardUpdated = async () => {
@@ -583,18 +615,29 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                   className="w-full max-w-2xl min-h-[16rem] md:min-h-[20rem] cursor-pointer transition-all duration-300 relative flex flex-col"
                   onClick={handleFlip}
                 >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute top-2 right-2 h-8 w-8 rounded-full opacity-70 hover:opacity-100 z-10"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent card flip when clicking edit
-                      handleEditClick(e);
-                    }}
-                    title="Edit card"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
+                  <div className="absolute top-2 right-2 flex gap-2 z-10">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full opacity-70 hover:opacity-100"
+                      onClick={handleAIHelpClick}
+                      title="Get AI explanation"
+                    >
+                      <Lightbulb className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-full opacity-70 hover:opacity-100"
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent card flip when clicking edit
+                        handleEditClick(e);
+                      }}
+                      title="Edit card"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                  </div>
                   
                   <CardContent className="p-6 flex flex-col flex-grow">
                     {/* Front content - always visible */}
@@ -742,6 +785,18 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
         onCardUpdated={handleCardUpdated}
         onCardDeleted={handleCardDeleted}
       />
+      
+      {/* AI explanation modal */}
+      {studyState.currentCard && (
+        <CardAIExplanationModal
+          front={studyState.currentCard.front}
+          back={studyState.currentCard.back}
+          explanation={aiExplanation}
+          isOpen={isAIExplanationModalOpen}
+          onOpenChange={setIsAIExplanationModalOpen}
+          isLoading={isLoadingExplanation}
+        />
+      )}
       
       <style jsx global>{`
         /* Removed perspective and backface-hidden styles */
