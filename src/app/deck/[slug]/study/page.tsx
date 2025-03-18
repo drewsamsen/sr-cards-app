@@ -311,6 +311,14 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
     }
   }
 
+  // Handler for when a card is deleted
+  const handleCardDeleted = () => {
+    // Move to the next card
+    getNextCard()
+    // Reset the flipped state
+    setIsFlipped(false)
+  }
+
   const handleResponse = async (response: 'again' | 'hard' | 'good' | 'easy') => {
     if (!studyState.currentCard) return
     
@@ -738,6 +746,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
           deckName: studyState.deck?.name
         } : null}
         onCardUpdated={handleCardUpdated}
+        onCardDeleted={handleCardDeleted}
       />
       
       <style jsx global>{`
