@@ -430,11 +430,8 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                   </div>
                   
                   <div className="space-y-4 w-full">
-                    <Link href={`/deck/${slug}`} className="w-full">
-                      <Button className="w-full">Back to Deck</Button>
-                    </Link>
                     <Link href="/decks" className="w-full">
-                      <Button variant="outline" className="w-full">View All Decks</Button>
+                      <Button className="w-full py-6 text-lg">Back to Decks</Button>
                     </Link>
                   </div>
                 </div>
@@ -475,7 +472,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                       <Button className="w-full">Back to Deck</Button>
                     </Link>
                     <Link href="/decks" className="w-full">
-                      <Button variant="outline" className="w-full">View All Decks</Button>
+                      <Button variant="outline" className="w-full">Back to Decks</Button>
                     </Link>
                   </div>
                 </div>
@@ -502,8 +499,8 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                     >
                       Try Again
                     </Button>
-                    <Link href={`/deck/${slug}`} className="w-full">
-                      <Button variant="outline" className="w-full">Back to Deck</Button>
+                    <Link href="/decks" className="w-full">
+                      <Button variant="outline" className="w-full">Back to Decks</Button>
                     </Link>
                   </div>
                 </div>
@@ -539,11 +536,8 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
               </div>
               
               <div className="space-y-4 w-full">
-                <Link href={`/deck/${slug}`} className="w-full">
-                  <Button className="w-full">Back to Deck</Button>
-                </Link>
                 <Link href="/decks" className="w-full">
-                  <Button variant="outline" className="w-full">View All Decks</Button>
+                  <Button className="w-full py-6 text-lg">Back to Decks</Button>
                 </Link>
               </div>
             </div>
@@ -561,8 +555,8 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
         <main className="flex-1 container mx-auto px-4 py-6 md:py-10">
           <div className="flex flex-col items-center justify-center">
             <p className="text-xl">You are all caught up</p>
-            <Link href={`/deck/${slug}`}>
-              <Button className="mt-4">Back to Deck</Button>
+            <Link href="/decks">
+              <Button className="mt-4">Back to Decks</Button>
             </Link>
           </div>
         </main>
