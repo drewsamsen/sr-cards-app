@@ -4,6 +4,10 @@
 The project is currently in active development with a focus on core functionality and user experience. The primary goal is to build a complete, functional flashcard application with spaced repetition capabilities.
 
 ## Recent Changes
+- Redesigned login/register UI to use text links instead of tabs for a cleaner interface
+- Simplified register form by removing title and description
+- Simplified login form by removing welcome text and description
+- Enhanced login/register UI with improved spacing, larger inputs, and better dark theme colors
 - Further simplified AI explanation modal by removing all labels
 - Simplified AI explanation modal by removing card content and renaming to "More from AI"
 - Removed mobile menu hamburger icon for non-logged in users
@@ -33,6 +37,13 @@ The project is currently in active development with a focus on core functionalit
 6. Add import/export functionality
 
 ## Active Decisions
+- **Login/Register UI**: 
+  - Replaced tabbed interface with a simpler single form design
+  - Added "Already have an account?" and "Don't have an account?" text links to switch forms
+  - Removed all titles and descriptions for a minimal appearance
+  - Added more space between elements for better readability
+  - Increased input field size for better usability
+  - Improved dark theme colors with better contrast
 - **AI Explanation Modal**: Maximally simplified to show only the explanation content without labels
 - **Header Design**: 
   - Removed Login button and made Try Demo the primary call-to-action in header at all screen widths
