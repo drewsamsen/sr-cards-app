@@ -1,0 +1,77 @@
+# Flashcard Review App - Project Intelligence
+
+## Coding Patterns
+
+### Component Structure
+- Components are organized by feature (cards, decks) and common UI elements
+- Modal components handle their own state and use a consistent pattern
+- Table components use Tanstack Table with custom columns and cell renderers
+- Form components use controlled inputs with validation
+
+### Naming Conventions
+- PascalCase for component names: `CardEditModal`, `DeckColumns`
+- camelCase for functions and variables: `useCards`, `handleSearch`
+- kebab-case for CSS classes: `data-table`, `card-content`
+- snake_case for API fields: `review_at`, `created_at`
+
+### File Organization
+- Components are in `/src/components/`
+- Pages are in `/src/app/` following Next.js App Router convention
+- Utilities and hooks are in `/src/lib/`
+- API services are in `/src/lib/api/services/`
+
+### State Management
+- Custom hooks for domain data: `useAuth()`, `useCards()`
+- Component state for UI: `useState` for modals, forms, etc.
+- Context API for global state: authentication
+
+### Styling Approach
+- Tailwind CSS for utility-based styling
+- Shadcn UI components as base components
+- Consistent spacing and color usage
+- Dark/light mode support via theme context
+
+## Development Workflow
+
+### Component Development
+1. Create UI structure with Shadcn components
+2. Add state management and event handlers
+3. Implement API integration if needed
+4. Add responsive styling with Tailwind
+5. Implement loading, error, and empty states
+
+### Feature Implementation
+1. Define data models and API services
+2. Create custom hooks for data management
+3. Build UI components
+4. Implement routing and navigation
+5. Add error handling and loading states
+
+### Common Patterns
+- Modal dialogs for focused tasks (adding/editing)
+- Table layouts for data presentation
+- Form components for data input
+- Alert components for notifications
+- Loading skeletons for data fetching states
+
+## Project-Specific Knowledge
+
+### Key Implementation Paths
+- Authentication flow: `useAuth` hook → `src/app/login` → protected routes
+- Card management: `useCards` hook → `CardAddModal`/`CardEditModal` → `DataTable`
+- Deck management: Similar pattern to cards with deck-specific components
+- Study system: FSRS algorithm implementation (in progress)
+
+### Critical Files
+- `src/lib/api/client.ts`: API client configuration
+- `src/components/header.tsx`: Main navigation
+- `src/components/data-table.tsx`: Reusable table component
+- `src/lib/hooks/useAuth.ts`: Authentication state management
+- `src/lib/hooks/useCards.ts`: Card data management
+
+### Preferred Approaches
+- Use existing Shadcn UI components when available
+- Follow established patterns for new features
+- Maintain type safety with TypeScript
+- Use custom hooks for data management
+- Keep components focused on single responsibilities 
