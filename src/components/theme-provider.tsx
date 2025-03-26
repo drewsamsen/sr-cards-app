@@ -16,7 +16,7 @@ type ThemeProviderState = {
 }
 
 const initialState: ThemeProviderState = {
-  theme: "light",
+  theme: "dark",
   setTheme: () => null,
 }
 
@@ -27,9 +27,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const [theme, setTheme] = useState<Theme>(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme') as Theme | null
-      return savedTheme || "light"
+      return savedTheme || "dark"
     }
-    return "light"
+    return "dark"
   })
   
   const { settings } = useUserSettings()

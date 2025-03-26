@@ -4,6 +4,7 @@
 The project is currently in active development with a focus on core functionality and user experience. The primary goal is to build a complete, functional flashcard application with spaced repetition capabilities.
 
 ## Recent Changes
+- Changed default theme to dark mode for better user experience
 - Added modal dialogs for card creation and editing
 - Implemented card management features
 - Added deck listing with review counts
@@ -26,6 +27,7 @@ The project is currently in active development with a focus on core functionalit
 6. Add import/export functionality
 
 ## Active Decisions
+- **Theme Default**: Dark mode set as default theme for improved user experience
 - **UI Framework**: Using Shadcn UI components with Tailwind CSS for styling
 - **Data Management**: Custom hooks for data fetching and state management
 - **Routing**: Using Next.js App Router for page routing
