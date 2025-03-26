@@ -93,26 +93,13 @@ export function CardAIExplanationModal({
               <p className="mt-4 text-muted-foreground">Generating...</p>
             </div>
           ) : (
-            <>
-              <div className="space-y-2">
-                <h3 className="font-semibold text-sm text-muted-foreground">Card</h3>
-                <div className="bg-muted p-3 rounded-md">
-                  <p className="font-medium mb-2">{front}</p>
-                  <div className="border-t border-border pt-2 mt-1">
-                    <p>{back}</p>
-                  </div>
+            <div className="space-y-2">
+              <div className="bg-card border p-4 rounded-md">
+                <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
+                  {formatMarkdown(explanation)}
                 </div>
               </div>
-              
-              <div className="space-y-2">
-                <h3 className="font-semibold text-sm text-muted-foreground">Detailed Explanation</h3>
-                <div className="bg-card border p-4 rounded-md">
-                  <div className="prose prose-sm dark:prose-invert max-w-none whitespace-pre-wrap">
-                    {formatMarkdown(explanation)}
-                  </div>
-                </div>
-              </div>
-            </>
+            </div>
           )}
         </div>
         

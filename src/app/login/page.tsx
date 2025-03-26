@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -14,6 +14,7 @@ import { CheckCircle2, AlertCircle } from "lucide-react"
 
 export default function LoginPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const { login, register, isLoading, error, clearError, user, isInitialized } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
@@ -23,6 +24,7 @@ export default function LoginPage() {
   const [formError, setFormError] = useState<string | null>(null)
   const [registrationSuccess, setRegistrationSuccess] = useState(false)
   const [activeTab, setActiveTab] = useState("login")
+  const [isDemoLoading, setIsDemoLoading] = useState(false)
 
   // Redirect to decks page if already logged in
   useEffect(() => {
@@ -37,6 +39,24 @@ export default function LoginPage() {
       setFormError(error)
     }
   }, [error])
+
+  // Check for demo parameter in URL
+  useEffect(() => {
+    const demoParam = searchParams.get('demo')
+    if (demoParam === 'true' && !isDemoLoading && !isLoading) {
+      // Set active tab to login (in case user was on register)
+      setActiveTab("login")
+      
+      // Small timeout to ensure the tab has changed before triggering demo login
+      setTimeout(() => {
+        handleDemoLogin()
+      }, 100)
+      
+      // Clean URL by removing query parameter
+      const newUrl = window.location.pathname
+      window.history.replaceState({}, '', newUrl)
+    }
+  }, [searchParams, isDemoLoading, isLoading])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -119,6 +139,39 @@ export default function LoginPage() {
     }
   }
 
+  const handleDemoLogin = () => {
+    // Ensure login tab is active
+    setActiveTab("login")
+    
+    setIsDemoLoading(true)
+    
+    try {
+      // Set demo credentials in the form
+      setFormData({
+        email: 'demo@example.com',
+        password: 'demopassword',
+        name: '', // Not needed for login
+      })
+      
+      // Small timeout to ensure the form state updates before submission
+      setTimeout(() => {
+        // Get the login form element and submit it
+        const loginForm = document.getElementById('login-form') as HTMLFormElement
+        if (loginForm) {
+          loginForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
+        } else {
+          console.error('Login form not found')
+          setFormError('Could not find login form')
+        }
+        setIsDemoLoading(false)
+      }, 50)
+    } catch (error) {
+      console.error('Demo login error:', error)
+      setFormError('Failed to login with demo account')
+      setIsDemoLoading(false)
+    }
+  }
+
   return (
     <PageLayout>
       <div className="flex items-start justify-center">
@@ -185,7 +238,7 @@ export default function LoginPage() {
                     />
                   </div>
                 </CardContent>
-                <CardFooter className="pt-4">
+                <CardFooter>
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? "Logging in..." : "Login"}
                   </Button>
@@ -244,7 +297,7 @@ export default function LoginPage() {
                     </p>
                   </div>
                 </CardContent>
-                <CardFooter className="pt-4">
+                <CardFooter>
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? "Creating account..." : "Create account"}
                   </Button>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/hooks"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Menu, X } from "lucide-react"
+import { Menu, X, Sparkles } from "lucide-react"
 
 export function Header() {
   const router = useRouter()
@@ -31,6 +31,11 @@ export function Header() {
       console.error('Error during logout:', error)
       setLogoutError('Failed to logout. Please try again.')
     }
+  }
+
+  const handleDemoLogin = () => {
+    // Redirect to login page with special query parameter to trigger demo login
+    router.push('/login?demo=true')
   }
 
   return (
@@ -60,24 +65,21 @@ export function Header() {
           )}
         </div>
         
-        {/* Mobile menu button */}
-        {user && (
-          <button 
-            className="md:hidden p-2 rounded-md text-foreground hover:bg-accent"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
-          </button>
-        )}
-        
-        <div className="hidden md:flex items-center gap-3">
+        <div className="flex items-center gap-3 pr-0">
           {user ? (
             <>
-              <div className="flex flex-col items-end">
+              {/* Mobile menu button - only show when user is logged in */}
+              <button 
+                className="md:hidden p-2 rounded-md text-foreground hover:bg-accent ml-auto -mr-2"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              >
+                {mobileMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </button>
+              <div className="hidden md:flex flex-col items-end">
                 <span className="text-sm font-medium text-foreground">
                   {user.fullName}
                 </span>
@@ -95,17 +97,20 @@ export function Header() {
                 size="sm" 
                 onClick={handleLogout}
                 disabled={isLoading}
+                className="hidden md:inline-flex"
               >
                 {isLoading ? "Logging out..." : "Log out"}
               </Button>
             </>
           ) : (
             <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => router.push('/login')}
+              variant="default" 
+              size="sm"
+              onClick={handleDemoLogin}
+              className="flex items-center"
             >
-              Log in
+              <Sparkles className="mr-1 h-4 w-4" />
+              Try Demo
             </Button>
           )}
         </div>
@@ -147,6 +152,26 @@ export function Header() {
               className="w-full"
             >
               {isLoading ? "Logging out..." : "Log out"}
+            </Button>
+          </div>
+        </div>
+      )}
+      
+      {/* Mobile: Not logged in */}
+      {mobileMenuOpen && !user && (
+        <div className="md:hidden border-t border-border">
+          <div className="px-4 py-3 flex flex-col gap-2">
+            <Button 
+              variant="default" 
+              size="sm"
+              onClick={() => {
+                handleDemoLogin();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full flex items-center justify-center"
+            >
+              <Sparkles className="mr-1 h-4 w-4" />
+              Try Demo
             </Button>
           </div>
         </div>

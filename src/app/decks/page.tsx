@@ -32,8 +32,8 @@ export interface Deck {
 
 // Create a DeckTableSkeleton component for loading state
 function DeckTableSkeleton() {
-  // Display 5 skeleton rows
-  const skeletonRows = Array(5).fill(0)
+  // Display 3 skeleton rows to match a typical user with 3 decks
+  const skeletonRows = Array(3).fill(0)
   
   return (
     <div className="w-full">
