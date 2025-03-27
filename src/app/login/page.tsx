@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label"
 import { useAuth } from "@/lib/hooks"
 import { PageLayout } from "@/components/page-layout"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { CheckCircle2, AlertCircle } from "lucide-react"
+import { CheckCircle2, AlertCircle, Loader2 } from "lucide-react"
 
 // Create a separate component for the search params logic
 function SearchParamsHandler({
@@ -153,9 +153,7 @@ export default function LoginPage() {
   }
 
   const handleDemoLogin = () => {
-    // Ensure login view is active
     setIsLoginView(true)
-    
     setIsDemoLoading(true)
     
     try {
@@ -163,20 +161,19 @@ export default function LoginPage() {
       setFormData({
         email: 'demo@example.com',
         password: 'demopassword',
-        name: '', // Not needed for login
+        name: '',
       })
       
       // Small timeout to ensure the form state updates before submission
       setTimeout(() => {
-        // Get the login form element and submit it
         const loginForm = document.getElementById('auth-form') as HTMLFormElement
         if (loginForm) {
           loginForm.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))
         } else {
           console.error('Login form not found')
           setFormError('Could not find login form')
+          setIsDemoLoading(false)
         }
-        setIsDemoLoading(false)
       }, 50)
     } catch (error) {
       console.error('Demo login error:', error)
@@ -193,7 +190,6 @@ export default function LoginPage() {
 
   return (
     <PageLayout>
-      {/* Wrap the search params handler in Suspense */}
       <Suspense fallback={null}>
         <SearchParamsHandler 
           onDemoLogin={handleDemoLogin}
@@ -204,7 +200,14 @@ export default function LoginPage() {
       </Suspense>
       
       <div className="flex items-start justify-center pt-8 min-h-[calc(100vh-10rem)]">
-        <Card className="w-full max-w-md border-0 dark:bg-gray-900/50 shadow-lg overflow-hidden">
+        <Card className="w-full max-w-md border-0 dark:bg-gray-900/50 shadow-lg overflow-hidden relative">
+          {isDemoLoading && (
+            <div className="absolute inset-0 z-50 bg-background/95 dark:bg-gray-900/95 backdrop-blur-sm flex flex-col items-center justify-center">
+              <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-4" />
+              <p className="text-lg font-medium text-muted-foreground">Loading demo account...</p>
+            </div>
+          )}
+          
           <form id="auth-form" onSubmit={handleSubmit}>
             <CardHeader className="px-6 pt-6 pb-0">
               <h1 className="text-2xl font-bold mb-1">
@@ -239,7 +242,6 @@ export default function LoginPage() {
                   id="email" 
                   name="email"
                   type="email" 
-                  placeholder="name@example.com" 
                   value={formData.email}
                   onChange={handleInputChange}
                   required 
