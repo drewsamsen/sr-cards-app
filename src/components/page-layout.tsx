@@ -3,7 +3,6 @@
 import React, { useState, useEffect, createContext, useContext } from "react"
 import { Header } from "@/components/header"
 import { Smartphone, Monitor } from "lucide-react"
-import { Button } from "@/components/ui/button"
 
 // Create context to share phone mode state
 type PhoneModeContextType = {

@@ -74,6 +74,7 @@ interface StudyState {
 }
 
 export default function StudyPage(props: { params: Promise<{ slug: string }> }) {
+  const { isPhoneMode } = usePhoneMode();
   const params = use(props.params);
   const { slug } = params;
   const router = useRouter()
@@ -394,8 +395,6 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
 
   // Show loading state while fetching card
   if (studyState.isLoading) {
-    const { isPhoneMode } = usePhoneMode();
-    
     return (
       <PageLayout>
         <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto">

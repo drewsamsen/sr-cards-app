@@ -25,20 +25,20 @@ export default function AboutPage() {
                   When you review a card, you rate how well you remembered it, and the system adjusts the next review time accordingly:
                 </p>
                 <ul className="space-y-1 list-disc pl-6 text-muted-foreground">
-                  <li>"Again" - You didn't remember. The card will be shown again soon.</li>
-                  <li>"Hard" - You remembered with difficulty. The interval will increase slightly.</li>
-                  <li>"Good" - You remembered well. The interval will increase normally.</li>
-                  <li>"Easy" - You remembered easily. The interval will increase significantly.</li>
+                  <li>&quot;Again&quot; - You didn&apos;t remember. The card will be shown again soon.</li>
+                  <li>&quot;Hard&quot; - You remembered with difficulty. The interval will increase slightly.</li>
+                  <li>&quot;Good&quot; - You remembered well. The interval will increase normally.</li>
+                  <li>&quot;Easy&quot; - You remembered easily. The interval will increase significantly.</li>
                 </ul>
               </section>
 
               <section>
                 <h2 className="text-xl font-semibold mb-4">How it Was Made</h2>
                 <p className="text-muted-foreground leading-relaxed">
-                  EchoCards was developed in March 2025 using Cursor AI with Claude 3.7 Sonnet thinking. The project's goal was to 
+                  EchoCards was developed in March 2025 using Cursor AI with Claude 3.7 Sonnet thinking. The project&apos;s goal was to 
                   recreate the popular Anki spaced repetition application but with a robust RESTful API architecture, making it easy to 
                   integrate with automation services like n8n. This approach enables users to build custom workflows and integrations,
-                  extending the application's functionality beyond what traditional flashcard apps offer.
+                  extending the application&apos;s functionality beyond what traditional flashcard apps offer.
                 </p>
               </section>
 
