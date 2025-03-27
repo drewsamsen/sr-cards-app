@@ -7,6 +7,7 @@
 - Modal components handle their own state and use a consistent pattern
 - Table components use Tanstack Table with custom columns and cell renderers
 - Form components use controlled inputs with validation
+- Phone-specific styling uses custom Tailwind variant `phone:`
 
 ### Naming Conventions
 - PascalCase for component names: `CardEditModal`, `DeckColumns`
@@ -19,17 +20,21 @@
 - Pages are in `/src/app/` following Next.js App Router convention
 - Utilities and hooks are in `/src/lib/`
 - API services are in `/src/lib/api/services/`
+- Memory bank for project documentation in `/memory-bank/`
 
 ### State Management
 - Custom hooks for domain data: `useAuth()`, `useCards()`
 - Component state for UI: `useState` for modals, forms, etc.
-- Context API for global state: authentication
+- Context API for global state: authentication, phone mode
+- Local storage for persisting preferences: display mode, theme
 
 ### Styling Approach
 - Tailwind CSS for utility-based styling
 - Shadcn UI components as base components
 - Consistent spacing and color usage
 - Dark/light mode support via theme context
+- Phone emulator styling with custom `.phone-emulator-mode` context
+- Conditional skeleton styling based on display mode
 
 ## Development Workflow
 
@@ -39,6 +44,7 @@
 3. Implement API integration if needed
 4. Add responsive styling with Tailwind
 5. Implement loading, error, and empty states
+6. Test in both desktop and phone emulator views
 
 ### Feature Implementation
 1. Define data models and API services
@@ -46,6 +52,7 @@
 3. Build UI components
 4. Implement routing and navigation
 5. Add error handling and loading states
+6. Refine responsive behavior for different devices
 
 ### Common Patterns
 - Modal dialogs for focused tasks (adding/editing)
@@ -53,6 +60,8 @@
 - Form components for data input
 - Alert components for notifications
 - Loading skeletons for data fetching states
+- Phone-specific styling for mobile view
+- Static content organization in About page
 
 ## Project-Specific Knowledge
 
@@ -60,7 +69,8 @@
 - Authentication flow: `useAuth` hook → `src/app/login` → protected routes
 - Card management: `useCards` hook → `CardAddModal`/`CardEditModal` → `DataTable`
 - Deck management: Similar pattern to cards with deck-specific components
-- Study system: FSRS algorithm implementation (in progress)
+- Study system: FSRS algorithm implementation with response buttons (Again, Hard, Good, Easy)
+- Phone emulation: `usePhoneMode` hook → responsive styling → `.phone-emulator-mode` class
 
 ### Critical Files
 - `src/lib/api/client.ts`: API client configuration
@@ -68,10 +78,15 @@
 - `src/components/data-table.tsx`: Reusable table component
 - `src/lib/hooks/useAuth.ts`: Authentication state management
 - `src/lib/hooks/useCards.ts`: Card data management
+- `src/components/page-layout.tsx`: Phone emulator and responsive layout
+- `tailwind.config.js`: Theme configuration and phone variant plugin
 
 ### Preferred Approaches
 - Use existing Shadcn UI components when available
 - Follow established patterns for new features
 - Maintain type safety with TypeScript
 - Use custom hooks for data management
-- Keep components focused on single responsibilities 
+- Keep components focused on single responsibilities
+- Test components in both desktop and phone views
+- Streamline loading skeletons based on view context
+- Use consistent terminology throughout the application 

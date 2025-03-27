@@ -1,9 +1,19 @@
 # Active Context: Flashcard Review App
 
 ## Current Focus
-The project is currently in active development with a focus on core functionality and user experience. The primary goal is to build a complete, functional flashcard application with spaced repetition capabilities.
+The project is currently in active development with a focus on UI refinement, enhanced user experience, and content organization. The primary goal is to improve the usability and visual appeal of the application while maintaining functionality.
 
 ## Recent Changes
+- Improved loading skeletons for phone emulator mode to be less crowded and more appropriate
+- Created About page with static content explaining app purpose and technology
+- Added "How it Was Made" section to About page describing the development process
+- Added GitHub repository links to the About page for frontend and backend code
+- Modified button colors on study page to restore consistent theming
+- Changed "Learn" button text to "Review" in the decks table for clarity
+- Repositioned the phone mode toggle to bottom-right corner with improved styling
+- Enhanced phone mode toggle to show both options (Mobile/Desktop) side-by-side
+- Improved demo login by hiding the form during the login process
+- Removed placeholder text from email input on login/register forms
 - Improved phone simulator with realistic aspect ratio and scrollable content
 - Moved header inside phone simulator for complete app simulation
 - Made phone simulation mode the default on desktop screens
@@ -26,58 +36,44 @@ The project is currently in active development with a focus on core functionalit
 - Implemented basic UI components and layouts
 
 ## In-Progress Work
-- Implementing spaced repetition algorithm (FSRS)
-- Building study session interface
-- Creating progress tracking and analytics
-- Improving user onboarding experience
-- Enhancing mobile responsiveness
+- Enhancing visual consistency across the application
+- Improving mobile responsiveness in phone emulator mode
+- Adding explanatory content about the application
+- Refining user interactions for common tasks
+- Ensuring consistent terminology throughout the UI
 
 ## Next Steps
-1. Complete the core study session interface
-2. Implement daily review limits
-3. Add detailed progress tracking
-4. Create comprehensive settings page
-5. Improve UI/UX based on initial feedback
-6. Add import/export functionality
+1. Complete any remaining visual refinements
+2. Enhance consistency in loading states
+3. Review and update all instructional text
+4. Improve feedback mechanisms for user actions
+5. Consider adding additional onboarding guidance
 
 ## Active Decisions
-- **Phone Emulator Styling System**:
-  - Implemented a custom Tailwind variant called `phone:` for phone emulator styling
-  - Created a plugin that recognizes the `.phone-emulator-mode` class context
-  - Added the class to the phone emulator's content area
-  - Updated core UI components (Table, Card, Button, Dialog) to use the phone variant
-  - Ensures consistent mobile styling when using the phone emulator
-  - Allows component styles to respect the phone emulator context automatically
-  - Eliminates the need for manual style adjustments for phone emulator mode
-- **Phone Simulation Mode**:
-  - Set fixed height (860px) and width (430px) for realistic phone aspect ratio
-  - Made content area scrollable to handle overflow content
-  - Added flex layout to properly organize header, content, and home indicator
-  - Included the app header inside the phone simulator for complete mobile experience
-  - Only the mode toggle button remains outside the simulator frame
-  - Made phone view the default for desktop and larger screens
-  - Used responsive design to only show phone frame on larger screens
-  - Small screen devices (actual phones) see the native layout without simulation
-  - Added screen width detection to determine when to apply the phone frame
-  - Added a toggle button in the top-right corner to switch between phone and desktop views
-  - Created a phone-like frame that simulates the app appearance on mobile devices
-  - Added subtle status bar and home indicator for realistic phone appearance
-  - Stored user preference in localStorage to persist between sessions
-- **Login/Register UI**: 
-  - Replaced tabbed interface with a simpler single form design
-  - Added "Already have an account?" and "Don't have an account?" text links to switch forms
-  - Removed all titles and descriptions for a minimal appearance
-  - Added more space between elements for better readability
-  - Increased input field size for better usability
-  - Improved dark theme colors with better contrast
-- **AI Explanation Modal**: Maximally simplified to show only the explanation content without labels
-- **Header Design**: 
-  - Removed Login button and made Try Demo the primary call-to-action in header at all screen widths
-  - Hamburger menu only shows for logged in users (who have navigation items)
-  - Try Demo button is the only action for non-logged in users
-- **Demo Button Placement**: Moved "Try Demo" button to the header for increased visibility and easier access
-- **Simplified Demo Login**: Changed the demo login to pre-fill standard credentials and use existing authentication flow
-- **Theme Default**: Dark mode set as default theme for improved user experience
+- **Loading Skeleton Improvements**:
+  - Reduced width and complexity of loading skeletons in phone mode
+  - Showing fewer elements and rows in phone mode skeletons
+  - Simplified table headers and action buttons in loading state
+  - Made loading skeletons accurately reflect actual loaded content
+  - Created consistent styling approach for all loading states
+- **About Page Structure**:
+  - Used static content rather than collapsible sections for clarity
+  - Organized content in logical sections (What is EchoCards, How it Works, etc.)
+  - Included technology stack details with GitHub links
+  - Added section about how the app was developed
+  - Used consistent styling with the rest of the application
+- **Button Terminology**:
+  - Changed "Learn" to "Review" to better reflect the activity
+  - Ensured consistent color schemes for action buttons
+  - Maintaining color coding for different response buttons (Again, Hard, Good, Easy)
+- **Phone Emulator Interface**:
+  - Repositioned toggle buttons for better accessibility
+  - Improved toggle UI to show both options clearly
+  - Maintained consistent behavior across the application
+- **Form Simplification**:
+  - Removed unnecessary placeholder text
+  - Maintained clear labels while reducing clutter
+  - Improved loading state visualization during demo login
 - **UI Framework**: Using Shadcn UI components with Tailwind CSS for styling
 - **Data Management**: Custom hooks for data fetching and state management
 - **Routing**: Using Next.js App Router for page routing
@@ -85,19 +81,18 @@ The project is currently in active development with a focus on core functionalit
 - **API Structure**: RESTful service pattern for backend communication
 
 ## Current Challenges
-- Ensuring optimal implementation of the FSRS algorithm
-- Creating an intuitive study interface that supports various learning styles
-- Balancing feature richness with simplicity of use
-- Managing state across complex user flows
-- Ensuring responsive design works well on all devices
+- Ensuring consistent visual design across all components
+- Creating an intuitive and accessible interface for all users
+- Balancing information density with clarity
+- Ensuring responsive design works well in both native and emulated phone views
+- Maintaining visual hierarchy in different screen sizes
 
 ## User Feedback Priorities
-- Easy onboarding with demo option
-- Intuitive card creation and editing experience
-- Clear visualization of study progress
+- Intuitive navigation and interface
+- Clear explanation of application purpose
+- Consistent visual design
 - Responsive and accessible interface
-- Reliable scheduling of cards for review
 - Fast and reliable performance
 
 ## Development Focus
-The primary development focus is on creating a solid foundation with core functionality before adding more advanced features. The immediate priority is delivering a functional, user-friendly flashcard application that effectively implements spaced repetition learning. 
+The primary development focus has shifted from core functionality implementation to refinement and user experience improvements. The priority is on creating a polished, intuitive interface that presents the application's functionality in a clear and approachable manner. 
