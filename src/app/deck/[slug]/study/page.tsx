@@ -600,10 +600,10 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
 
   return (
     <PageLayout>
-      <div className="flex flex-col items-center justify-between h-full pb-32 md:pb-36">
-        {/* Make this entire area clickable for flipping the card */}
-        <div className="w-full flex-1 flex flex-col items-center cursor-pointer" onClick={handleFlip}>
-          <div className="w-full flex justify-center h-full">
+      <div className="flex flex-col items-center h-full pb-32 md:pb-36">
+        {/* Card area - top section */}
+        <div className="w-full flex flex-col items-center flex-shrink-0">
+          <div className="w-full flex justify-center">
             <AnimatePresence mode="wait">
               <motion.div
                 key={studyState.currentCard?.id}
@@ -670,11 +670,20 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
               </motion.div>
             </AnimatePresence>
           </div>
-          
-          {/* This empty div provides additional clickable area below the card */}
-          <div className="w-full max-w-2xl h-16 mt-4"></div>
         </div>
         
+        {/* Large clickable area that extends to the bottom */}
+        <div 
+          className="w-full max-w-2xl h-56 mt-4 cursor-pointer"
+          style={{ 
+            minHeight: '200px',
+            height: 'calc(100vh - 350px)'
+          }}
+          onClick={handleFlip}
+          data-testid="flip-zone"
+        ></div>
+        
+        {/* Response buttons area */}
         <motion.div 
           className="w-full fixed bottom-0 left-0 right-0 bg-background pb-4 pt-4 px-2 md:pb-6 md:pt-6 md:px-0 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] z-10"
           initial={{ y: 100, opacity: 0 }}
