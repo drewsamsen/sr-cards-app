@@ -61,12 +61,6 @@ function DeckTableSkeleton() {
                   <Skeleton className="h-4 w-4" />
                 </div>
               </TableHead>
-              <TableHead>
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-8 w-16" />
-                  <Skeleton className="h-4 w-4" />
-                </div>
-              </TableHead>
               <TableHead style={{ width: "50px" }}>
                 <Skeleton className="h-8 w-8" />
               </TableHead>
@@ -76,16 +70,12 @@ function DeckTableSkeleton() {
             {skeletonRows.map((_, index) => (
               <TableRow key={index}>
                 <TableCell>
-                  <Skeleton className="h-8 w-8 rounded-md" />
+                  <Skeleton className="h-8 w-20 rounded-md" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className={`h-5 ${isPhoneMode ? 'w-[100px]' : 'w-[200px]'}`} />
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-col gap-1">
-                    <Skeleton className={`h-5 ${isPhoneMode ? 'w-16' : 'w-24'}`} />
-                    <Skeleton className={`h-4 ${isPhoneMode ? 'w-14' : 'w-20'}`} />
-                    <Skeleton className={`h-4 ${isPhoneMode ? 'w-14' : 'w-20'}`} />
+                  <div className="space-y-2">
+                    <Skeleton className={`h-5 ${isPhoneMode ? 'w-[100px]' : 'w-[200px]'}`} />
+                    <Skeleton className={`h-4 ${isPhoneMode ? 'w-[150px]' : 'w-[250px]'}`} />
                   </div>
                 </TableCell>
                 <TableCell>

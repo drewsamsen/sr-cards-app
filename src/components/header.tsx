@@ -75,7 +75,7 @@ export function Header() {
             <>
               {showMobileControls && (
                 <button 
-                  className="p-2 rounded-md text-foreground hover:bg-accent ml-auto -mr-2"
+                  className="p-2 rounded-md text-foreground hover:bg-accent ml-auto -mr-2 cursor-pointer"
                   onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 >
                   {mobileMenuOpen ? (

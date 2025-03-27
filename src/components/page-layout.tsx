@@ -71,7 +71,7 @@ export function PageLayout({ children }: PageLayoutProps) {
   
   return (
     <PhoneModeContext.Provider value={phoneModeValue}>
-      <div className="flex min-h-screen flex-col bg-[#1a1f36]">
+      <div className={`flex min-h-screen flex-col ${isEmulatedPhone ? 'bg-[#1a1f36]' : 'bg-background'}`}>
         {/* Only show toggle button on larger screens */}
         {!isSmallScreen && (
           <div className="fixed top-4 right-4 z-50">
