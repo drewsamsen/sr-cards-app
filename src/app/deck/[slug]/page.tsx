@@ -45,164 +45,119 @@ function DeckDetailSkeleton() {
   const { isPhoneMode } = usePhoneMode()
   
   return (
-    <div className="w-full space-y-5">
+    <div className="w-full space-y-5 phone:space-y-4">
       {/* Deck header skeleton */}
-      <div className="w-full space-y-4">
+      <div className="w-full space-y-4 phone:space-y-3">
         {/* Deck title */}
-        <div className="flex items-center mb-2 px-4">
+        <div className="flex items-center mb-2 px-4 sm:px-6 phone:px-2">
           <Skeleton className={`h-7 ${isPhoneMode ? 'w-[150px]' : 'w-[250px]'}`} />
           {!isPhoneMode && <Skeleton className="h-7 w-7 ml-2 rounded-full" />}
         </div>
         
         {/* Deck stats */}
-        <div className={`grid ${isPhoneMode ? 'grid-cols-1 gap-3' : 'grid-cols-1 md:grid-cols-3 gap-4'}`}>
-          {/* Show one stat card in phone mode instead of three */}
-          <Card>
-            <CardHeader className="pb-2">
-              <Skeleton className={`h-5 ${isPhoneMode ? 'w-[80px]' : 'w-[120px]'}`} />
-            </CardHeader>
-            <CardContent className="pb-3">
-              <div className="space-y-1">
-                <Skeleton className="h-6 w-[60px]" />
-                {!isPhoneMode && <Skeleton className="h-4 w-[120px]" />}
-              </div>
-            </CardContent>
-          </Card>
-          
-          {/* Hide extra stat cards in phone mode */}
-          {!isPhoneMode && (
-            <>
-              <Card>
-                <CardHeader className="pb-2">
-                  <Skeleton className="h-5 w-[120px]" />
-                </CardHeader>
-                <CardContent className="pb-4">
-                  <div className="space-y-2">
-                    <Skeleton className="h-7 w-[80px]" />
-                    <Skeleton className="h-4 w-[150px]" />
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader className="pb-2">
-                  <Skeleton className="h-5 w-[120px]" />
-                </CardHeader>
-                <CardContent className="pb-4">
-                  <div className="space-y-2">
-                    <Skeleton className="h-7 w-[80px]" />
-                    <Skeleton className="h-4 w-[150px]" />
-                  </div>
-                </CardContent>
-              </Card>
-            </>
-          )}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 px-4 sm:px-6 phone:gap-3 phone:mb-4 phone:px-2">
+          {/* Show all three stat cards but simplified in phone mode */}
+          <Skeleton className="h-[88px] w-full rounded-xl phone:h-[72px] phone:rounded-lg" />
+          <Skeleton className="h-[88px] w-full rounded-xl phone:h-[72px] phone:rounded-lg" />
+          <Skeleton className="h-[88px] w-full rounded-xl phone:h-[72px] phone:rounded-lg" />
         </div>
       </div>
       
-      {/* Cards table skeleton */}
-      <Card>
-        <CardContent className="pt-2 px-2 pb-4">
-          {/* Search and header section skeleton */}
-          <div className="flex items-center justify-between py-3">
-            <Skeleton className={`h-8 ${isPhoneMode ? 'w-[100px]' : 'w-[250px]'}`} />
-            <div className="flex items-center gap-2">
-              {/* Show only one button in phone mode */}
-              {!isPhoneMode && <Skeleton className="h-9 w-[90px] rounded-md" />}
-              <Skeleton className="h-8 w-[80px] rounded-md" />
-            </div>
+      {/* Table loading skeleton */}
+      <div className="space-y-2 sm:space-y-4 phone:space-y-2">
+        {/* Search and header section skeleton */}
+        <div className="flex items-center justify-between px-4 sm:px-6 phone:px-2">
+          <Skeleton className={`h-8 ${isPhoneMode ? 'w-[100px]' : 'w-[250px]'}`} />
+          <div className="flex items-center gap-2">
+            {/* Show both buttons in all modes */}
+            <Skeleton className="h-9 w-[80px] rounded-md phone:h-8" />
+            <Skeleton className="h-9 w-[80px] rounded-md phone:h-8" />
           </div>
-          
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  {/* Simplified header in phone mode */}
+        </div>
+        
+        {/* Table skeleton */}
+        <div className="rounded-md border overflow-hidden phone:rounded-sm phone:border-gray-200 phone:dark:border-gray-800">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {/* Simplified header in phone mode */}
+                <TableHead>
+                  <div className="flex items-center gap-1">
+                    <Skeleton className="h-7 w-16" />
+                    {!isPhoneMode && <Skeleton className="h-4 w-4" />}
+                  </div>
+                </TableHead>
+                {!isPhoneMode && (
                   <TableHead>
-                    <div className="flex items-center gap-1">
-                      <Skeleton className="h-7 w-16" />
-                      {!isPhoneMode && <Skeleton className="h-4 w-4" />}
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-8 w-16" />
+                      <Skeleton className="h-4 w-4" />
                     </div>
                   </TableHead>
-                  {!isPhoneMode && (
+                )}
+                <TableHead>
+                  <Skeleton className="h-7 w-14" />
+                </TableHead>
+                {!isPhoneMode && (
+                  <>
                     <TableHead>
                       <div className="flex items-center gap-2">
                         <Skeleton className="h-8 w-16" />
                         <Skeleton className="h-4 w-4" />
                       </div>
                     </TableHead>
+                    <TableHead style={{ width: "100px" }}>
+                      <Skeleton className="h-8 w-16" />
+                    </TableHead>
+                  </>
+                )}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {/* Show fewer rows in phone mode */}
+              {Array(isPhoneMode ? 3 : 5).fill(0).map((_, index) => (
+                <TableRow key={index}>
+                  <TableCell>
+                    <div className="max-w-[200px]">
+                      <Skeleton className={`h-5 w-full ${isPhoneMode ? 'max-w-[120px]' : ''}`} />
+                      {!isPhoneMode && <Skeleton className="h-4 w-3/4 mt-1" />}
+                    </div>
+                  </TableCell>
+                  {!isPhoneMode && (
+                    <TableCell>
+                      <div className="max-w-[200px]">
+                        <Skeleton className="h-5 w-full" />
+                        <Skeleton className="h-4 w-3/4 mt-1" />
+                      </div>
+                    </TableCell>
                   )}
-                  <TableHead>
-                    <Skeleton className="h-7 w-14" />
-                  </TableHead>
+                  <TableCell>
+                    <Skeleton className="h-6 w-14 rounded-full" />
+                  </TableCell>
                   {!isPhoneMode && (
                     <>
-                      <TableHead>
+                      <TableCell>
+                        <Skeleton className="h-5 w-24" />
+                      </TableCell>
+                      <TableCell>
                         <div className="flex items-center gap-2">
-                          <Skeleton className="h-8 w-16" />
-                          <Skeleton className="h-4 w-4" />
+                          <Skeleton className="h-8 w-8 rounded-md" />
+                          <Skeleton className="h-8 w-8 rounded-md" />
                         </div>
-                      </TableHead>
-                      <TableHead style={{ width: "100px" }}>
-                        <Skeleton className="h-8 w-16" />
-                      </TableHead>
+                      </TableCell>
                     </>
                   )}
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {/* Show fewer rows in phone mode */}
-                {Array(isPhoneMode ? 3 : 5).fill(0).map((_, index) => (
-                  <TableRow key={index}>
-                    <TableCell>
-                      <div className="max-w-[200px]">
-                        <Skeleton className={`h-5 w-full ${isPhoneMode ? 'max-w-[120px]' : ''}`} />
-                        {!isPhoneMode && <Skeleton className="h-4 w-3/4 mt-1" />}
-                      </div>
-                    </TableCell>
-                    {!isPhoneMode && (
-                      <TableCell>
-                        <div className="max-w-[200px]">
-                          <Skeleton className="h-5 w-full" />
-                          <Skeleton className="h-4 w-3/4 mt-1" />
-                        </div>
-                      </TableCell>
-                    )}
-                    <TableCell>
-                      <Skeleton className="h-6 w-14 rounded-full" />
-                    </TableCell>
-                    {!isPhoneMode && (
-                      <>
-                        <TableCell>
-                          <Skeleton className="h-5 w-24" />
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Skeleton className="h-8 w-8 rounded-md" />
-                            <Skeleton className="h-8 w-8 rounded-md" />
-                          </div>
-                        </TableCell>
-                      </>
-                    )}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-          
-          {/* Footer/pagination skeleton - simplified in phone mode */}
-          {isPhoneMode ? (
-            <div className="flex justify-end py-3">
-              <Skeleton className="h-7 w-[60px]" />
-            </div>
-          ) : (
-            <div className="flex items-center justify-between space-x-2 py-4">
-              <Skeleton className="h-9 w-[250px]" />
-              <Skeleton className="h-9 w-[150px]" />
-            </div>
-          )}
-        </CardContent>
-      </Card>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        
+        {/* Pagination skeleton */}
+        <div className="px-4 sm:px-6 phone:px-2 py-2">
+          <Skeleton className="h-9 w-full max-w-lg rounded-md phone:h-8" />
+        </div>
+      </div>
     </div>
   )
 }
@@ -657,6 +612,26 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
         </Card>
       )}
       
+      {/* Deck stats section */}
+      {!isEditing && deck && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 px-4 sm:px-6 phone:gap-3 phone:mb-4 phone:px-2">
+          <div className="bg-card border rounded-xl p-4 shadow-sm phone:rounded-lg phone:p-3 phone:border-gray-200 phone:dark:border-gray-800">
+            <div className="text-sm font-medium text-muted-foreground mb-1 phone:text-xs">Total Cards</div>
+            <div className="text-2xl font-bold phone:text-xl">{deck.totalCards || 0}</div>
+          </div>
+          
+          <div className="bg-card border rounded-xl p-4 shadow-sm phone:rounded-lg phone:p-3 phone:border-gray-200 phone:dark:border-gray-800">
+            <div className="text-sm font-medium text-muted-foreground mb-1 phone:text-xs">Due for Review</div>
+            <div className="text-2xl font-bold phone:text-xl">{deck.dueCards || 0}</div>
+          </div>
+          
+          <div className="bg-card border rounded-xl p-4 shadow-sm phone:rounded-lg phone:p-3 phone:border-gray-200 phone:dark:border-gray-800">
+            <div className="text-sm font-medium text-muted-foreground mb-1 phone:text-xs">New Cards</div>
+            <div className="text-2xl font-bold phone:text-xl">{deck.newCards || 0}</div>
+          </div>
+        </div>
+      )}
+      
       {cardsError && (
         <Alert variant="destructive" className="mb-4 sm:mb-6">
           <AlertCircle className="h-4 w-4" />
@@ -666,52 +641,48 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
         </Alert>
       )}
       
-      <Card>
-        <CardContent className="pt-2 sm:pt-3 px-2 sm:px-6 pb-4 sm:pb-6">
-          <DataTable 
-            columns={deckCardColumns} 
-            data={cardsWithHandlers} 
-            searchPlaceholder="Search cards..." 
-            emptyMessage={
-              isLoadingCards 
-                ? "Loading cards..." 
-                : cardsError 
-                  ? "Error loading cards" 
-                  : "No cards found in this deck."
-            }
-            pagination={tablePagination}
-            onPaginationChange={{
-              onPageChange: handlePageChange,
-              onPageSizeChange: handlePageSizeChange
-            }}
-            onSearch={handleSearch}
-            useServerSearch={true}
-            actionButton={
-              <div className="flex gap-2">
-                <Button 
-                  variant="default" 
-                  size="sm" 
-                  className="flex items-center gap-1"
-                  onClick={() => setIsCardAddModalOpen(true)}
-                >
-                  <Plus className="h-4 w-4" />
-                  Card
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="flex items-center gap-1"
-                  disabled={isLoadingCards || cards.length === 0}
-                  onClick={() => router.push(`/deck/${deckSlug}/study`)}
-                >
-                  <BookOpen className="h-4 w-4" />
-                  Study
-                </Button>
-              </div>
-            }
-          />
-        </CardContent>
-      </Card>
+      <DataTable 
+        columns={deckCardColumns} 
+        data={cardsWithHandlers} 
+        searchPlaceholder="Search cards..." 
+        emptyMessage={
+          isLoadingCards 
+            ? "Loading cards..." 
+            : cardsError 
+              ? "Error loading cards" 
+              : "No cards found in this deck."
+        }
+        pagination={tablePagination}
+        onPaginationChange={{
+          onPageChange: handlePageChange,
+          onPageSizeChange: handlePageSizeChange
+        }}
+        onSearch={handleSearch}
+        useServerSearch={true}
+        actionButton={
+          <div className="flex gap-2">
+            <Button 
+              variant="default" 
+              size="sm" 
+              className="flex items-center gap-1"
+              onClick={() => setIsCardAddModalOpen(true)}
+            >
+              <Plus className="h-4 w-4" />
+              Card
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="flex items-center gap-1"
+              disabled={isLoadingCards || cards.length === 0}
+              onClick={() => router.push(`/deck/${deckSlug}/study`)}
+            >
+              <BookOpen className="h-4 w-4" />
+              Study
+            </Button>
+          </div>
+        }
+      />
       
       {/* Card Edit Modal */}
       <CardEditModal
