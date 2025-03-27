@@ -74,16 +74,32 @@ export function PageLayout({ children }: PageLayoutProps) {
       <div className={`flex min-h-screen flex-col ${isEmulatedPhone ? 'bg-[#1a1f36]' : 'bg-background'}`}>
         {/* Only show toggle button on larger screens */}
         {!isSmallScreen && (
-          <div className="fixed top-4 right-4 z-50">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={toggleDisplayMode} 
-              className="h-8 w-8 p-0 bg-background/80 backdrop-blur-sm"
-              title={isPhoneMode ? "Switch to desktop mode" : "Switch to phone mode"}
-            >
-              {isPhoneMode ? <Monitor className="h-4 w-4" /> : <Smartphone className="h-4 w-4" />}
-            </Button>
+          <div className="fixed bottom-6 right-6 z-50">
+            <div className="flex rounded-lg overflow-hidden shadow-lg border border-muted/40 bg-background/90 backdrop-blur-sm">
+              <button
+                onClick={() => !isPhoneMode && toggleDisplayMode()}
+                className={`flex items-center gap-2 px-3 py-1.5 text-sm transition-colors ${
+                  isPhoneMode 
+                    ? 'bg-primary text-primary-foreground font-medium' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/30'
+                }`}
+              >
+                <Smartphone className="h-4 w-4" />
+                <span>Mobile</span>
+              </button>
+              <div className="w-px bg-border"></div>
+              <button
+                onClick={() => isPhoneMode && toggleDisplayMode()}
+                className={`flex items-center gap-2 px-3 py-1.5 text-sm transition-colors ${
+                  !isPhoneMode 
+                    ? 'bg-primary text-primary-foreground font-medium' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent/30'
+                }`}
+              >
+                <Monitor className="h-4 w-4" />
+                <span>Desktop</span>
+              </button>
+            </div>
           </div>
         )}
         
