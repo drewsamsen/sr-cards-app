@@ -34,6 +34,7 @@ interface DataTableProps<TData, TValue> {
   onSearch?: (query: string) => void
   useServerSearch?: boolean
   hideSearch?: boolean
+  hideHeader?: boolean
 }
 
 export function DataTable<TData, TValue>({
@@ -47,7 +48,8 @@ export function DataTable<TData, TValue>({
   showTopPagination = true,
   onSearch,
   useServerSearch = false,
-  hideSearch = false
+  hideSearch = false,
+  hideHeader = false
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [globalFilter, setGlobalFilter] = useState("")
@@ -145,24 +147,26 @@ export function DataTable<TData, TValue>({
       <div className="rounded-md border overflow-hidden phone:rounded-sm phone:border-gray-200 phone:dark:border-gray-800">
         <div className="w-full overflow-auto phone:overflow-x-auto phone:overflow-y-hidden">
           <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
+            {!hideHeader && (
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                        <TableHead key={header.id}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
+                      )
+                    })}
+                  </TableRow>
+                ))}
+              </TableHeader>
+            )}
             <TableBody>
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (

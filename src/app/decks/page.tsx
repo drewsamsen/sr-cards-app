@@ -207,6 +207,7 @@ export default function DecksPage() {
             searchPlaceholder="Search decks..." 
             emptyMessage="No flashcard decks found."
             hideSearch={true}
+            hideHeader={true}
           />
           
           <div className="flex justify-end mt-4 sm:mt-6">
