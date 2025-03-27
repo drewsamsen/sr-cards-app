@@ -119,7 +119,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-2 sm:space-y-4 phone:space-y-2">
-      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 phone:gap-1 phone:flex-wrap">
+      <div className="px-4 flex flex-row items-center justify-between gap-2 sm:gap-4 sm:px-6 phone:gap-1 phone:flex-wrap phone-important:px-2">
         {!hideSearch && (
           <div className="w-full max-w-xs phone:max-w-full">
             <form onSubmit={handleSearchSubmit}>
@@ -144,7 +144,7 @@ export function DataTable<TData, TValue>({
         </div>
       )}
       
-      <div className="rounded-md border overflow-hidden phone:rounded-sm phone:border-gray-200 phone:dark:border-gray-800">
+      <div className="mx-0 rounded-md border overflow-hidden sm:mx-0 phone:rounded-sm phone:border-gray-200 phone:dark:border-gray-800 phone-important:mx-0">
         <div className="w-full overflow-auto phone:overflow-x-auto phone:overflow-y-hidden">
           <Table>
             {!hideHeader && (

@@ -451,7 +451,7 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
   return (
     <PageLayout>
       {deckError && (
-        <Alert variant="destructive" className="mb-4 sm:mb-6">
+        <Alert variant="destructive" className="mx-4 mb-4 sm:mx-6 sm:mb-6 phone-important:mx-2 phone-important:mb-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             {deckError}
@@ -460,7 +460,7 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
       )}
       
       {formError && (
-        <Alert variant="destructive" className="mb-4 sm:mb-6">
+        <Alert variant="destructive" className="mx-4 mb-4 sm:mx-6 sm:mb-6 phone-important:mx-2 phone-important:mb-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             {formError}
@@ -469,14 +469,14 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
       )}
       
       {formSuccess && (
-        <Alert className="mb-4 sm:mb-6 bg-green-50 text-green-800 border-green-200">
+        <Alert className="mx-4 mb-4 sm:mx-6 sm:mb-6 phone-important:mx-2 phone-important:mb-4 bg-green-50 text-green-800 border-green-200">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>Deck updated successfully!</AlertDescription>
         </Alert>
       )}
       
       {deleteSuccess && (
-        <Alert className="mb-4 sm:mb-6 bg-green-50 text-green-800 border-green-200">
+        <Alert className="mx-4 mb-4 sm:mx-6 sm:mb-6 phone-important:mx-2 phone-important:mb-4 bg-green-50 text-green-800 border-green-200">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>Card deleted successfully!</AlertDescription>
         </Alert>
@@ -484,8 +484,8 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
       
       {/* Ultra compact deck header */}
       {!isEditing ? (
-        <div className="flex items-center mb-2 sm:mb-3 px-4 sm:px-6">
-          <h1 className="text-xl font-semibold">
+        <div className="px-4 flex items-center mb-2 sm:mb-3 sm:px-6 phone-important:px-2">
+          <h1 className="text-xl font-semibold pl-[0.625rem]">
             {isLoadingDeck ? "Loading..." : deck?.name || "Deck not found"}
           </h1>
           <Button 
@@ -612,28 +612,8 @@ export default function DeckPage(props: { params: Promise<{ slug: string }> }) {
         </Card>
       )}
       
-      {/* Deck stats section */}
-      {!isEditing && deck && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 px-4 sm:px-6 phone:gap-3 phone:mb-4 phone:px-2">
-          <div className="bg-card border rounded-xl p-4 shadow-sm phone:rounded-lg phone:p-3 phone:border-gray-200 phone:dark:border-gray-800">
-            <div className="text-sm font-medium text-muted-foreground mb-1 phone:text-xs">Total Cards</div>
-            <div className="text-2xl font-bold phone:text-xl">{deck.totalCards || 0}</div>
-          </div>
-          
-          <div className="bg-card border rounded-xl p-4 shadow-sm phone:rounded-lg phone:p-3 phone:border-gray-200 phone:dark:border-gray-800">
-            <div className="text-sm font-medium text-muted-foreground mb-1 phone:text-xs">Due for Review</div>
-            <div className="text-2xl font-bold phone:text-xl">{deck.dueCards || 0}</div>
-          </div>
-          
-          <div className="bg-card border rounded-xl p-4 shadow-sm phone:rounded-lg phone:p-3 phone:border-gray-200 phone:dark:border-gray-800">
-            <div className="text-sm font-medium text-muted-foreground mb-1 phone:text-xs">New Cards</div>
-            <div className="text-2xl font-bold phone:text-xl">{deck.newCards || 0}</div>
-          </div>
-        </div>
-      )}
-      
       {cardsError && (
-        <Alert variant="destructive" className="mb-4 sm:mb-6">
+        <Alert variant="destructive" className="mx-4 mb-4 sm:mx-6 sm:mb-6 phone-important:mx-2 phone-important:mb-4">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             {cardsError}

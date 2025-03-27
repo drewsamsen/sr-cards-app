@@ -79,9 +79,38 @@ module.exports = {
   plugins: [
     require("tailwindcss-animate"),
     // Custom plugin for phone emulator mode
-    function({ addVariant }) {
-      // Add phone variant for phone emulator mode
-      addVariant('phone', '.phone-emulator-mode &')
+    function({ addVariant, e, addUtilities }) {
+      // Add phone variant for phone emulator mode with higher specificity
+      addVariant('phone', ['.phone-emulator-mode &', '&.phone-emulator-mode'])
+      
+      // Add important to phone-important variant utilities for guaranteed override
+      addVariant('phone-important', ({ modifySelectors, separator }) => {
+        modifySelectors(({ className }) => {
+          return `.phone-emulator-mode .${e(`phone-important${separator}${className}`)}`;
+        });
+      });
+      
+      // Add direct utilities for the most common spacing cases
+      const phoneSpecificUtilities = {
+        '.phone-mx-2': {
+          'margin-left': '0.5rem',
+          'margin-right': '0.5rem'
+        },
+        '.phone-px-2': {
+          'padding-left': '0.5rem',
+          'padding-right': '0.5rem'
+        },
+        '.phone-mx-4': {
+          'margin-left': '1rem',
+          'margin-right': '1rem'
+        },
+        '.phone-px-4': {
+          'padding-left': '1rem',
+          'padding-right': '1rem'
+        }
+      };
+      
+      addUtilities(phoneSpecificUtilities, ['responsive', 'hover']);
     },
   ],
 } 

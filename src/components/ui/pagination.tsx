@@ -92,11 +92,11 @@ export function DataTablePagination({
     <div className={cn("w-full space-y-2", compact ? 'py-2' : 'py-3', className)}>
       {/* Top row with page information and items per page */}
       <div className="flex items-center justify-between">
-        <div className="text-sm text-muted-foreground phone:text-xs">
+        <div className="pl-4 text-sm text-muted-foreground sm:pl-6 phone:text-xs phone-important:pl-2">
           Page {currentPage} of {totalPages}
         </div>
         
-        <div className="flex items-center gap-2 phone:gap-1">
+        <div className="pr-4 flex items-center gap-2 sm:pr-6 phone:gap-1 phone-important:pr-2">
           <span className="text-sm text-muted-foreground phone:text-xs">Items per page:</span>
           <Select
             value={String(pageSize)}
@@ -117,8 +117,8 @@ export function DataTablePagination({
       </div>
       
       {/* Bottom row with pagination controls */}
-      <div className="flex justify-center w-full">
-        <div className="inline-flex items-center border rounded-md overflow-hidden divide-x phone:rounded phone:border-gray-200 phone:dark:border-gray-800 phone:divide-gray-200 phone:dark:divide-gray-800">
+      <div className="px-4 flex justify-center w-full sm:px-6 phone-important:px-2">
+        <div className="inline-flex items-center border rounded-md overflow-hidden divide-x w-full">
           {/* First page button */}
           <Button
             variant="ghost"

@@ -190,3 +190,69 @@ html.dark,
     translate: -50% 0 !important;
   }
 }
+
+/* ======================================
+   PHONE EMULATOR MODE STYLE OVERRIDES
+   This section ensures phone-specific styles
+   always take priority in phone emulator mode
+   ====================================== */
+
+/* High-specificity selectors for phone emulator mode */
+.phone-emulator-mode *[class*="phone-important:mx-"] {
+  margin-left: var(--tw-phone-mx, initial) !important;
+  margin-right: var(--tw-phone-mx, initial) !important;
+}
+
+.phone-emulator-mode *[class*="phone-important:my-"] {
+  margin-top: var(--tw-phone-my, initial) !important;
+  margin-bottom: var(--tw-phone-my, initial) !important;
+}
+
+.phone-emulator-mode *[class*="phone-important:m-"] {
+  margin: var(--tw-phone-m, initial) !important;
+}
+
+.phone-emulator-mode *[class*="phone-important:px-"] {
+  padding-left: var(--tw-phone-px, initial) !important;
+  padding-right: var(--tw-phone-px, initial) !important;
+}
+
+.phone-emulator-mode *[class*="phone-important:py-"] {
+  padding-top: var(--tw-phone-py, initial) !important;
+  padding-bottom: var(--tw-phone-py, initial) !important;
+}
+
+.phone-emulator-mode *[class*="phone-important:p-"] {
+  padding: var(--tw-phone-p, initial) !important;
+}
+
+/* Specific values for the most common cases */
+.phone-emulator-mode *[class*="phone-important:mx-2"] { --tw-phone-mx: 0.5rem; }
+.phone-emulator-mode *[class*="phone-important:mx-3"] { --tw-phone-mx: 0.75rem; }
+.phone-emulator-mode *[class*="phone-important:mx-4"] { --tw-phone-mx: 1rem; }
+.phone-emulator-mode *[class*="phone-important:mx-6"] { --tw-phone-mx: 1.5rem; }
+
+.phone-emulator-mode *[class*="phone-important:my-2"] { --tw-phone-my: 0.5rem; }
+.phone-emulator-mode *[class*="phone-important:my-3"] { --tw-phone-my: 0.75rem; }
+.phone-emulator-mode *[class*="phone-important:my-4"] { --tw-phone-my: 1rem; }
+.phone-emulator-mode *[class*="phone-important:my-6"] { --tw-phone-my: 1.5rem; }
+
+.phone-emulator-mode *[class*="phone-important:m-2"] { --tw-phone-m: 0.5rem; }
+.phone-emulator-mode *[class*="phone-important:m-3"] { --tw-phone-m: 0.75rem; }
+.phone-emulator-mode *[class*="phone-important:m-4"] { --tw-phone-m: 1rem; }
+.phone-emulator-mode *[class*="phone-important:m-6"] { --tw-phone-m: 1.5rem; }
+
+.phone-emulator-mode *[class*="phone-important:px-2"] { --tw-phone-px: 0.5rem; }
+.phone-emulator-mode *[class*="phone-important:px-3"] { --tw-phone-px: 0.75rem; }
+.phone-emulator-mode *[class*="phone-important:px-4"] { --tw-phone-px: 1rem; }
+.phone-emulator-mode *[class*="phone-important:px-6"] { --tw-phone-px: 1.5rem; }
+
+.phone-emulator-mode *[class*="phone-important:py-2"] { --tw-phone-py: 0.5rem; }
+.phone-emulator-mode *[class*="phone-important:py-3"] { --tw-phone-py: 0.75rem; }
+.phone-emulator-mode *[class*="phone-important:py-4"] { --tw-phone-py: 1rem; }
+.phone-emulator-mode *[class*="phone-important:py-6"] { --tw-phone-py: 1.5rem; }
+
+.phone-emulator-mode *[class*="phone-important:p-2"] { --tw-phone-p: 0.5rem; }
+.phone-emulator-mode *[class*="phone-important:p-3"] { --tw-phone-p: 0.75rem; }
+.phone-emulator-mode *[class*="phone-important:p-4"] { --tw-phone-p: 1rem; }
+.phone-emulator-mode *[class*="phone-important:p-6"] { --tw-phone-p: 1.5rem; }
