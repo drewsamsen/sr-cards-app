@@ -12,7 +12,7 @@ import {
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Input } from "@/components/ui/input"
-import { Pagination } from "@/components/ui/pagination"
+import { DataTablePagination } from "@/components/ui/pagination"
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -104,9 +104,8 @@ export function DataTable<TData, TValue>({
     if (!pagination || !onPaginationChange) return null;
     
     return (
-      <Pagination
+      <DataTablePagination
         currentPage={pagination.pageIndex + 1}
-        totalPages={pagination.pageCount}
         pageSize={pagination.pageSize}
         totalItems={pagination.totalItems}
         onPageChange={onPaginationChange.onPageChange}

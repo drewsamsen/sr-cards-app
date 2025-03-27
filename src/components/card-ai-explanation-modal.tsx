@@ -60,8 +60,6 @@ function MobileDialogContent({
 }
 
 interface CardAIExplanationModalProps {
-  front: string
-  back: string
   explanation: string
   isOpen: boolean
   onOpenChange: (open: boolean) => void
@@ -69,8 +67,6 @@ interface CardAIExplanationModalProps {
 }
 
 export function CardAIExplanationModal({ 
-  front,
-  back,
   explanation,
   isOpen, 
   onOpenChange,

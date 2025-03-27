@@ -13,7 +13,6 @@ import { cardService } from "@/lib/api/services/card.service"
 import { CardEditModal } from "@/components/card-edit-modal"
 import { CardAIExplanationModal } from "@/components/card-ai-explanation-modal"
 import { PageLayout } from "@/components/page-layout"
-import { usePhoneMode } from "@/components/page-layout"
 import { motion, AnimatePresence } from "framer-motion"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -78,7 +77,6 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   const { slug } = params;
   const router = useRouter()
   const { user, isInitialized } = useAuth()
-  const { isPhoneMode } = usePhoneMode()
   const [isFlipped, setIsFlipped] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [studyState, setStudyState] = useState<StudyState>({
@@ -791,8 +789,6 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
       {/* AI explanation modal */}
       {studyState.currentCard && (
         <CardAIExplanationModal
-          front={studyState.currentCard.front}
-          back={studyState.currentCard.back}
           explanation={aiExplanation}
           isOpen={isAIExplanationModalOpen}
           onOpenChange={setIsAIExplanationModalOpen}

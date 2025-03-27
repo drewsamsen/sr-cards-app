@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, MoreHorizontal } from "lucide-react"
+import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -144,11 +144,9 @@ const PaginationItem = ({
 const PaginationLink = ({
   className,
   isActive,
-  size = "icon",
   ...props
 }: React.ComponentProps<"a"> & {
   isActive?: boolean
-  size?: "default" | "sm" | "lg" | "icon"
 }) => (
   <PaginationItem>
     <a
@@ -171,7 +169,6 @@ const PaginationPrevious = ({
 }: React.ComponentProps<"a">) => (
   <PaginationLink
     aria-label="Go to previous page"
-    size="default"
     className={cn("gap-1 pl-2.5 pr-3.5 phone:gap-0.5 phone:pl-1.5 phone:pr-2.5", className)}
     {...props}
   >
@@ -186,7 +183,6 @@ const PaginationNext = ({
 }: React.ComponentProps<"a">) => (
   <PaginationLink
     aria-label="Go to next page"
-    size="default"
     className={cn("gap-1 pl-3.5 pr-2.5 phone:gap-0.5 phone:pl-2.5 phone:pr-1.5", className)}
     {...props}
   >

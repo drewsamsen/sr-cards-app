@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
@@ -11,9 +11,42 @@ import { PageLayout } from "@/components/page-layout"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { CheckCircle2, AlertCircle } from "lucide-react"
 
+// Create a separate component for the search params logic
+function SearchParamsHandler({
+  onDemoLogin,
+  isDemoLoading,
+  isLoading,
+  setIsLoginView,
+}: {
+  onDemoLogin: () => void;
+  isDemoLoading: boolean;
+  isLoading: boolean;
+  setIsLoginView: (isLogin: boolean) => void;
+}) {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const demoParam = searchParams.get('demo')
+    if (demoParam === 'true' && !isDemoLoading && !isLoading) {
+      // Set to login view
+      setIsLoginView(true)
+      
+      // Small timeout to ensure the form state updates before triggering demo login
+      setTimeout(() => {
+        onDemoLogin()
+      }, 100)
+      
+      // Clean URL by removing query parameter
+      const newUrl = window.location.pathname
+      window.history.replaceState({}, '', newUrl)
+    }
+  }, [searchParams, isDemoLoading, isLoading, onDemoLogin, setIsLoginView]);
+
+  return null;
+}
+
 export default function LoginPage() {
   const router = useRouter()
-  const searchParams = useSearchParams()
   const { login, register, isLoading, error, clearError, user, isInitialized } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
@@ -38,24 +71,6 @@ export default function LoginPage() {
       setFormError(error)
     }
   }, [error])
-
-  // Check for demo parameter in URL
-  useEffect(() => {
-    const demoParam = searchParams.get('demo')
-    if (demoParam === 'true' && !isDemoLoading && !isLoading) {
-      // Set to login view
-      setIsLoginView(true)
-      
-      // Small timeout to ensure the form state updates before triggering demo login
-      setTimeout(() => {
-        handleDemoLogin()
-      }, 100)
-      
-      // Clean URL by removing query parameter
-      const newUrl = window.location.pathname
-      window.history.replaceState({}, '', newUrl)
-    }
-  }, [searchParams, isDemoLoading, isLoading])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -178,6 +193,16 @@ export default function LoginPage() {
 
   return (
     <PageLayout>
+      {/* Wrap the search params handler in Suspense */}
+      <Suspense fallback={null}>
+        <SearchParamsHandler 
+          onDemoLogin={handleDemoLogin}
+          isDemoLoading={isDemoLoading}
+          isLoading={isLoading}
+          setIsLoginView={setIsLoginView}
+        />
+      </Suspense>
+      
       <div className="flex items-start justify-center pt-8 min-h-[calc(100vh-10rem)]">
         <Card className="w-full max-w-md border-0 dark:bg-gray-900/50 shadow-lg overflow-hidden">
           <form id="auth-form" onSubmit={handleSubmit}>
