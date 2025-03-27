@@ -18,6 +18,7 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table"
+import { usePhoneMode } from "@/components/page-layout"
 
 // Define the Deck type to match the data structure
 export interface Deck {
@@ -34,12 +35,13 @@ export interface Deck {
 function DeckTableSkeleton() {
   // Display 3 skeleton rows to match a typical user with 3 decks
   const skeletonRows = Array(3).fill(0)
+  const { isPhoneMode } = usePhoneMode()
   
   return (
     <div className="w-full">
       {/* Search and header section skeleton */}
       <div className="flex items-center justify-between py-4">
-        <Skeleton className="h-9 w-[250px]" />
+        <Skeleton className={`h-9 ${isPhoneMode ? 'w-[120px]' : 'w-[250px]'}`} />
         <div className="flex items-center gap-1">
           <Skeleton className="h-9 w-9 rounded-md" />
           <Skeleton className="h-9 w-9 rounded-md" />
@@ -50,8 +52,8 @@ function DeckTableSkeleton() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead style={{ width: "70px" }}>
-                <Skeleton className="h-8 w-16" />
+              <TableHead style={{ width: isPhoneMode ? "40px" : "70px" }}>
+                <Skeleton className="h-8 w-8" />
               </TableHead>
               <TableHead>
                 <div className="flex items-center gap-2">
@@ -74,16 +76,16 @@ function DeckTableSkeleton() {
             {skeletonRows.map((_, index) => (
               <TableRow key={index}>
                 <TableCell>
-                  <Skeleton className="h-8 w-16 rounded-md" />
+                  <Skeleton className="h-8 w-8 rounded-md" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-5 w-[200px]" />
+                  <Skeleton className={`h-5 ${isPhoneMode ? 'w-[100px]' : 'w-[200px]'}`} />
                 </TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1">
-                    <Skeleton className="h-5 w-24" />
-                    <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className={`h-5 ${isPhoneMode ? 'w-16' : 'w-24'}`} />
+                    <Skeleton className={`h-4 ${isPhoneMode ? 'w-14' : 'w-20'}`} />
+                    <Skeleton className={`h-4 ${isPhoneMode ? 'w-14' : 'w-20'}`} />
                   </div>
                 </TableCell>
                 <TableCell>
@@ -97,13 +99,13 @@ function DeckTableSkeleton() {
       
       {/* Footer/pagination skeleton */}
       <div className="flex items-center justify-between space-x-2 py-4">
-        <Skeleton className="h-9 w-[250px]" />
-        <Skeleton className="h-9 w-[150px]" />
+        <Skeleton className={`h-9 ${isPhoneMode ? 'w-[100px]' : 'w-[250px]'}`} />
+        <Skeleton className={`h-9 ${isPhoneMode ? 'w-[80px]' : 'w-[150px]'}`} />
       </div>
       
       {/* Button skeleton */}
       <div className="flex justify-end mt-4 sm:mt-6">
-        <Skeleton className="h-10 w-[150px] rounded-md" />
+        <Skeleton className={`h-10 ${isPhoneMode ? 'w-[120px]' : 'w-[150px]'} rounded-md`} />
       </div>
     </div>
   )

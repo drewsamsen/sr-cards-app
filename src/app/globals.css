@@ -4,6 +4,41 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Default to dark theme to prevent flash */
+:root {
+  color-scheme: dark !important;
+}
+
+/* Apply dark theme by default at the HTML level */
+html {
+  background-color: oklch(0.15 0.03 240) !important;
+  color: oklch(0.9 0.005 0) !important;
+}
+
+body {
+  background-color: oklch(0.15 0.03 240) !important;
+  color: oklch(0.9 0.005 0) !important;
+}
+
+/* Ensure dark theme for all states */
+html:not(.light), 
+html.dark, 
+:root:not(.light),
+:root.dark {
+  color-scheme: dark !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+  
+  html, body {
+    background-color: oklch(0.15 0.03 240);
+    color: oklch(0.9 0.005 0);
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

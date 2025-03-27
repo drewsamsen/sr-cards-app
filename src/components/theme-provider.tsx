@@ -23,14 +23,21 @@ const initialState: ThemeProviderState = {
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  // Initialize theme from localStorage first for immediate display
-  const [theme, setTheme] = useState<Theme>(() => {
+  // Initialize theme as dark by default
+  const [theme, setTheme] = useState<Theme>("dark")
+  
+  // Apply dark theme immediately on mount
+  useEffect(() => {
+    document.documentElement.classList.add('dark')
+    
+    // Only after setting dark, check for saved theme
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme') as Theme | null
-      return savedTheme || "dark"
+      if (savedTheme) {
+        setTheme(savedTheme)
+      }
     }
-    return "dark"
-  })
+  }, [])
   
   const { settings } = useUserSettings()
   const { user, isInitialized } = useAuth()

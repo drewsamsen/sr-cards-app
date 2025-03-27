@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
   },
   env: {
     // Add environment variables that will be available on the client-side
-    API_URL: process.env.API_URL || 'https://api.supacards.com',
+    API_URL: process.env.API_URL || 'https://api.echocards.com',
   },
 };
 

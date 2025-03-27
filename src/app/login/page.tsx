@@ -178,7 +178,7 @@ export default function LoginPage() {
 
   return (
     <PageLayout>
-      <div className="flex items-center justify-center min-h-[calc(100vh-10rem)] py-8">
+      <div className="flex items-start justify-center pt-8 min-h-[calc(100vh-10rem)]">
         <Card className="w-full max-w-md border-0 dark:bg-gray-900/50 shadow-lg overflow-hidden">
           <form id="auth-form" onSubmit={handleSubmit}>
             <CardHeader className="px-6 pt-6 pb-0">

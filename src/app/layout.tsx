@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SupaCards",
-  description: "Flashcard application powered by Supabase",
+  title: "EchoCards",
+  description: "Flashcard application for spaced repetition learning",
 };
 
 export default function RootLayout({
@@ -25,23 +25,31 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
-        <Script id="theme-script" strategy="beforeInteractive">
-          {`
-            (function() {
+        {/* Critical CSS to prevent flash of light theme - applied immediately */}
+        <style dangerouslySetInnerHTML={{ __html: `
+          :root { color-scheme: dark; }
+          html { background-color: #111827 !important; }
+          body { background-color: #111827 !important; color: #f9fafb !important; }
+        `}} />
+        
+        {/* Highest priority script to set dark mode */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Force dark mode immediately to prevent any flash of light theme
+              document.documentElement.classList.add('dark');
               try {
-                const theme = localStorage.getItem('theme');
-                if (theme) {
-                  document.documentElement.classList.remove('light', 'dark');
-                  document.documentElement.classList.add(theme);
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme === 'light') {
+                  document.documentElement.classList.remove('dark');
+                  document.documentElement.classList.add('light');
                 }
-              } catch (e) {
-                console.error('Error setting theme from localStorage:', e);
-              }
-            })();
-          `}
-        </Script>
+              } catch (e) {}
+            `,
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}

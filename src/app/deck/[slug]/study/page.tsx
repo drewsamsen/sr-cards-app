@@ -13,6 +13,7 @@ import { cardService } from "@/lib/api/services/card.service"
 import { CardEditModal } from "@/components/card-edit-modal"
 import { CardAIExplanationModal } from "@/components/card-ai-explanation-modal"
 import { PageLayout } from "@/components/page-layout"
+import { usePhoneMode } from "@/components/page-layout"
 import { motion, AnimatePresence } from "framer-motion"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -77,6 +78,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
   const { slug } = params;
   const router = useRouter()
   const { user, isInitialized } = useAuth()
+  const { isPhoneMode } = usePhoneMode()
   const [isFlipped, setIsFlipped] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [studyState, setStudyState] = useState<StudyState>({
@@ -598,10 +600,10 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
 
   return (
     <PageLayout>
-      <div className="flex flex-col items-center justify-between flex-grow">
+      <div className="flex flex-col items-center justify-between h-full">
         {/* Make this entire area clickable for flipping the card */}
-        <div className="w-full flex-grow flex flex-col items-center cursor-pointer pb-32 md:pb-0" onClick={handleFlip}>
-          <div className="w-full flex justify-center">
+        <div className="w-full flex-1 flex flex-col items-center cursor-pointer" onClick={handleFlip}>
+          <div className="w-full flex justify-center h-full">
             <AnimatePresence mode="wait">
               <motion.div
                 key={studyState.currentCard?.id}
@@ -674,7 +676,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
         </div>
         
         <motion.div 
-          className={`w-full fixed bottom-0 left-0 right-0 bg-background pb-4 pt-4 px-2 md:static md:pb-0 md:pt-8 md:px-0 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] md:shadow-none`}
+          className="w-full mt-auto bg-background pb-4 pt-4 px-2 md:pb-0 md:pt-8 md:px-0 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] md:shadow-none z-10"
           initial={{ y: 100, opacity: 0 }}
           animate={{ 
             y: isFlipped ? 0 : 100, 

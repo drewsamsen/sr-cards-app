@@ -4,6 +4,10 @@
 The project is currently in active development with a focus on core functionality and user experience. The primary goal is to build a complete, functional flashcard application with spaced repetition capabilities.
 
 ## Recent Changes
+- Improved phone simulator with realistic aspect ratio and scrollable content
+- Moved header inside phone simulator for complete app simulation
+- Made phone simulation mode the default on desktop screens
+- Added phone simulation mode with toggle button for better mobile testing on desktop
 - Redesigned login/register UI to use text links instead of tabs for a cleaner interface
 - Simplified register form by removing title and description
 - Simplified login form by removing welcome text and description
@@ -37,6 +41,28 @@ The project is currently in active development with a focus on core functionalit
 6. Add import/export functionality
 
 ## Active Decisions
+- **Phone Emulator Styling System**:
+  - Implemented a custom Tailwind variant called `phone:` for phone emulator styling
+  - Created a plugin that recognizes the `.phone-emulator-mode` class context
+  - Added the class to the phone emulator's content area
+  - Updated core UI components (Table, Card, Button, Dialog) to use the phone variant
+  - Ensures consistent mobile styling when using the phone emulator
+  - Allows component styles to respect the phone emulator context automatically
+  - Eliminates the need for manual style adjustments for phone emulator mode
+- **Phone Simulation Mode**:
+  - Set fixed height (860px) and width (430px) for realistic phone aspect ratio
+  - Made content area scrollable to handle overflow content
+  - Added flex layout to properly organize header, content, and home indicator
+  - Included the app header inside the phone simulator for complete mobile experience
+  - Only the mode toggle button remains outside the simulator frame
+  - Made phone view the default for desktop and larger screens
+  - Used responsive design to only show phone frame on larger screens
+  - Small screen devices (actual phones) see the native layout without simulation
+  - Added screen width detection to determine when to apply the phone frame
+  - Added a toggle button in the top-right corner to switch between phone and desktop views
+  - Created a phone-like frame that simulates the app appearance on mobile devices
+  - Added subtle status bar and home indicator for realistic phone appearance
+  - Stored user preference in localStorage to persist between sessions
 - **Login/Register UI**: 
   - Replaced tabbed interface with a simpler single form design
   - Added "Already have an account?" and "Don't have an account?" text links to switch forms

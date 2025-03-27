@@ -17,7 +17,8 @@ module.exports = {
     },
     extend: {
       screens: {
-        'xs': '480px',
+        'phone': { 'raw': '(max-width: 430px) and (min-height: 700px) and (-webkit-min-device-pixel-ratio: 2)' },
+        'sm': '640px',
       },
       colors: {
         border: "hsl(var(--border))",
@@ -75,5 +76,12 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    // Custom plugin for phone emulator mode
+    function({ addVariant }) {
+      // Add phone variant for phone emulator mode
+      addVariant('phone', '.phone-emulator-mode &')
+    },
+  ],
 } 

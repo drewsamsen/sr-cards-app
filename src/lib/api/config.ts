@@ -7,7 +7,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 // Base URLs for API requests
 const DEV_API_URL = ''; // Empty string for local development (uses the proxy)
-const PROD_API_URL = process.env.API_URL || 'https://api.supacards.com'; // Use environment variable or fallback
+const PROD_API_URL = process.env.API_URL || 'https://api.echocards.com'; // Use environment variable or fallback
 
 // Base URL for API requests based on environment
 export const API_BASE_URL = isProduction ? PROD_API_URL : DEV_API_URL;

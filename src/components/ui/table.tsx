@@ -17,7 +17,7 @@ const TableHeader = React.forwardRef<HTMLTableSectionElement, React.HTMLAttribut
   ({ className, ...props }, ref) => (
     <thead 
       ref={ref} 
-      className={cn("[&_tr]:border-b", className)} 
+      className={cn("[&_tr]:border-b phone:[&_tr]:border-b-0", className)} 
       {...props} 
     />
   ),
@@ -50,7 +50,7 @@ const TableRow = React.forwardRef<HTMLTableRowElement, React.HTMLAttributes<HTML
   ({ className, ...props }, ref) => (
     <tr
       ref={ref}
-      className={cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted", className)}
+      className={cn("border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted phone:border-b-0 phone:border-t phone:border-gray-100 phone:dark:border-gray-800/50", className)}
       {...props}
     />
   ),
@@ -62,7 +62,7 @@ const TableHead = React.forwardRef<HTMLTableCellElement, React.ThHTMLAttributes<
     <th
       ref={ref}
       className={cn(
-        "h-10 px-2 sm:h-12 sm:px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
+        "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 sm:h-12 sm:px-4 phone:h-8 phone:px-1.5 phone:text-xs phone:font-semibold phone:text-foreground/70",
         className,
       )}
       {...props}
@@ -75,7 +75,7 @@ const TableCell = React.forwardRef<HTMLTableCellElement, React.TdHTMLAttributes<
   ({ className, ...props }, ref) => (
     <td 
       ref={ref} 
-      className={cn("p-2 sm:p-4 align-middle [&:has([role=checkbox])]:pr-0", className)} 
+      className={cn("p-2 align-middle [&:has([role=checkbox])]:pr-0 sm:p-4 phone:py-1.5 phone:px-1.5 phone:text-sm", className)} 
       {...props} 
     />
   ),
@@ -86,7 +86,7 @@ const TableCaption = React.forwardRef<HTMLTableCaptionElement, React.HTMLAttribu
   ({ className, ...props }, ref) => (
     <caption 
       ref={ref} 
-      className={cn("mt-4 text-sm text-muted-foreground", className)} 
+      className={cn("mt-4 text-sm text-muted-foreground phone:mt-2 phone:text-xs", className)} 
       {...props} 
     />
   ),

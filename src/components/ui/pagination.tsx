@@ -1,6 +1,7 @@
 "use client"
 
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
+import * as React from "react"
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, MoreHorizontal } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -9,51 +10,54 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 
+// Original DataTable Pagination Component
 interface PaginationProps {
-  currentPage: number
-  totalPages: number
-  pageSize: number
   totalItems: number
+  pageSize: number
+  currentPage: number
   onPageChange: (page: number) => void
-  onPageSizeChange: (size: number) => void
+  onPageSizeChange?: (size: number) => void
   pageSizeOptions?: number[]
   compact?: boolean
+  className?: string
 }
 
-export function Pagination({
-  currentPage,
-  totalPages,
-  pageSize,
+export function DataTablePagination({
   totalItems,
+  pageSize,
+  currentPage,
   onPageChange,
   onPageSizeChange,
   pageSizeOptions = [10, 20, 50, 100],
-  compact = false
+  compact = false,
+  className
 }: PaginationProps) {
   // Calculate start and end item numbers
-  const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1
-  const endItem = Math.min(currentPage * pageSize, totalItems)
+  const totalPages = Math.ceil(totalItems / pageSize)
+  const startItem = Math.min(totalItems, (currentPage - 1) * pageSize + 1)
+  const endItem = Math.min(totalItems, currentPage * pageSize)
 
   return (
-    <div className={`flex flex-col ${compact ? 'sm:flex-row' : 'sm:flex-row'} items-center justify-between space-y-3 sm:space-y-0 ${compact ? 'py-2' : 'py-4'}`}>
+    <div className={`flex flex-col ${compact ? 'sm:flex-row' : 'sm:flex-row'} items-center justify-between space-y-3 sm:space-y-0 ${compact ? 'py-2' : 'py-4'} ${className}`}>
       <div className={`${compact ? 'text-xs' : 'text-sm'} text-muted-foreground`}>
         Showing <span className="font-medium">{startItem}</span> to{" "}
         <span className="font-medium">{endItem}</span> of{" "}
-        <span className="font-medium">{totalItems}</span> items
+        <span className="font-medium">{totalItems}</span> results
       </div>
-      <div className={`flex items-center ${compact ? 'space-x-2 sm:space-x-4' : 'space-x-6 lg:space-x-8'}`}>
-        {!compact && (
+      <div className="flex items-center space-x-6 lg:space-x-8">
+        {onPageSizeChange && (
           <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Rows per page</p>
+            <p className={`${compact ? 'text-xs' : 'text-sm'} text-muted-foreground`}>Rows per page</p>
             <Select
               value={pageSize.toString()}
               onValueChange={(value) => onPageSizeChange(Number(value))}
             >
-              <SelectTrigger className="h-8 w-[70px]">
+              <SelectTrigger className={`${compact ? 'h-8' : ''} w-[70px]`}>
                 <SelectValue placeholder={pageSize.toString()} />
               </SelectTrigger>
-              <SelectContent side="top">
+              <SelectContent>
                 {pageSizeOptions.map((size) => (
                   <SelectItem key={size} value={size.toString()}>
                     {size}
@@ -63,74 +67,154 @@ export function Pagination({
             </Select>
           </div>
         )}
+        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
+          Page {currentPage} of {totalPages}
+        </div>
         <div className="flex items-center space-x-2">
           <Button
             variant="outline"
-            size="icon"
-            className={`${compact ? 'h-7 w-7' : 'h-8 w-8'} p-0`}
+            size={compact ? "sm" : "default"}
             onClick={() => onPageChange(1)}
             disabled={currentPage === 1}
+            className="hidden sm:flex"
           >
-            <span className="sr-only">Go to first page</span>
-            <ChevronsLeft className={`${compact ? 'h-3.5 w-3.5' : 'h-4 w-4'}`} />
+            First
           </Button>
           <Button
             variant="outline"
-            size="icon"
-            className={`${compact ? 'h-7 w-7' : 'h-8 w-8'} p-0`}
+            size={compact ? "sm" : "default"}
             onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            <span className="sr-only">Go to previous page</span>
-            <ChevronLeft className={`${compact ? 'h-3.5 w-3.5' : 'h-4 w-4'}`} />
+            Previous
           </Button>
-          <div className="flex items-center gap-1">
-            <span className={`text-sm ${compact ? '' : 'font-medium'}`}>{currentPage}</span>
-            <span className="text-sm text-muted-foreground">of</span>
-            <span className={`text-sm ${compact ? '' : 'font-medium'}`}>{totalPages || 1}</span>
-          </div>
           <Button
             variant="outline"
-            size="icon"
-            className={`${compact ? 'h-7 w-7' : 'h-8 w-8'} p-0`}
+            size={compact ? "sm" : "default"}
             onClick={() => onPageChange(currentPage + 1)}
-            disabled={currentPage === totalPages || totalPages === 0}
+            disabled={currentPage === totalPages}
           >
-            <span className="sr-only">Go to next page</span>
-            <ChevronRight className={`${compact ? 'h-3.5 w-3.5' : 'h-4 w-4'}`} />
+            Next
           </Button>
           <Button
             variant="outline"
-            size="icon"
-            className={`${compact ? 'h-7 w-7' : 'h-8 w-8'} p-0`}
+            size={compact ? "sm" : "default"}
             onClick={() => onPageChange(totalPages)}
-            disabled={currentPage === totalPages || totalPages === 0}
+            disabled={currentPage === totalPages}
+            className="hidden sm:flex"
           >
-            <span className="sr-only">Go to last page</span>
-            <ChevronsRight className={`${compact ? 'h-3.5 w-3.5' : 'h-4 w-4'}`} />
+            Last
           </Button>
         </div>
-        {compact && (
-          <div className="flex items-center space-x-2">
-            <Select
-              value={pageSize.toString()}
-              onValueChange={(value) => onPageSizeChange(Number(value))}
-            >
-              <SelectTrigger className="h-7 w-[60px]">
-                <SelectValue placeholder={pageSize.toString()} />
-              </SelectTrigger>
-              <SelectContent side="top">
-                {pageSizeOptions.map((size) => (
-                  <SelectItem key={size} value={size.toString()}>
-                    {size}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <span className="text-xs text-muted-foreground">per page</span>
-          </div>
-        )}
       </div>
     </div>
   )
+}
+
+// New Pagination Components
+const Pagination = ({ className, ...props }: React.ComponentProps<"nav">) => (
+  <nav
+    role="navigation"
+    aria-label="pagination"
+    className={cn("mx-auto flex w-full justify-center phone:justify-start phone:max-w-full phone:overflow-x-auto", className)}
+    {...props}
+  />
+)
+
+const PaginationContent = ({
+  className,
+  ...props
+}: React.ComponentProps<"ul">) => (
+  <ul
+    className={cn(
+      "flex flex-row items-center gap-1 phone:gap-0.5 phone:mr-2",
+      className
+    )}
+    {...props}
+  />
+)
+
+const PaginationItem = ({
+  className,
+  ...props
+}: React.ComponentProps<"li">) => (
+  <li className={cn("", className)} {...props} />
+)
+
+const PaginationLink = ({
+  className,
+  isActive,
+  size = "icon",
+  ...props
+}: React.ComponentProps<"a"> & {
+  isActive?: boolean
+  size?: "default" | "sm" | "lg" | "icon"
+}) => (
+  <PaginationItem>
+    <a
+      aria-current={isActive ? "page" : undefined}
+      className={cn(
+        "flex h-9 w-9 items-center justify-center rounded-md text-sm transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 phone:h-7 phone:w-7 phone:text-xs",
+        {
+          "bg-accent/60 font-medium text-accent-foreground": isActive,
+        },
+        className
+      )}
+      {...props}
+    />
+  </PaginationItem>
+)
+
+const PaginationPrevious = ({
+  className,
+  ...props
+}: React.ComponentProps<"a">) => (
+  <PaginationLink
+    aria-label="Go to previous page"
+    size="default"
+    className={cn("gap-1 pl-2.5 pr-3.5 phone:gap-0.5 phone:pl-1.5 phone:pr-2.5", className)}
+    {...props}
+  >
+    <ChevronLeft className="size-4 phone:size-3" />
+    <span>Previous</span>
+  </PaginationLink>
+)
+
+const PaginationNext = ({
+  className,
+  ...props
+}: React.ComponentProps<"a">) => (
+  <PaginationLink
+    aria-label="Go to next page"
+    size="default"
+    className={cn("gap-1 pl-3.5 pr-2.5 phone:gap-0.5 phone:pl-2.5 phone:pr-1.5", className)}
+    {...props}
+  >
+    <span>Next</span>
+    <ChevronRight className="size-4 phone:size-3" />
+  </PaginationLink>
+)
+
+const PaginationEllipsis = ({
+  className,
+  ...props
+}: React.ComponentProps<"span">) => (
+  <span
+    aria-hidden
+    className={cn("flex h-9 w-9 items-center justify-center phone:h-7 phone:w-7", className)}
+    {...props}
+  >
+    <MoreHorizontal className="size-4 phone:size-3" />
+    <span className="sr-only">More pages</span>
+  </span>
+)
+
+export {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
 } 

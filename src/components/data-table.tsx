@@ -117,23 +117,23 @@ export function DataTable<TData, TValue>({
   };
 
   return (
-    <div className="space-y-2 sm:space-y-4">
-      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4">
+    <div className="space-y-2 sm:space-y-4 phone:space-y-2">
+      <div className="flex flex-row items-center justify-between gap-2 sm:gap-4 phone:gap-1 phone:flex-wrap">
         {!hideSearch && (
-          <div className="w-full max-w-xs">
+          <div className="w-full max-w-xs phone:max-w-full">
             <form onSubmit={handleSearchSubmit}>
               <Input
                 placeholder={searchPlaceholder}
                 value={searchInputValue}
                 onChange={handleSearchChange}
                 onKeyDown={handleKeyDown}
-                className="max-w-full"
+                className="max-w-full phone:h-8 phone:text-sm"
               />
             </form>
           </div>
         )}
         {actionButton && (
-          <div className="flex justify-end ml-auto">{actionButton}</div>
+          <div className="flex justify-end ml-auto phone:mt-2 phone:w-full phone:ml-0">{actionButton}</div>
         )}
       </div>
       
@@ -143,8 +143,8 @@ export function DataTable<TData, TValue>({
         </div>
       )}
       
-      <div className="rounded-md border overflow-hidden">
-        <div className="w-full overflow-auto">
+      <div className="rounded-md border overflow-hidden phone:rounded-sm phone:border-gray-200 phone:dark:border-gray-800">
+        <div className="w-full overflow-auto phone:overflow-x-auto phone:overflow-y-hidden">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (
