@@ -15,6 +15,7 @@ import { CardAIExplanationModal } from "@/components/card-ai-explanation-modal"
 import { PageLayout } from "@/components/page-layout"
 import { motion, AnimatePresence } from "framer-motion"
 import { Skeleton } from "@/components/ui/skeleton"
+import { usePhoneMode } from "@/components/page-layout"
 
 // Helper function to calculate and format time difference
 const getTimeUntil = (dateString: string) => {
@@ -393,19 +394,21 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
 
   // Show loading state while fetching card
   if (studyState.isLoading) {
+    const { isPhoneMode } = usePhoneMode();
+    
     return (
       <PageLayout>
         <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto">
           <div className="w-full">
             {/* Card skeleton */}
-            <Card className="w-full min-h-[16rem] md:min-h-[20rem] mb-6">
+            <Card className={`w-full ${isPhoneMode ? 'min-h-[12rem]' : 'min-h-[16rem] md:min-h-[20rem]'} mb-6`}>
               <CardContent className="flex flex-col items-center justify-center h-full p-6">
                 {/* Title/question skeleton */}
-                <Skeleton className="h-8 w-3/4 mb-4" />
-                {/* Content skeleton lines */}
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-5/6 mb-2" />
-                <Skeleton className="h-4 w-4/6" />
+                <Skeleton className={`h-7 ${isPhoneMode ? 'w-[150px]' : 'w-3/4'} mb-4`} />
+                {/* Content skeleton lines - fewer in phone mode */}
+                <Skeleton className={`h-4 w-full mb-2`} />
+                {!isPhoneMode && <Skeleton className="h-4 w-5/6 mb-2" />}
+                <Skeleton className={`h-4 ${isPhoneMode ? 'w-3/4' : 'w-4/6'}`} />
               </CardContent>
             </Card>
           </div>

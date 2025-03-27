@@ -32,18 +32,20 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { usePhoneMode } from "@/components/page-layout"
 
 // Create a CardsTableSkeleton component for loading state
 function CardsTableSkeleton() {
-  // Display 7 skeleton rows
-  const skeletonRows = Array(7).fill(0)
+  // Display fewer skeleton rows in phone mode
+  const { isPhoneMode } = usePhoneMode()
+  const skeletonRows = Array(isPhoneMode ? 4 : 7).fill(0)
   
   return (
     <div className="w-full">
       {/* Search and header section skeleton */}
       <div className="flex items-center justify-between py-4">
-        <Skeleton className="h-9 w-[250px]" />
-        <Skeleton className="h-9 w-[120px] rounded-md" />
+        <Skeleton className={`h-8 ${isPhoneMode ? 'w-[100px]' : 'w-[250px]'}`} />
+        <Skeleton className={`h-8 w-[90px] rounded-md`} />
       </div>
       
       <div className="rounded-md border">
@@ -51,72 +53,87 @@ function CardsTableSkeleton() {
           <TableHeader>
             <TableRow>
               <TableHead>
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-8 w-16" />
-                  <Skeleton className="h-4 w-4" />
+                <div className="flex items-center gap-1">
+                  <Skeleton className={`h-7 w-14`} />
+                  {!isPhoneMode && <Skeleton className="h-4 w-4" />}
                 </div>
               </TableHead>
+              {!isPhoneMode && (
+                <TableHead>
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-7 w-14" />
+                    <Skeleton className="h-4 w-4" />
+                  </div>
+                </TableHead>
+              )}
               <TableHead>
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-8 w-16" />
-                  <Skeleton className="h-4 w-4" />
-                </div>
+                <Skeleton className={`h-7 w-14`} />
               </TableHead>
-              <TableHead>
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-8 w-16" />
-                  <Skeleton className="h-4 w-4" />
-                </div>
-              </TableHead>
-              <TableHead>
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-8 w-16" />
-                  <Skeleton className="h-4 w-4" />
-                </div>
-              </TableHead>
-              <TableHead style={{ width: "100px" }}>
-                <Skeleton className="h-8 w-16" />
-              </TableHead>
+              {!isPhoneMode && (
+                <>
+                  <TableHead>
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-7 w-14" />
+                      <Skeleton className="h-4 w-4" />
+                    </div>
+                  </TableHead>
+                  <TableHead style={{ width: "100px" }}>
+                    <Skeleton className="h-7 w-14" />
+                  </TableHead>
+                </>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
             {skeletonRows.map((_, index) => (
               <TableRow key={index}>
                 <TableCell>
-                  <div className="max-w-[200px]">
+                  <div className={`${isPhoneMode ? 'max-w-[120px]' : 'max-w-[200px]'}`}>
                     <Skeleton className="h-5 w-full" />
-                    <Skeleton className="h-4 w-3/4 mt-1" />
+                    {!isPhoneMode && <Skeleton className="h-4 w-3/4 mt-1" />}
                   </div>
                 </TableCell>
+                {!isPhoneMode && (
+                  <TableCell>
+                    <div className="max-w-[200px]">
+                      <Skeleton className="h-5 w-full" />
+                      <Skeleton className="h-4 w-3/4 mt-1" />
+                    </div>
+                  </TableCell>
+                )}
                 <TableCell>
-                  <div className="max-w-[200px]">
-                    <Skeleton className="h-5 w-full" />
-                    <Skeleton className="h-4 w-3/4 mt-1" />
-                  </div>
+                  <Skeleton className="h-6 w-14 rounded-full" />
                 </TableCell>
-                <TableCell>
-                  <Skeleton className="h-6 w-16 rounded-full" />
-                </TableCell>
-                <TableCell>
-                  <Skeleton className="h-5 w-24" />
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Skeleton className="h-8 w-8 rounded-md" />
-                    <Skeleton className="h-8 w-8 rounded-md" />
-                  </div>
-                </TableCell>
+                {!isPhoneMode && (
+                  <>
+                    <TableCell>
+                      <Skeleton className="h-5 w-24" />
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                        <Skeleton className="h-8 w-8 rounded-md" />
+                      </div>
+                    </TableCell>
+                  </>
+                )}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
       
-      {/* Footer/pagination skeleton */}
-      <div className="flex items-center justify-between space-x-2 py-4">
-        <Skeleton className="h-9 w-[250px]" />
-        <Skeleton className="h-9 w-[150px]" />
-      </div>
+      {/* Footer/pagination skeleton - simplified in phone mode */}
+      {isPhoneMode ? (
+        <div className="flex justify-end py-3">
+          <Skeleton className="h-7 w-[60px]" />
+        </div>
+      ) : (
+        <div className="flex items-center justify-between space-x-2 py-4">
+          <Skeleton className="h-9 w-[250px]" />
+          <Skeleton className="h-9 w-[150px]" />
+        </div>
+      )}
     </div>
   )
 }
