@@ -258,7 +258,7 @@ export default function ImportPage() {
       )}
       
       <Card className="mb-8">
-        <CardContent className="pt-6">
+        <CardContent>
           <form onSubmit={handleCreatePreview} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="deck-select">Select Deck</Label>
@@ -289,14 +289,7 @@ export default function ImportPage() {
               <Label htmlFor="tab-content">Delimited Content</Label>
               <Textarea 
                 id="tab-content"
-                placeholder="front,back
-What is React?,A JavaScript library for building user interfaces
-What is NextJS?,A React framework for production
-
-OR use tabs:
-front	back
-What is React?	A JavaScript library for building user interfaces
-What is NextJS?	A React framework for production"
+                placeholder=""
                 rows={10}
                 value={tabContent}
                 onChange={(e) => setTabContent(e.target.value)}

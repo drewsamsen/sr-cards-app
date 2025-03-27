@@ -21,6 +21,7 @@ export function Header() {
     { name: "Cards", href: "/cards" },
     { name: "Import", href: "/import" },
     { name: "Settings", href: "/settings" },
+    { name: "About", href: "/about" },
   ]
 
   const handleLogout = async () => {

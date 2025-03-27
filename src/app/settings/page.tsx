@@ -174,7 +174,7 @@ export default function SettingsPage() {
       )}
       
       <Card>
-        <CardContent className="pt-6 px-6 pb-6">
+        <CardContent className="px-6 pb-6">
           {isLoading ? (
             <p>Loading settings...</p>
           ) : (
