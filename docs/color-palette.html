@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EchoCards Color Palette</title>
+  <style>
+    :root {
+      --light-background: #ffffff;
+      --light-foreground: #0f172a;
+      --light-card: #ffffff;
+      --light-card-foreground: #0f172a;
+      --light-primary: #3b82f6;
+      --light-primary-foreground: #ffffff;
+      --light-secondary: #f1f5f9;
+      --light-secondary-foreground: #0f172a;
+      --light-muted: #f1f5f9;
+      --light-muted-foreground: #64748b;
+      --light-accent: #f1f5f9;
+      --light-accent-foreground: #0f172a;
+      --light-destructive: #ef4444;
+      --light-destructive-foreground: #ffffff;
+      --light-border: #e2e8f0;
+
+      --dark-background: #111827;
+      --dark-foreground: #f9fafb;
+      --dark-card: #1e2937;
+      --dark-card-foreground: #f9fafb;
+      --dark-primary: #3b82f6;
+      --dark-primary-foreground: #ffffff;
+      --dark-secondary: #1e2937;
+      --dark-secondary-foreground: #f9fafb;
+      --dark-muted: #1e2937;
+      --dark-muted-foreground: #94a3b8;
+      --dark-accent: #1e2937;
+      --dark-accent-foreground: #f9fafb;
+      --dark-destructive: #ef4444;
+      --dark-destructive-foreground: #ffffff;
+      --dark-border: #384151;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      line-height: 1.6;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .dark-mode {
+      background-color: var(--dark-background);
+      color: var(--dark-foreground);
+    }
+    
+    header {
+      margin-bottom: 2rem;
+    }
+    
+    header h1 {
+      margin-bottom: 0.5rem;
+    }
+    
+    .theme-toggle {
+      background: #333;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+    
+    .section {
+      margin-bottom: 3rem;
+    }
+    
+    .section-title {
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .color-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .dark-mode .color-card {
+      border-color: #555;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    
+    .color-sample {
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      text-shadow: 0 0 2px rgba(0,0,0,0.5);
+    }
+    
+    .color-info {
+      padding: 1rem;
+    }
+    
+    .color-name {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+    }
+    
+    .color-value {
+      font-family: monospace;
+      opacity: 0.8;
+    }
+    
+    .color-usage {
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+    }
+    
+    .tailwind-classes {
+      margin-top: 0.75rem;
+      font-family: monospace;
+      background: #f8f8f8;
+      padding: 0.5rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+    
+    .dark-mode .tailwind-classes {
+      background: #2a2a2a;
+    }
+    
+    footer {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid #ddd;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .dark-mode footer {
+      border-top-color: #444;
+    }
+
+    /* Table styles */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+    }
+    
+    th, td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+    
+    .dark-mode th, .dark-mode td {
+      border-bottom-color: #444;
+    }
+    
+    th {
+      background-color: #f8f8f8;
+    }
+    
+    .dark-mode th {
+      background-color: #2a2a2a;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>EchoCards Color Palette</h1>
+    <p>A comprehensive guide to colors used throughout the EchoCards application. For development team use only.</p>
+    <button class="theme-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+  </header>
+
+  <div class="section">
+    <h2 class="section-title">Theme Colors (Base)</h2>
+    <p>These are the base theme colors that define the overall look and feel of the application.</p>
+    
+    <div class="color-grid">
+      <!-- Background -->
+      <div class="color-card">
+        <div class="color-sample" style="background-color: var(--light-background);" id="bg-light">
+          Light Background
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Background</span>
+            <span class="color-value">#ffffff</span>
+          </div>
+          <div class="color-usage">
+            Used for the main background of the application in light mode.
+          </div>
+          <div class="tailwind-classes">
+            bg-background (light)<br>
+            Tailwind: bg-white
+          </div>
+        </div>
+      </div>
+      
+      <div class="color-card">
+        <div class="color-sample" style="background-color: var(--dark-background);" id="bg-dark">
+          Dark Background
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Background (Dark)</span>
+            <span class="color-value">#111827</span>
+          </div>
+          <div class="color-usage">
+            Used for the main background of the application in dark mode.
+          </div>
+          <div class="tailwind-classes">
+            bg-background (dark)<br>
+            Tailwind: dark:bg-gray-900
+          </div>
+        </div>
+      </div>
+      
+      <!-- Primary -->
+      <div class="color-card">
+        <div class="color-sample" style="background-color: var(--light-primary);" id="primary-light">
+          Primary
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Primary</span>
+            <span class="color-value">#3b82f6</span>
+          </div>
+          <div class="color-usage">
+            Used for primary buttons, links, and interactive elements. Our main brand color.
+          </div>
+          <div class="tailwind-classes">
+            text-primary, bg-primary<br>
+            Tailwind: text-blue-500, bg-blue-500
+          </div>
+        </div>
+      </div>
+      
+      <div class="color-card">
+        <div class="color-sample" style="background-color: var(--dark-primary);" id="primary-dark">
+          Primary (Dark)
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Primary (Dark)</span>
+            <span class="color-value">#3b82f6</span>
+          </div>
+          <div class="color-usage">
+            Used for primary buttons, links, and interactive elements in dark mode.
+          </div>
+          <div class="tailwind-classes">
+            text-primary, bg-primary<br>
+            Tailwind: dark:text-blue-500, dark:bg-blue-500
+          </div>
+        </div>
+      </div>
+      
+      <!-- Muted -->
+      <div class="color-card">
+        <div class="color-sample" style="background-color: var(--light-muted);" id="muted-light">
+          Muted
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Muted</span>
+            <span class="color-value">#f1f5f9</span>
+          </div>
+          <div class="color-usage">
+            Used for subtle backgrounds, disabled states, and secondary UI elements.
+          </div>
+          <div class="tailwind-classes">
+            bg-muted<br>
+            Tailwind: bg-slate-100
+          </div>
+        </div>
+      </div>
+      
+      <div class="color-card">
+        <div class="color-sample" style="background-color: var(--dark-muted);" id="muted-dark">
+          Muted (Dark)
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Muted (Dark)</span>
+            <span class="color-value">#1e2937</span>
+          </div>
+          <div class="color-usage">
+            Used for subtle backgrounds, disabled states, and secondary UI elements in dark mode.
+          </div>
+          <div class="tailwind-classes">
+            bg-muted<br>
+            Tailwind: dark:bg-slate-800
+          </div>
+        </div>
+      </div>
+      
+      <!-- Destructive -->
+      <div class="color-card">
+        <div class="color-sample" style="background-color: var(--light-destructive);" id="destructive-light">
+          Destructive
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Destructive</span>
+            <span class="color-value">#ef4444</span>
+          </div>
+          <div class="color-usage">
+            Used for error states, delete actions, and to indicate warnings.
+          </div>
+          <div class="tailwind-classes">
+            bg-destructive<br>
+            Tailwind: bg-red-500
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Action Colors</h2>
+    <p>Colors used specifically for action buttons in the application, such as in the card review interface.</p>
+    
+    <div class="color-grid">
+      <!-- Study Button -->
+      <div class="color-card">
+        <div class="color-sample" style="background-color: #2563eb;">
+          Study Button
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Study Button</span>
+            <span class="color-value">#2563eb</span>
+          </div>
+          <div class="color-usage">
+            Used for the "Study" button in the decks list.
+          </div>
+          <div class="tailwind-classes">
+            bg-blue-600 hover:bg-blue-700<br>
+            dark:bg-blue-900 dark:hover:bg-blue-800
+          </div>
+        </div>
+      </div>
+      
+      <!-- Review - Easy -->
+      <div class="color-card">
+        <div class="color-sample" style="background-color: #2563eb;">
+          Easy (Review)
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Easy (Review)</span>
+            <span class="color-value">#2563eb</span>
+          </div>
+          <div class="color-usage">
+            Used for the "Easy" button in the card review interface.
+          </div>
+          <div class="tailwind-classes">
+            bg-blue-600 hover:bg-blue-700<br>
+            dark:bg-blue-900 dark:hover:bg-blue-800
+          </div>
+        </div>
+      </div>
+      
+      <!-- Review - Good -->
+      <div class="color-card">
+        <div class="color-sample" style="background-color: #16a34a;">
+          Good (Review)
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Good (Review)</span>
+            <span class="color-value">#16a34a</span>
+          </div>
+          <div class="color-usage">
+            Used for the "Good" button in the card review interface.
+          </div>
+          <div class="tailwind-classes">
+            bg-green-600 hover:bg-green-700<br>
+            dark:bg-green-900 dark:hover:bg-green-800
+          </div>
+        </div>
+      </div>
+      
+      <!-- Review - Hard -->
+      <div class="color-card">
+        <div class="color-sample" style="background-color: #ea580c;">
+          Hard (Review)
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Hard (Review)</span>
+            <span class="color-value">#ea580c</span>
+          </div>
+          <div class="color-usage">
+            Used for the "Hard" button in the card review interface.
+          </div>
+          <div class="tailwind-classes">
+            bg-orange-600 hover:bg-orange-700<br>
+            dark:bg-orange-900 dark:hover:bg-orange-800
+          </div>
+        </div>
+      </div>
+      
+      <!-- Review - Again -->
+      <div class="color-card">
+        <div class="color-sample" style="background-color: #dc2626;">
+          Again (Review)
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Again (Review)</span>
+            <span class="color-value">#dc2626</span>
+          </div>
+          <div class="color-usage">
+            Used for the "Again" button in the card review interface.
+          </div>
+          <div class="tailwind-classes">
+            bg-red-600 hover:bg-red-700<br>
+            dark:bg-red-900 dark:hover:bg-red-800
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">UI Component Colors</h2>
+    <p>Colors used in specific UI components throughout the application.</p>
+    
+    <div class="color-grid">
+      <!-- Card background -->
+      <div class="color-card">
+        <div class="color-sample" style="background-color: var(--light-card); color: black;">
+          Card
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Card</span>
+            <span class="color-value">#ffffff</span>
+          </div>
+          <div class="color-usage">
+            Used for card backgrounds, modals, and elevated surfaces.
+          </div>
+          <div class="tailwind-classes">
+            bg-card<br>
+            Tailwind: bg-white / dark:bg-gray-800
+          </div>
+        </div>
+      </div>
+      
+      <!-- Accent -->
+      <div class="color-card">
+        <div class="color-sample" style="background-color: var(--light-accent); color: black;">
+          Accent
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Accent</span>
+            <span class="color-value">#f1f5f9</span>
+          </div>
+          <div class="color-usage">
+            Used for hover states, highlights, and to emphasize UI elements.
+          </div>
+          <div class="tailwind-classes">
+            bg-accent<br>
+            Tailwind: bg-slate-100 / dark:bg-slate-800
+          </div>
+        </div>
+      </div>
+      
+      <!-- Border -->
+      <div class="color-card">
+        <div class="color-sample" style="background-color: var(--light-border); color: black;">
+          Border
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Border</span>
+            <span class="color-value">#e2e8f0</span>
+          </div>
+          <div class="color-usage">
+            Used for borders, dividers, and separators.
+          </div>
+          <div class="tailwind-classes">
+            border-border<br>
+            Tailwind: border-slate-200 / dark:border-slate-700
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Text Colors</h2>
+    <p>Colors used for text elements throughout the application.</p>
+    
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Light Mode</th>
+          <th>Dark Mode</th>
+          <th>Usage</th>
+          <th>Tailwind Classes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Foreground</td>
+          <td style="color: var(--light-foreground)">Sample Text</td>
+          <td style="color: var(--dark-foreground); background: #333;">Sample Text</td>
+          <td>Main text color</td>
+          <td>text-foreground</td>
+        </tr>
+        <tr>
+          <td>Muted Foreground</td>
+          <td style="color: var(--light-muted-foreground)">Sample Text</td>
+          <td style="color: var(--dark-muted-foreground); background: #333;">Sample Text</td>
+          <td>Secondary text, labels, help text</td>
+          <td>text-muted-foreground</td>
+        </tr>
+        <tr>
+          <td>Primary</td>
+          <td style="color: var(--light-primary)">Sample Text</td>
+          <td style="color: var(--dark-primary); background: #333;">Sample Text</td>
+          <td>Links, emphasized text</td>
+          <td>text-primary</td>
+        </tr>
+        <tr>
+          <td>Destructive</td>
+          <td style="color: var(--light-destructive)">Sample Text</td>
+          <td style="color: var(--dark-destructive); background: #333;">Sample Text</td>
+          <td>Error messages, warnings</td>
+          <td>text-destructive</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">Opacity Variants</h2>
+    <p>Various opacity variants used to create depth and visual hierarchy.</p>
+    
+    <div class="color-grid">
+      <div class="color-card">
+        <div class="color-sample" style="background-color: rgba(59, 130, 246, 0.1);">
+          Primary/10
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Primary 10%</span>
+            <span class="color-value">rgba(59, 130, 246, 0.1)</span>
+          </div>
+          <div class="color-usage">
+            Used for primary color backgrounds with low emphasis, such as in status cards.
+          </div>
+          <div class="tailwind-classes">
+            bg-primary/10
+          </div>
+        </div>
+      </div>
+      
+      <div class="color-card">
+        <div class="color-sample" style="background-color: rgba(59, 130, 246, 0.2);">
+          Primary/20
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Primary 20%</span>
+            <span class="color-value">rgba(59, 130, 246, 0.2)</span>
+          </div>
+          <div class="color-usage">
+            Used for backgrounds with medium emphasis, such as in icons or indicators.
+          </div>
+          <div class="tailwind-classes">
+            bg-primary/20
+          </div>
+        </div>
+      </div>
+      
+      <div class="color-card">
+        <div class="color-sample" style="background-color: rgba(239, 68, 68, 0.1);">
+          Destructive/10
+        </div>
+        <div class="color-info">
+          <div class="color-name">
+            <span>Destructive 10%</span>
+            <span class="color-value">rgba(239, 68, 68, 0.1)</span>
+          </div>
+          <div class="color-usage">
+            Used for error or warning backgrounds with low emphasis.
+          </div>
+          <div class="tailwind-classes">
+            bg-destructive/10
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>This is a private style guide for the EchoCards development team. Last updated: <span id="last-updated"></span></p>
+  </footer>
+
+  <script>
+    // Set last updated date
+    document.getElementById('last-updated').textContent = new Date().toLocaleDateString();
+    
+    // Toggle dark mode
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+    }
+    
+    // Update color samples with text color based on luminance
+    function updateColorTextContrast() {
+      document.querySelectorAll('.color-sample').forEach(sample => {
+        const bgColor = getComputedStyle(sample).backgroundColor;
+        const rgb = bgColor.match(/\d+/g);
+        
+        if (rgb && rgb.length >= 3) {
+          const luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
+          sample.style.color = luminance > 0.5 ? '#000000' : '#ffffff';
+        }
+      });
+    }
+    
+    // Run once on load
+    updateColorTextContrast();
+    
+    // Run when theme is toggled
+    document.querySelector('.theme-toggle').addEventListener('click', () => {
+      setTimeout(updateColorTextContrast, 100);
+    });
+  </script>
+</body>
+</html> 

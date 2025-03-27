@@ -1,7 +1,7 @@
 "use client"
 
 import type { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown, Settings, BookOpen } from "lucide-react"
+import { ArrowUpDown, Settings } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 
@@ -33,8 +33,7 @@ export const deckColumns: ColumnDef<Deck>[] = [
             className="flex items-center gap-1 w-auto min-w-20 justify-center"
             disabled
           >
-            <BookOpen className="h-4 w-4" />
-            Study {remainingReviews}
+            Learn {remainingReviews}
           </Button>
         );
       }
@@ -46,8 +45,7 @@ export const deckColumns: ColumnDef<Deck>[] = [
             variant="outline" 
             className="flex items-center gap-1 w-auto min-w-20 justify-center bg-blue-600 hover:bg-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 text-white border-0"
           >
-            <BookOpen className="h-4 w-4" />
-            Study {remainingReviews}
+            Learn {remainingReviews}
           </Button>
         </Link>
       )
