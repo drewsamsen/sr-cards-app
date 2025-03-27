@@ -600,7 +600,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
 
   return (
     <PageLayout>
-      <div className="flex flex-col items-center justify-between h-full">
+      <div className="flex flex-col items-center justify-between h-full pb-32 md:pb-36">
         {/* Make this entire area clickable for flipping the card */}
         <div className="w-full flex-1 flex flex-col items-center cursor-pointer" onClick={handleFlip}>
           <div className="w-full flex justify-center h-full">
@@ -676,7 +676,7 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
         </div>
         
         <motion.div 
-          className="w-full mt-auto bg-background pb-4 pt-4 px-2 md:pb-0 md:pt-8 md:px-0 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] md:shadow-none z-10"
+          className="w-full fixed bottom-0 left-0 right-0 bg-background pb-4 pt-4 px-2 md:pb-6 md:pt-6 md:px-0 shadow-[0_-2px_10px_rgba(0,0,0,0.1)] z-10"
           initial={{ y: 100, opacity: 0 }}
           animate={{ 
             y: isFlipped ? 0 : 100, 
@@ -687,21 +687,21 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
             }
           }}
         >
-          <div className="grid grid-cols-4 gap-0.5 xs:gap-1 sm:gap-2 max-w-2xl w-full mx-auto">
+          <div className="grid grid-cols-4 gap-1 phone:gap-0.5 max-w-2xl w-full mx-auto px-2 sm:px-0">
             <div className="flex flex-col items-center">
               <Button 
                 variant="destructive" 
                 size="lg"
                 onClick={() => handleResponse('again')}
-                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 text-xs xs:text-sm sm:text-base bg-red-600 hover:bg-red-700 dark:bg-red-900 dark:hover:bg-red-800"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-2 phone:px-1 phone:text-xs text-sm bg-red-600 hover:bg-red-700 dark:bg-red-900 dark:hover:bg-red-800"
                 disabled={isTransitioning}
               >
-                <RotateCcw className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
+                <RotateCcw className="h-4 w-4 phone:h-3 phone:w-3 flex-shrink-0 mr-1 phone:mr-0.5" />
                 <span className="whitespace-nowrap">Again</span>
               </Button>
               {studyState.currentCard?.reviewMetrics && (
                 <div className="flex flex-col items-center">
-                  <span className="text-xs text-muted-foreground mt-1">
+                  <span className="text-xs phone:text-[10px] text-muted-foreground mt-1">
                     {getTimeUntil(studyState.currentCard.reviewMetrics.again)}
                   </span>
                 </div>
@@ -713,15 +713,15 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 variant="outline" 
                 size="lg"
                 onClick={() => handleResponse('hard')}
-                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 text-xs xs:text-sm sm:text-base text-white bg-orange-600 hover:bg-orange-700 dark:bg-orange-900 dark:hover:bg-orange-800 border-0"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-2 phone:px-1 phone:text-xs text-sm text-white bg-orange-600 hover:bg-orange-700 dark:bg-orange-900 dark:hover:bg-orange-800 border-0"
                 disabled={isTransitioning}
               >
-                <X className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
+                <X className="h-4 w-4 phone:h-3 phone:w-3 flex-shrink-0 mr-1 phone:mr-0.5" />
                 <span className="whitespace-nowrap">Hard</span>
               </Button>
               {studyState.currentCard?.reviewMetrics && (
                 <div className="flex flex-col items-center">
-                  <span className="text-xs text-muted-foreground mt-1">
+                  <span className="text-xs phone:text-[10px] text-muted-foreground mt-1">
                     {getTimeUntil(studyState.currentCard.reviewMetrics.hard)}
                   </span>
                 </div>
@@ -733,15 +733,15 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 variant="secondary" 
                 size="lg"
                 onClick={() => handleResponse('good')}
-                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 text-xs xs:text-sm sm:text-base text-white bg-green-600 hover:bg-green-700 dark:bg-green-900 dark:hover:bg-green-800"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-2 phone:px-1 phone:text-xs text-sm text-white bg-green-600 hover:bg-green-700 dark:bg-green-900 dark:hover:bg-green-800"
                 disabled={isTransitioning}
               >
-                <Check className="h-3 w-3 xs:h-4 xs:w-4 flex-shrink-0 mr-0.5 xs:mr-1" />
+                <Check className="h-4 w-4 phone:h-3 phone:w-3 flex-shrink-0 mr-1 phone:mr-0.5" />
                 <span className="whitespace-nowrap">Good</span>
               </Button>
               {studyState.currentCard?.reviewMetrics && (
                 <div className="flex flex-col items-center">
-                  <span className="text-xs text-muted-foreground mt-1">
+                  <span className="text-xs phone:text-[10px] text-muted-foreground mt-1">
                     {getTimeUntil(studyState.currentCard.reviewMetrics.good)}
                   </span>
                 </div>
@@ -753,15 +753,15 @@ export default function StudyPage(props: { params: Promise<{ slug: string }> }) 
                 variant="default" 
                 size="lg"
                 onClick={() => handleResponse('easy')}
-                className="flex items-center justify-center h-14 xs:h-16 w-full px-0.5 xs:px-1 sm:px-4 text-xs xs:text-sm sm:text-base text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800"
+                className="flex items-center justify-center h-14 xs:h-16 w-full px-2 phone:px-1 phone:text-xs text-sm text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800"
                 disabled={isTransitioning}
               >
-                <Check className="h-4 w-4 xs:h-5 xs:w-5 flex-shrink-0 mr-0.5 xs:mr-1" />
+                <Check className="h-5 w-5 phone:h-4 phone:w-4 flex-shrink-0 mr-1 phone:mr-0.5" />
                 <span className="whitespace-nowrap">Easy</span>
               </Button>
               {studyState.currentCard?.reviewMetrics && (
                 <div className="flex flex-col items-center">
-                  <span className="text-xs text-muted-foreground mt-1">
+                  <span className="text-xs phone:text-[10px] text-muted-foreground mt-1">
                     {getTimeUntil(studyState.currentCard.reviewMetrics.easy)}
                   </span>
                 </div>
