@@ -24,12 +24,25 @@ export const deckColumns: ColumnDef<Deck>[] = [
     cell: ({ row }) => {
       const remainingReviews = row.getValue("remainingReviews") as number
       const slug = row.original.slug
+      const isNewDeckRow = row.original.id === "new-deck"
+      
+      if (isNewDeckRow) {
+        return (
+          <Button 
+            variant="outline" 
+            className="flex items-center gap-1 w-[96px] min-w-20 h-10 justify-center bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-800 dark:hover:bg-emerald-700 text-white border-0"
+            onClick={() => window.location.href = "/decks/new"}
+          >
+            Add New
+          </Button>
+        );
+      }
       
       if (remainingReviews === 0) {
         return (
           <Button 
             variant="outline" 
-            className="flex items-center gap-1 w-auto min-w-20 h-10 justify-center"
+            className="flex items-center gap-1 w-[96px] min-w-20 h-10 justify-center"
             disabled
           >
             Study Now
@@ -41,7 +54,7 @@ export const deckColumns: ColumnDef<Deck>[] = [
         <Link href={`/deck/${slug}/study`}>
           <Button 
             variant="outline" 
-            className="flex items-center gap-1 w-auto min-w-20 h-10 justify-center bg-blue-600 hover:bg-blue-700 dark:bg-slate-800 dark:hover:bg-slate-700 text-white border-0"
+            className="flex items-center gap-1 w-[96px] min-w-20 h-10 justify-center bg-blue-600 hover:bg-blue-700 dark:bg-slate-800 dark:hover:bg-slate-700 text-white border-0"
           >
             Study Now
           </Button>
@@ -56,13 +69,27 @@ export const deckColumns: ColumnDef<Deck>[] = [
       const name = row.getValue("name") as string
       const totalCards = row.original.totalCards as number
       const remainingReviews = row.original.remainingReviews as number
+      const isNewDeckRow = row.original.id === "new-deck"
+      
+      if (isNewDeckRow) {
+        return (
+          <div className="space-y-1 cursor-pointer" onClick={() => window.location.href = "/decks/new"}>
+            <div className="text-lg font-bold leading-tight text-slate-600 dark:text-slate-400">
+              Create a new deck
+            </div>
+            <div className="text-sm text-slate-600 dark:text-slate-400">
+              Add flashcards to study and review
+            </div>
+          </div>
+        );
+      }
       
       return (
         <div className="space-y-1">
           <Link href={`/deck/${row.original.slug}`} className="text-lg font-bold leading-tight text-primary hover:underline block">
             {name}
           </Link>
-          <div className="text-sm text-slate-600 dark:text-slate-600">
+          <div className="text-sm text-slate-600 dark:text-slate-500">
             Cards: {totalCards}, Due: {remainingReviews}
           </div>
         </div>

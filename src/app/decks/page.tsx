@@ -33,83 +33,42 @@ export interface Deck {
 
 // Create a DeckTableSkeleton component for loading state
 function DeckTableSkeleton() {
-  // Display 3 skeleton rows to match a typical user with 3 decks
-  const skeletonRows = Array(3).fill(0)
+  // Display 4 skeleton rows to match a typical user with 4 decks
+  const skeletonRows = Array(4).fill(0)
   const { isPhoneMode } = usePhoneMode()
   
   return (
     <div className="w-full">
-      {/* Search and header section skeleton */}
-      <div className="flex items-center justify-between py-4">
-        <Skeleton className={`h-8 ${isPhoneMode ? 'w-[100px]' : 'w-[250px]'}`} />
-        {/* In phone mode, only show one button */}
-        <div className="flex items-center gap-1">
-          {!isPhoneMode && <Skeleton className="h-9 w-9 rounded-md" />}
-          <Skeleton className="h-8 w-8 rounded-md" />
-        </div>
-      </div>
-      
       <div className="rounded-md border">
         <Table>
-          <TableHeader>
-            <TableRow>
-              {/* Hide first column in phone mode */}
-              {!isPhoneMode && (
-                <TableHead style={{ width: "70px" }}>
-                  <Skeleton className="h-8 w-8" />
-                </TableHead>
-              )}
-              <TableHead>
-                <div className="flex items-center gap-2">
-                  <Skeleton className="h-7 w-16" />
-                  {!isPhoneMode && <Skeleton className="h-4 w-4" />}
-                </div>
-              </TableHead>
-              <TableHead style={{ width: isPhoneMode ? "40px" : "50px" }}>
-                <Skeleton className="h-7 w-7" />
-              </TableHead>
-            </TableRow>
-          </TableHeader>
           <TableBody>
             {skeletonRows.map((_, index) => (
               <TableRow key={index}>
-                {/* Hide first column in phone mode */}
-                {!isPhoneMode && (
-                  <TableCell>
-                    <Skeleton className="h-8 w-16 rounded-md" />
-                  </TableCell>
-                )}
                 <TableCell>
-                  <div className="space-y-1">
-                    <Skeleton className={`h-5 ${isPhoneMode ? 'w-[80px]' : 'w-[200px]'}`} />
-                    {/* Only show one line of text in phone mode */}
-                    {!isPhoneMode && <Skeleton className="h-4 w-[150px]" />}
-                  </div>
+                  <Skeleton className="h-10 w-[96px] rounded-md" />
                 </TableCell>
                 <TableCell>
-                  <Skeleton className="h-7 w-7 rounded-md" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-7 w-[200px]" />
+                    <Skeleton className="h-4 w-[150px]" />
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
+            {/* Add New row */}
+            <TableRow>
+              <TableCell>
+                <Skeleton className="h-10 w-[96px] rounded-md bg-emerald-200 dark:bg-emerald-900" />
+              </TableCell>
+              <TableCell>
+                <div className="space-y-1">
+                  <Skeleton className="h-7 w-[200px] bg-slate-300 dark:bg-slate-700" />
+                  <Skeleton className="h-4 w-[220px] bg-slate-200 dark:bg-slate-800" />
+                </div>
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
-      </div>
-      
-      {/* Footer/pagination skeleton - simplified in phone mode */}
-      {!isPhoneMode ? (
-        <div className="flex items-center justify-between space-x-2 py-4">
-          <Skeleton className="h-9 w-[250px]" />
-          <Skeleton className="h-9 w-[150px]" />
-        </div>
-      ) : (
-        <div className="flex justify-end space-x-2 py-3">
-          <Skeleton className="h-7 w-[60px]" />
-        </div>
-      )}
-      
-      {/* Button skeleton */}
-      <div className="flex justify-end mt-4">
-        <Skeleton className={`h-9 ${isPhoneMode ? 'w-[100px]' : 'w-[150px]'} rounded-md`} />
       </div>
     </div>
   )
@@ -132,10 +91,36 @@ export default function DecksPage() {
         totalCards: deck.totalCards || 0,
         newCards: deck.newCards || 0,
         dueCards: deck.dueCards || 0
-      }))
-      setDecks(transformedDecks)
+      }));
+      
+      // Add a special "add new deck" row
+      const decksWithAddNew = [
+        ...transformedDecks,
+        {
+          id: "new-deck",
+          name: "",
+          slug: "",
+          remainingReviews: 0,
+          totalCards: 0,
+          newCards: 0,
+          dueCards: 0
+        }
+      ];
+      
+      setDecks(decksWithAddNew);
+    } else {
+      // If no decks, still show the "add new" row
+      setDecks([{
+        id: "new-deck",
+        name: "",
+        slug: "",
+        remainingReviews: 0,
+        totalCards: 0,
+        newCards: 0,
+        dueCards: 0
+      }]);
     }
-  }, [apiDecks])
+  }, [apiDecks]);
 
   // Set up periodic refetching (every 10 minutes)
   useEffect(() => {
@@ -209,16 +194,6 @@ export default function DecksPage() {
             hideSearch={true}
             hideHeader={true}
           />
-          
-          <div className="flex justify-end mt-4 sm:mt-6">
-            <Button 
-              onClick={() => router.push('/decks/new')}
-              className="flex items-center gap-1"
-            >
-              <Plus className="h-4 w-4" />
-              Create new deck
-            </Button>
-          </div>
         </>
       )}
     </PageLayout>

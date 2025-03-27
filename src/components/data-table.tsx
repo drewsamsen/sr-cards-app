@@ -139,7 +139,7 @@ export function DataTable<TData, TValue>({
       </div>
       
       {pagination && showTopPagination && (
-        <div className="flex justify-between items-center">
+        <div>
           {renderPagination(true)}
         </div>
       )}
@@ -194,7 +194,7 @@ export function DataTable<TData, TValue>({
       </div>
       
       {pagination && (
-        <div className="flex justify-between items-center">
+        <div>
           {renderPagination()}
         </div>
       )}
