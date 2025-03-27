@@ -43,7 +43,7 @@ export const deckColumns: ColumnDef<Deck>[] = [
           <Button 
             size="sm" 
             variant="outline" 
-            className="flex items-center gap-1 w-auto min-w-20 justify-center bg-blue-600 hover:bg-blue-700 dark:bg-blue-900 dark:hover:bg-blue-800 text-white border-0"
+            className="flex items-center gap-1 w-auto min-w-20 justify-center bg-blue-600 hover:bg-blue-700 dark:bg-slate-800 dark:hover:bg-slate-700 text-white border-0"
           >
             Learn {remainingReviews}
           </Button>
