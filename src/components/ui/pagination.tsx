@@ -36,8 +36,6 @@ export function DataTablePagination({
 }: PaginationProps) {
   // Calculate pagination information
   const totalPages = Math.ceil(totalItems / pageSize)
-  const startItem = Math.min(totalItems, (currentPage - 1) * pageSize + 1)
-  const endItem = Math.min(totalItems, currentPage * pageSize)
 
   // Generate visible page numbers
   const getPageNumbers = () => {

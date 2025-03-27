@@ -5,8 +5,7 @@ import { useRouter } from "next/navigation"
 import { DataTable } from "@/components/data-table"
 import { deckColumns } from "@/components/deck-columns"
 import { useAuth, useDecks } from "@/lib/hooks"
-import { Button } from "@/components/ui/button"
-import { Plus, AlertCircle } from "lucide-react"
+import { AlertCircle } from "lucide-react"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { PageLayout } from "@/components/page-layout"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -14,8 +13,6 @@ import {
   Table, 
   TableBody, 
   TableCell, 
-  TableHead, 
-  TableHeader, 
   TableRow 
 } from "@/components/ui/table"
 import { usePhoneMode } from "@/components/page-layout"
@@ -35,7 +32,7 @@ export interface Deck {
 function DeckTableSkeleton() {
   // Display 4 skeleton rows to match a typical user with 4 decks
   const skeletonRows = Array(4).fill(0)
-  const { isPhoneMode } = usePhoneMode()
+  const { /*isPhoneMode*/ } = usePhoneMode()
   
   return (
     <div className="w-full">
@@ -79,6 +76,7 @@ export default function DecksPage() {
   const { user, isInitialized } = useAuth()
   const { decks: apiDecks, isLoading: isLoadingDecks, error: decksError, fetchDecks } = useDecks()
   const [decks, setDecks] = useState<Deck[]>([])
+  const { /*isPhoneMode*/ } = usePhoneMode()
 
   // Transform API decks to our Deck format
   useEffect(() => {
