@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Menu, X, Sparkles } from "lucide-react"
 import { usePhoneMode } from "@/components/page-layout"
+import { Logo } from "@/components/logo"
 
 export function Header() {
   const router = useRouter()
@@ -48,7 +49,8 @@ export function Header() {
     <header className="w-full border-b bg-background">
       <div className="max-w-screen-xl mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-8">
-          <Link href="/decks" className="hover:opacity-80 transition-opacity">
+          <Link href="/decks" className="hover:opacity-80 transition-opacity flex items-center gap-2.5">
+            <Logo className="text-muted-foreground dark:text-muted-foreground" size={24} />
             <h1 className="text-xl font-bold text-foreground">EchoCards</h1>
           </Link>
           
