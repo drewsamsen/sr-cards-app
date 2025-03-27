@@ -2,6 +2,8 @@
 
 A modern spaced repetition flashcard application built with Next.js, React, and TypeScript. This app helps users efficiently learn and retain information using the FSRS (Free Spaced Repetition Scheduler) algorithm.
 
+**Live App**: [echo.cards](https://echo.cards)
+
 ## Features
 
 - **User Authentication**: Secure login and registration system
@@ -72,3 +74,7 @@ Open [http://localhost:3001](http://localhost:3001) with your browser to see the
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Deployment
+
+The application is deployed and publicly available at [echo.cards](https://echo.cards).

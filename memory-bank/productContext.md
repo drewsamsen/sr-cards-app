@@ -14,6 +14,8 @@ The Flashcard Review App addresses these challenges through a spaced repetition 
 3. **Tracks progress** to show advancement and maintain motivation
 4. **Adapts to user performance** by adjusting review schedules
 
+The app is deployed and publicly accessible at [echo.cards](https://echo.cards).
+
 ## Target User Experience
 Users should feel that the app:
 - Makes learning more efficient and effective

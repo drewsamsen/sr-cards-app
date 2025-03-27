@@ -99,3 +99,7 @@ npm start
 - Implementing proper error handling throughout the application
 - Managing state across complex user flows
 - Ensuring data synchronization with backend 
+
+## Deployment
+- The application is deployed and accessible at [echo.cards](https://echo.cards)
+- Production environment hosted with continuous deployment 
